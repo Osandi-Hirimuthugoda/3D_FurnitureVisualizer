@@ -1,8 +1,11 @@
 import React from 'react';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
       <Navbar userRole="admin" />
@@ -21,6 +24,14 @@ const Dashboard = () => {
             <h3>Total Customers</h3>
             <p>0</p>
           </div>
+        </div>
+        <div className="dashboard-actions">
+          <button 
+            className="action-btn"
+            onClick={() => navigate('/admin/room-setup')}
+          >
+            🎨 Create Room Design
+          </button>
         </div>
       </div>
       <Footer />
