@@ -2,21 +2,34 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
+// Customer Pages
+import Home from './pages/customer/Home';
+import Products from './pages/customer/Products';
+import Cart from './pages/customer/Cart';
+
+// Admin Pages
+import Dashboard from './pages/admin/Dashboard';
+import ManageProducts from './pages/admin/ManageProducts';
+import ManageOrders from './pages/admin/ManageOrders';
+
 function App() {
   return (
     <Router>
       <div className="App">
-        <h1>MERN Stack Application</h1>
         <Routes>
+          {/* Customer Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/cart" element={<Cart />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/products" element={<ManageProducts />} />
+          <Route path="/admin/orders" element={<ManageOrders />} />
         </Routes>
       </div>
     </Router>
   );
-}
-
-function Home() {
-  return <div><h2>Home Page</h2></div>;
 }
 
 export default App;
