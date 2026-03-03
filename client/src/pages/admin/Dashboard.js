@@ -25,12 +25,18 @@ const Dashboard = () => {
             <p>0</p>
           </div>
         </div>
-        <div className="dashboard-actions">
-          <button 
+        <div className="dashboard-actions" style={{ display: 'flex', gap: '10px' }}>
+          <button
             className="action-btn"
             onClick={() => navigate('/admin/room-setup')}
           >
             🎨 Create Room Design
+          </button>
+          <button
+            className="action-btn"
+            onClick={() => navigate('/admin/portfolio')}
+          >
+            📁 My Design Portfolio
           </button>
         </div>
       </div>

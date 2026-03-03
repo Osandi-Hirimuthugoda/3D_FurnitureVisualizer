@@ -14,9 +14,9 @@ const Navbar = ({ userRole }) => {
             <span className="brand-text">3D Furniture Visualizer</span>
           </Link>
         </div>
-        
-        <button 
-          className="menu-toggle" 
+
+        <button
+          className="menu-toggle"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -33,12 +33,16 @@ const Navbar = ({ userRole }) => {
               <li><Link to="/admin/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link></li>
               <li><Link to="/admin/products" onClick={() => setIsMenuOpen(false)}>Manage Products</Link></li>
               <li><Link to="/admin/orders" onClick={() => setIsMenuOpen(false)}>Orders</Link></li>
+              <li><Link to="/admin/portfolio" onClick={() => setIsMenuOpen(false)}>Portfolio</Link></li>
             </>
           )}
           {userRole === 'customer' && (
-            <li><Link to="/cart" onClick={() => setIsMenuOpen(false)}>
-              <span className="cart-icon">🛒</span> Cart
-            </Link></li>
+            <>
+              <li><Link to="/portfolio" onClick={() => setIsMenuOpen(false)}>Portfolio</Link></li>
+              <li><Link to="/cart" onClick={() => setIsMenuOpen(false)}>
+                <span className="cart-icon">🛒</span> Cart
+              </Link></li>
+            </>
           )}
           <li className="nav-user">
             <button className="btn-user">

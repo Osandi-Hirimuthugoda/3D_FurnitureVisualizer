@@ -5,6 +5,7 @@ import './App.css';
 // Shared Pages
 import RoomSetup from './pages/shared/RoomSetup';
 import Appearance from './pages/shared/Appearance';
+import Portfolio from './pages/shared/Portfolio';
 
 // Customer Pages
 import Home from './pages/customer/Home';
@@ -27,13 +28,15 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/room-setup" element={<RoomSetup userRole="customer" />} />
           <Route path="/appearance" element={<Appearance userRole="customer" />} />
-          
+          <Route path="/portfolio" element={<Portfolio userRole="customer" />} />
+
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/products" element={<ManageProducts />} />
           <Route path="/admin/orders" element={<ManageOrders />} />
           <Route path="/admin/room-setup" element={<RoomSetup userRole="admin" />} />
           <Route path="/admin/appearance" element={<Appearance userRole="admin" />} />
+          <Route path="/admin/portfolio" element={<Portfolio userRole="admin" />} />
         </Routes>
       </div>
     </Router>
