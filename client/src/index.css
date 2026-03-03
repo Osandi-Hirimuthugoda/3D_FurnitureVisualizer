@@ -5,18 +5,30 @@
 }
 
 :root {
-  --primary-blue: #1e3c72;
-  --secondary-blue: #2a5298;
-  --accent-blue: #3d7eaa;
-  --primary-green: #1a472a;
-  --secondary-green: #2d5f3f;
-  --accent-green: #4a9960;
-  --light-cyan: #a8dadc;
-  --text-dark: #1a1a1a;
+  --primary-teal: #2F9E9E;
+  --secondary-teal: #4CB7A5;
+  --accent-sage: #A8CBB5;
+  --light-blue: #E3F2FD;
+  --hover-teal: #23827A;
+  --coral: #F37A6D;
+  --terracotta: #D76B4D;
+  --error-red: #F28B82;
+  --warning-amber: #FBC24C;
+  --text-dark: #333333;
   --text-light: #666;
-  --bg-light: #f8f9fa;
+  --bg-light: #F5F5F5;
+  --bg-offwhite: #F2E8D7;
   --white: #ffffff;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  /* Legacy aliases for any var() references in existing code */
+  --primary-blue: #2F9E9E;
+  --secondary-blue: #4CB7A5;
+  --accent-blue: #4CB7A5;
+  --primary-green: #2F9E9E;
+  --secondary-green: #4CB7A5;
+  --accent-green: #4CB7A5;
+  --light-cyan: #E3F2FD;
 }
 
 body {
@@ -54,7 +66,7 @@ a {
 
 /* Accessibility improvements */
 :focus-visible {
-  outline: 3px solid var(--accent-blue);
+  outline: 3px solid var(--secondary-teal);
   outline-offset: 2px;
 }
 
@@ -65,6 +77,6 @@ html {
 
 /* Selection color */
 ::selection {
-  background-color: var(--accent-blue);
+  background-color: var(--primary-teal);
   color: white;
 }

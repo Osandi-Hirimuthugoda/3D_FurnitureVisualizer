@@ -6,6 +6,7 @@ import './App.css';
 import RoomSetup from './pages/shared/RoomSetup';
 import Appearance from './pages/shared/Appearance';
 import Portfolio from './pages/shared/Portfolio';
+import Settings from './pages/shared/Settings';
 
 // Customer Pages
 import Home from './pages/customer/Home';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/room-setup" element={<RoomSetup userRole="customer" />} />
           <Route path="/appearance" element={<Appearance userRole="customer" />} />
           <Route path="/portfolio" element={<Portfolio userRole="customer" />} />
+          <Route path="/settings" element={<Settings userRole="customer" />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<Dashboard />} />
@@ -37,6 +39,7 @@ function App() {
           <Route path="/admin/room-setup" element={<RoomSetup userRole="admin" />} />
           <Route path="/admin/appearance" element={<Appearance userRole="admin" />} />
           <Route path="/admin/portfolio" element={<Portfolio userRole="admin" />} />
+          <Route path="/admin/settings" element={<Settings userRole="admin" />} />
         </Routes>
       </div>
     </Router>

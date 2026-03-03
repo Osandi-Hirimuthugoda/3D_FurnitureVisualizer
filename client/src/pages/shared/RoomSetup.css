@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #F5F5F5 0%, #E3F2FD 100%);
 }
 
 .room-setup-header {
@@ -110,7 +110,7 @@
 .floor-select:focus {
   outline: none;
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(61, 126, 170, 0.1);
+  box-shadow: 0 0 0 3px rgba(47, 158, 158, 0.15);
 }
 
 .shape-buttons {
@@ -132,14 +132,14 @@
 
 .shape-btn:hover {
   border-color: var(--accent-blue);
-  background: rgba(61, 126, 170, 0.05);
+  background: rgba(47, 158, 158, 0.05);
 }
 
 .shape-btn.active {
-  background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+  background: linear-gradient(135deg, #2F9E9E, #4CB7A5);
   color: white;
-  border-color: var(--primary-blue);
-  box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+  border-color: #2F9E9E;
+  box-shadow: 0 4px 12px rgba(47, 158, 158, 0.3);
 }
 
 .color-input-group {
@@ -207,15 +207,15 @@
 }
 
 .continue-btn {
-  background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+  background: linear-gradient(135deg, #F37A6D 0%, #D76B4D 100%);
   color: white;
   border: none;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+  box-shadow: 0 4px 12px rgba(215, 107, 77, 0.3);
 }
 
 .continue-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+  box-shadow: 0 6px 20px rgba(215, 107, 77, 0.4);
 }
 
 .preview-canvas {
