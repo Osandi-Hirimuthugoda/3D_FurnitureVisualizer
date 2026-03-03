@@ -1,0 +1,160 @@
+.register-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fffdfa;
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.register-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.logo-box {
+    background: #ff5e00;
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-weight: bold;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* Profile Upload Style */
+.profile-upload-section {
+    margin-bottom: 2rem;
+}
+
+.profile-placeholder {
+    width: 80px;
+    height: 80px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-size: 2rem;
+}
+
+.upload-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #ff5e00;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px white solid;
+}
+
+.upload-text {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.5rem;
+}
+
+/* Form Layout */
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #444;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.full-width {
+    margin-bottom: 1rem;
+}
+
+/* Password Requirements Box */
+.password-rules {
+    background: #fcfcfc;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: left;
+    margin: 1.5rem 0;
+}
+
+.password-rules p {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+.password-rules ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: #ff5e00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.register-btn:hover {
+    background: #e65500;
+}
+
+.login-footer {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.login-footer a {
+    color: #ff5e00;
+    text-decoration: none;
+    font-weight: 600;
+}
