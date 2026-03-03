@@ -26,8 +26,7 @@ const Navbar = ({ userRole }) => {
         </button>
 
         <ul className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-          <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
-          <li><Link to="/products" onClick={() => setIsMenuOpen(false)}>Products</Link></li>
+         
           {userRole === 'admin' && (
             <>
               <li><Link to="/admin/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link></li>
