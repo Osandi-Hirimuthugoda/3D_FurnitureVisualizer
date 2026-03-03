@@ -44,15 +44,9 @@ const Navbar = ({ userRole }) => {
             </>
           )}
           <li className="nav-user">
-            {userRole === 'admin' ? (
-              <Link to="/admin/settings" className="btn-user" onClick={() => setIsMenuOpen(false)}>
-                👤 Admin Settings
-              </Link>
-            ) : (
-              <Link to="/settings" className="btn-user" onClick={() => setIsMenuOpen(false)}>
-                👤 Account Settings
-              </Link>
-            )}
+            <button className="btn-user">
+              {userRole === 'admin' ? '👤 Admin' : '👤 Account'}
+            </button>
           </li>
         </ul>
       </div>
