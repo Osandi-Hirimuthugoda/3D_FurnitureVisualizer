@@ -1,0 +1,276 @@
+.portfolio-page {
+  min-height: 100vh;
+  background-color: #FAFAFA;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.portfolio-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #FFFFFF;
+  min-height: 100vh;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Header */
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #E2E8F0;
+  margin-bottom: 25px;
+}
+
+.back-btn-portfolio {
+  background: none;
+  border: none;
+  color: #718096;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+  width: 150px;
+}
+
+.back-btn-portfolio:hover {
+  color: #2D3748;
+}
+
+.portfolio-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2D3748;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.new-design-btn {
+  background-color: #000000;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.new-design-btn:hover {
+  background-color: #333333;
+}
+
+/* Search and Filter Container */
+.portfolio-controls-container {
+  margin-bottom: 30px;
+}
+
+.search-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  padding: 15px 20px;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+}
+
+.search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-right: 1px solid #E2E8F0;
+  padding-right: 15px;
+}
+
+.search-icon {
+  font-size: 14px;
+  color: #A0AEC0;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #4A5568;
+}
+
+.search-input-wrapper input::placeholder {
+  color: #A0AEC0;
+}
+
+.filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 180px;
+}
+
+.filter-icon {
+  color: #4A5568;
+  font-size: 18px;
+  transform: rotate(90deg); /* Poor man's funnel icon */
+}
+
+.room-filter-dropdown {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #CBD5E0;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #4A5568;
+  outline: none;
+  cursor: pointer;
+  background-color: #FFFFFF;
+}
+
+.results-count {
+  font-size: 12px;
+  color: #A0AEC0;
+  margin: 0;
+}
+
+/* Grid */
+.designs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+@media (max-width: 992px) {
+  .designs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .designs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cards */
+.design-card {
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.design-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-image-placeholder {
+  background-color: #E2E8F0;
+  height: 200px;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+.room-tag {
+  background-color: #000000;
+  color: #FFFFFF;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  height: fit-content;
+  text-transform: capitalize;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.design-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #4A5568;
+  margin: 0 0 8px 0;
+}
+
+.customer-name {
+  font-size: 12px;
+  color: #A0AEC0;
+  margin: 0 0 8px 0;
+}
+
+.design-date {
+  font-size: 12px;
+  color: #A0AEC0;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.calendar-icon {
+  font-size: 12px;
+}
+
+/* Card Action Buttons */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  height: 36px;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.action-btn:hover {
+  opacity: 0.9;
+}
+
+.open-btn {
+  background-color: #000000;
+  color: #FFFFFF;
+  flex: 2;
+  gap: 6px;
+}
+
+.duplicate-btn {
+  background-color: #FFFFFF;
+  color: #4A5568;
+  border: 1px solid #E2E8F0;
+  flex: 1;
+}
+
+.duplicate-btn:hover {
+  background-color: #F7FAFC;
+}
+
+.delete-btn {
+  background-color: #718096;
+  color: #FFFFFF;
+  flex: 1;
+}
+
+.delete-btn:hover {
+  background-color: #4A5568;
+}
