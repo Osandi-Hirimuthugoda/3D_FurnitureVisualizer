@@ -10,6 +10,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import RoomSetup from './pages/shared/RoomSetup';
 import Dashboard from './pages/shared/Dashboard';
 import LayoutEditor from './pages/shared/LayoutEditor';
+import ThreeDView from './pages/shared/ThreeDView';
+import Appearance from './pages/shared/Appearance';
 
 // Customer Pages
 import Home from './pages/customer/Home';
@@ -43,6 +45,16 @@ function App() {
           <Route path="/room-layout" element={
             <ProtectedRoute>
               <LayoutEditor />
+            </ProtectedRoute>
+          } />
+          <Route path="/room-3d" element={
+            <ProtectedRoute>
+              <ThreeDView />
+            </ProtectedRoute>
+          } />
+          <Route path="/appearance" element={
+            <ProtectedRoute>
+              <Appearance />
             </ProtectedRoute>
           } />
           <Route path="/products" element={

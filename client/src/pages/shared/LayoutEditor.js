@@ -96,7 +96,10 @@ const LayoutEditor = () => {
           ← Back to Dashboard
         </button>
         <h1>2D Layout Editor</h1>
-        <button className="view-3d-btn">
+        <button
+          className="view-3d-btn"
+          onClick={() => navigate('/room-3d')}
+        >
           👁️ View in 3D
         </button>
       </header>
