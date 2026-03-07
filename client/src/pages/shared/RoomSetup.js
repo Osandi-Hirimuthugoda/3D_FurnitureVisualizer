@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
+import Sidebar from '../../components/admin/Sidebar';
 import Footer from '../../components/shared/Footer';
 import './RoomSetup.css';
 
 const RoomSetup = ({ userRole = 'customer' }) => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const actualUserRole = localStorage.getItem('userRole') || userRole;
   const [roomSpecs, setRoomSpecs] = useState({
     length: 5,
     width: 4,
@@ -24,7 +25,6 @@ const RoomSetup = ({ userRole = 'customer' }) => {
   // Safe parsing for dimensions
   const safeLength = Math.max(1, Math.min(10, parseInt(roomSpecs.length) || 5));
   const safeWidth = Math.max(1, Math.min(10, parseInt(roomSpecs.width) || 4));
-  const safeHeight = Math.max(1, Math.min(10, parseInt(roomSpecs.height) || 3));
 
   const handleContinue = () => {
     // Save room specs and navigate to 2D layout
@@ -43,14 +43,16 @@ const RoomSetup = ({ userRole = 'customer' }) => {
 
   return (
     <div className="room-setup-page">
-      <Navbar userRole={userRole} />
+      <Navbar userRole={actualUserRole} />
+      <Sidebar />
       
-      <div className="room-setup-header">
-        <button className="back-btn" onClick={handleBack}>
-          ← Back to Dashboard
-        </button>
-        <h1>Room Setup</h1>
-      </div>
+      <div className="room-setup-wrapper with-sidebar">
+        <div className="room-setup-header">
+          <button className="back-btn" onClick={handleBack}>
+            ← Back to Dashboard
+          </button>
+          <h1>Room Setup</h1>
+        </div>
 
       <div className="room-setup-container">
         <div className="room-specifications">
@@ -341,6 +343,7 @@ const RoomSetup = ({ userRole = 'customer' }) => {
             This is a top-down view of your room. The grid lines represent {roomSpecs.unit}.
           </p>
         </div>
+      </div>
       </div>
 
       <Footer />

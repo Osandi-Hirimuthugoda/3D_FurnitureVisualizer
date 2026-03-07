@@ -5,15 +5,29 @@ import './Sidebar.css';
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
+  const userRole = localStorage.getItem('userRole');
 
-  const menuItems = [
-    { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
-    { path: '/admin/products', icon: '🪑', label: 'Products' },
-    { path: '/admin/orders', icon: '📦', label: 'Orders' },
-    { path: '/admin/customers', icon: '👥', label: 'Customers' },
-    { path: '/admin/analytics', icon: '📈', label: 'Analytics' },
-    { path: '/admin/settings', icon: '⚙️', label: 'Settings' },
+  // Menu items based on user role
+  const adminMenuItems = [
+    { path: '/dashboard', icon: '📊', label: 'Dashboard' },
+    { path: '/room-setup', icon: '🏠', label: 'Room Setup' },
+    { path: '/room-layout', icon: '📐', label: '2D Layout' },
+    { path: '/products', icon: '🛋️', label: 'Browse Products' },
+    { path: '/admin/products', icon: '🪑', label: 'Manage Products' },
+    { path: '/admin/orders', icon: '📦', label: 'Manage Orders' },
   ];
+
+  const customerMenuItems = [
+    { path: '/dashboard', icon: '📊', label: 'Dashboard' },
+    { path: '/room-setup', icon: '🏠', label: 'Room Setup' },
+    { path: '/room-layout', icon: '📐', label: '2D Layout' },
+    { path: '/products', icon: '🛋️', label: 'Browse Products' },
+    { path: '/cart', icon: '🛒', label: 'My Cart' },
+  ];
+
+  const menuItems = userRole === 'admin' ? adminMenuItems : customerMenuItems;
+  const panelTitle = userRole === 'admin' ? 'Admin Panel' : 'Menu';
+  const panelIcon = userRole === 'admin' ? '🛠️' : '🎨';
 
   return (
     <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
@@ -26,8 +40,8 @@ const Sidebar = () => {
       </button>
 
       <div className="sidebar-header">
-        <span className="sidebar-icon">🛠️</span>
-        {!isCollapsed && <h2>Admin Panel</h2>}
+        <span className="sidebar-icon">{panelIcon}</span>
+        {!isCollapsed && <h2>{panelTitle}</h2>}
       </div>
 
       <nav className="sidebar-nav">
@@ -50,7 +64,7 @@ const Sidebar = () => {
       <div className="sidebar-footer">
         <Link to="/" className="back-to-site">
           <span className="menu-icon">🏠</span>
-          {!isCollapsed && <span>Back to Site</span>}
+          {!isCollapsed && <span>Back to Home</span>}
         </Link>
       </div>
     </aside>

@@ -5,6 +5,16 @@
   background: linear-gradient(135deg, #F5F5F5 0%, #E3F2FD 100%);
 }
 
+.room-setup-wrapper {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+}
+
+.room-setup-wrapper.with-sidebar {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+}
+
 .room-setup-header {
   max-width: 1400px;
   width: 100%;

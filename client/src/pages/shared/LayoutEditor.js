@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from '../../components/admin/Sidebar';
 import './LayoutEditor.css';
 
 const LayoutEditor = () => {
   const navigate = useNavigate();
-  const userRole = localStorage.getItem('userRole');
   const [selectedItem, setSelectedItem] = useState(null);
   const [canvasItems, setCanvasItems] = useState([]);
   const [itemPosition, setItemPosition] = useState({ x: 1.5, y: 2.0 });
@@ -88,7 +88,9 @@ const LayoutEditor = () => {
   };
 
   return (
-    <div className="layout-editor">
+    <>
+      <Sidebar />
+      <div className="layout-editor with-sidebar">
       <header className="editor-header">
         <button className="back-btn" onClick={() => navigate('/dashboard')}>
           ← Back to Dashboard
@@ -296,6 +298,7 @@ const LayoutEditor = () => {
         </aside>
       </div>
     </div>
+    </>
   );
 };
 
