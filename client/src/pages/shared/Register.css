@@ -6,16 +6,40 @@
     background-color: #fffdfa;
     padding: 2rem;
     font-family: 'Segoe UI', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background image with blur */
+.register-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('../../assets/bg-home.png.png') center/cover no-repeat;
+    filter: blur(8px) brightness(0.9);
+    transform: scale(1.03);
+    z-index: 0;
+}
+
+/* Light overlay to improve contrast */
+.register-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.45);
+    z-index: 0;
 }
 
 .register-card {
-    background: white;
+    background: rgba(255,255,255,0.95);
     padding: 2.5rem;
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
     width: 100%;
     max-width: 600px;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .logo-box {

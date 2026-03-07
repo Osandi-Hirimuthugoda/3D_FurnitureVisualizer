@@ -10,6 +10,12 @@ import Appearance from './pages/shared/Appearance';
 import Home from './pages/customer/Home';
 import Products from './pages/customer/Products';
 import Cart from './pages/customer/Cart';
+import Login from './pages/shared/Login';
+import Register from './pages/shared/Register';
+
+// Note: Portfolio and Settings are commented out because the files don't exist yet
+// import Portfolio from './pages/customer/Portfolio'; 
+// import Settings from './pages/customer/Settings';
 
 // Admin Pages
 import Dashboard from './pages/admin/Dashboard';
@@ -25,10 +31,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/room-setup" element={<RoomSetup userRole="customer" />} />
           <Route path="/appearance" element={<Appearance userRole="customer" />} />
-          <Route path="/portfolio" element={<Portfolio userRole="customer" />} />
-          <Route path="/settings" element={<Settings userRole="customer" />} />
+          
+          {/* Commented out until files are created */}
+          {/* <Route path="/portfolio" element={<Portfolio userRole="customer" />} /> */}
+          {/* <Route path="/settings" element={<Settings userRole="customer" />} /> */}
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<Dashboard />} />
