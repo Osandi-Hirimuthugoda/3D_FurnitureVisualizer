@@ -1,15 +1,38 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../../components/shared/Navbar';
-import Footer from '../../components/shared/Footer';
 import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
   return (
     <div className="home-page">
-      <Navbar userRole="customer" />
+      <nav className="home-navbar">
+        <div className="nav-container">
+          <div className="nav-brand">
+            <span className="brand-icon">🪑</span>
+            <span className="brand-text">3D Furniture Visualizer</span>
+          </div>
+          <div className="nav-actions">
+            {isAuthenticated ? (
+              <button 
+                className="btn-dashboard"
+                onClick={() => navigate('/dashboard')}
+              >
+                Go to Dashboard
+              </button>
+            ) : (
+              <button 
+                className="btn-login"
+                onClick={() => navigate('/login')}
+              >
+                Login
+              </button>
+            )}
+          </div>
+        </div>
+      </nav>
       
       <section className="hero-section">
         <div className="hero-content">
@@ -22,7 +45,7 @@ const Home = () => {
             className="cta-button"
             onClick={() => navigate('/login')}
           >
-            🎨 Create New Design
+            🎨 Get Started
           </button>
         </div>
         <div className="hero-image">
@@ -58,7 +81,187 @@ const Home = () => {
         </div>
       </section>
 
-      <Footer />
+      <section className="how-it-works-section">
+        <h2>How It Works</h2>
+        <div className="steps-container">
+          <div className="step">
+            <div className="step-number">1</div>
+            <div className="step-icon">📏</div>
+            <h3>Measure Your Room</h3>
+            <p>Enter your room dimensions and choose the shape</p>
+          </div>
+          <div className="step-arrow">→</div>
+          <div className="step">
+            <div className="step-number">2</div>
+            <div className="step-icon">🪑</div>
+            <h3>Add Furniture</h3>
+            <p>Browse and place furniture in your virtual room</p>
+          </div>
+          <div className="step-arrow">→</div>
+          <div className="step">
+            <div className="step-number">3</div>
+            <div className="step-icon">🎨</div>
+            <h3>Customize</h3>
+            <p>Adjust colors, materials, and arrangements</p>
+          </div>
+          <div className="step-arrow">→</div>
+          <div className="step">
+            <div className="step-number">4</div>
+            <div className="step-icon">✨</div>
+            <h3>Visualize in 3D</h3>
+            <p>See your room come to life in stunning 3D</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="gallery-section">
+        <h2>Design Gallery</h2>
+        <p className="section-subtitle">Get inspired by these beautiful room designs</p>
+        <div className="gallery-grid">
+          <div className="gallery-item">
+            <div className="gallery-placeholder">🛋️</div>
+            <h4>Modern Living Room</h4>
+          </div>
+          <div className="gallery-item">
+            <div className="gallery-placeholder">🛏️</div>
+            <h4>Cozy Bedroom</h4>
+          </div>
+          <div className="gallery-item">
+            <div className="gallery-placeholder">🍽️</div>
+            <h4>Elegant Dining</h4>
+          </div>
+          <div className="gallery-item">
+            <div className="gallery-placeholder">💼</div>
+            <h4>Home Office</h4>
+          </div>
+        </div>
+      </section>
+
+      <section className="testimonials-section">
+        <h2>What Our Customers Say</h2>
+        <div className="testimonials-grid">
+          <div className="testimonial-card">
+            <div className="stars">⭐⭐⭐⭐⭐</div>
+            <p className="testimonial-text">
+              "This tool helped me visualize my living room perfectly before buying furniture. Saved me from making costly mistakes!"
+            </p>
+            <div className="testimonial-author">
+              <div className="author-avatar">👤</div>
+              <div>
+                <h4>Sarah Johnson</h4>
+                <p>Interior Designer</p>
+              </div>
+            </div>
+          </div>
+          <div className="testimonial-card">
+            <div className="stars">⭐⭐⭐⭐⭐</div>
+            <p className="testimonial-text">
+              "Amazing 3D visualization! I could see exactly how my furniture would fit and look. Highly recommended!"
+            </p>
+            <div className="testimonial-author">
+              <div className="author-avatar">👤</div>
+              <div>
+                <h4>Michael Chen</h4>
+                <p>Homeowner</p>
+              </div>
+            </div>
+          </div>
+          <div className="testimonial-card">
+            <div className="stars">⭐⭐⭐⭐⭐</div>
+            <p className="testimonial-text">
+              "The best room planning tool I've used. Intuitive, accurate, and the 3D view is incredible!"
+            </p>
+            <div className="testimonial-author">
+              <div className="author-avatar">👤</div>
+              <div>
+                <h4>Emma Williams</h4>
+                <p>Architect</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="pricing-section">
+        <h2>Choose Your Plan</h2>
+        <div className="pricing-grid">
+          <div className="pricing-card">
+            <h3>Free</h3>
+            <div className="price">
+              <span className="currency">Rs.</span>
+              <span className="amount">0</span>
+              <span className="period">/month</span>
+            </div>
+            <ul className="features-list">
+              <li>✓ 3 Room Designs</li>
+              <li>✓ Basic Furniture Library</li>
+              <li>✓ 2D View</li>
+              <li>✓ Save Designs</li>
+            </ul>
+            <button className="pricing-btn" onClick={() => navigate('/login')}>
+              Get Started
+            </button>
+          </div>
+          <div className="pricing-card featured">
+            <div className="popular-badge">Most Popular</div>
+            <h3>Pro</h3>
+            <div className="price">
+              <span className="currency">Rs.</span>
+              <span className="amount">1,990</span>
+              <span className="period">/month</span>
+            </div>
+            <ul className="features-list">
+              <li>✓ Unlimited Designs</li>
+              <li>✓ Premium Furniture Library</li>
+              <li>✓ 3D Visualization</li>
+              <li>✓ Export & Share</li>
+              <li>✓ Priority Support</li>
+            </ul>
+            <button className="pricing-btn primary" onClick={() => navigate('/login')}>
+              Start Free Trial
+            </button>
+          </div>
+          <div className="pricing-card">
+            <h3>Business</h3>
+            <div className="price">
+              <span className="currency">Rs.</span>
+              <span className="amount">4,990</span>
+              <span className="period">/month</span>
+            </div>
+            <ul className="features-list">
+              <li>✓ Everything in Pro</li>
+              <li>✓ Team Collaboration</li>
+              <li>✓ Custom Branding</li>
+              <li>✓ API Access</li>
+              <li>✓ Dedicated Support</li>
+            </ul>
+            <button className="pricing-btn" onClick={() => navigate('/login')}>
+              Contact Sales
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="newsletter-section">
+        <div className="newsletter-container">
+          <h2>Stay Updated</h2>
+          <p>Subscribe to our newsletter for design tips and updates</p>
+          <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              className="newsletter-input"
+            />
+            <button type="submit" className="newsletter-btn">
+              Subscribe
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <footer className="home-footer">
+        <p>&copy; 2024 3D Furniture Visualizer. All rights reserved.</p>
+      </footer>
     </div>
   );
 };

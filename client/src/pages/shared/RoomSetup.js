@@ -38,11 +38,7 @@ const RoomSetup = ({ userRole = 'customer' }) => {
   };
 
   const handleBack = () => {
-    if (userRole === 'admin') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/');
-    }
+    navigate('/dashboard');
   };
 
   return (

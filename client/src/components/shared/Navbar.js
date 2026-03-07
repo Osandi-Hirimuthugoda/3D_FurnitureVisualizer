@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 const Navbar = ({ userRole }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userEmail');
+    navigate('/login');
+  };
 
   return (
     <nav className="navbar">
@@ -32,20 +40,18 @@ const Navbar = ({ userRole }) => {
               <li><Link to="/admin/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link></li>
               <li><Link to="/admin/products" onClick={() => setIsMenuOpen(false)}>Manage Products</Link></li>
               <li><Link to="/admin/orders" onClick={() => setIsMenuOpen(false)}>Orders</Link></li>
-              <li><Link to="/admin/portfolio" onClick={() => setIsMenuOpen(false)}>Portfolio</Link></li>
             </>
           )}
           {userRole === 'customer' && (
             <>
-              <li><Link to="/portfolio" onClick={() => setIsMenuOpen(false)}>Portfolio</Link></li>
               <li><Link to="/cart" onClick={() => setIsMenuOpen(false)}>
                 <span className="cart-icon">🛒</span> Cart
               </Link></li>
             </>
           )}
           <li className="nav-user">
-            <button className="btn-user">
-              {userRole === 'admin' ? '👤 Admin' : '👤 Account'}
+            <button className="btn-user" onClick={handleLogout}>
+              👤 Logout
             </button>
           </li>
         </ul>
