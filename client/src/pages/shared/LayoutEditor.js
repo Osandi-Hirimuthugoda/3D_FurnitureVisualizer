@@ -179,10 +179,23 @@ const LayoutEditor = () => {
         {/* Center - Canvas */}
         <main className="canvas-area">
           <div className="canvas-toolbar">
-            <button className="toolbar-btn">↶ Undo</button>
-            <button className="toolbar-btn">↷ Redo</button>
-            <button className="toolbar-btn">Reset Layout</button>
-            <button className="toolbar-btn snap-btn">⊞ Snap to Grid</button>
+            <div className="toolbar-left">
+              <button className="toolbar-btn">↶ Undo</button>
+              <button className="toolbar-btn">↷ Redo</button>
+              <button className="toolbar-btn" onClick={() => {
+                if (window.confirm('Are you sure you want to reset the layout?')) {
+                  setCanvasItems([]);
+                  setSelectedItem(null);
+                }
+              }}>Reset Layout</button>
+              <button className="toolbar-btn snap-btn">⊞ Snap to Grid</button>
+            </div>
+            <div className="toolbar-right">
+              <div className="furniture-count">
+                <span className="count-icon">🪑</span>
+                <span className="count-text">Total Furniture: {canvasItems.length}</span>
+              </div>
+            </div>
           </div>
 
           <div className="canvas-wrapper">
@@ -200,7 +213,36 @@ const LayoutEditor = () => {
                     transform: `rotate(${item.rotation}deg)`
                   }}
                   onClick={() => setSelectedItem(item)}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('canvasId', item.canvasId.toString());
+                  }}
+                  onDragEnd={(e) => {
+                    const canvas = e.currentTarget.parentElement;
+                    const rect = canvas.getBoundingClientRect();
+                    const newX = (e.clientX - rect.left) / 50;
+                    const newY = (e.clientY - rect.top) / 50;
+                    
+                    setCanvasItems(canvasItems.map(i =>
+                      i.canvasId === item.canvasId
+                        ? { ...i, x: Math.max(0, Math.min(10 - i.width, newX)), y: Math.max(0, Math.min(8 - i.height, newY)) }
+                        : i
+                    ));
+                    if (selectedItem?.canvasId === item.canvasId) {
+                      setSelectedItem({ ...item, x: newX, y: newY });
+                    }
+                  }}
                 >
+                  {item.image ? (
+                    item.image.startsWith('data:image') || item.image.startsWith('http') ? (
+                      <img src={item.image} alt={item.name} className="canvas-item-image" />
+                    ) : (
+                      <span className="canvas-item-emoji">{item.image}</span>
+                    )
+                  ) : (
+                    <span className="canvas-item-emoji">🪑</span>
+                  )}
                   <div className="item-label">{item.name}</div>
                   <div className="resize-handles">
                     <div className="handle top-left"></div>
@@ -220,9 +262,42 @@ const LayoutEditor = () => {
           
           {selectedItem ? (
             <>
-              <div className="property-section">
-                <h4>{selectedItem.name}</h4>
-                <p className="currently-selected">Currently selected</p>
+              <div className="property-section selected-item-info">
+                <div className="selected-item-header">
+                  <div className="selected-item-icon">
+                    {selectedItem.image ? (
+                      selectedItem.image.startsWith('data:image') || selectedItem.image.startsWith('http') ? (
+                        <img src={selectedItem.image} alt={selectedItem.name} className="selected-thumbnail" />
+                      ) : (
+                        <span className="selected-emoji">{selectedItem.image}</span>
+                      )
+                    ) : (
+                      <span className="selected-emoji">🪑</span>
+                    )}
+                  </div>
+                  <div className="selected-item-details">
+                    <h4>{selectedItem.name}</h4>
+                    <p className="item-category-badge">{selectedItem.type || 'Furniture'}</p>
+                  </div>
+                </div>
+                <div className="selected-status">
+                  <span className="status-indicator"></span>
+                  <span className="status-text">Currently selected</span>
+                </div>
+                {selectedItem.dimensions && (
+                  <div className="item-dimensions-display">
+                    <span className="dimension-icon">📏</span>
+                    <span className="dimension-text">
+                      {selectedItem.dimensions.length}m × {selectedItem.dimensions.width}m × {selectedItem.dimensions.height}m
+                    </span>
+                  </div>
+                )}
+                {selectedItem.price && (
+                  <div className="item-price-display">
+                    <span className="price-icon">💰</span>
+                    <span className="price-text">Rs. {selectedItem.price.toLocaleString()}</span>
+                  </div>
+                )}
               </div>
 
               <div className="property-section">
@@ -287,13 +362,47 @@ const LayoutEditor = () => {
               </div>
 
               <div className="property-section status">
-                <h4>Status</h4>
-                <p>Total items: {canvasItems.length}</p>
-                <p>Grid: On</p>
+                <h4>Room Statistics</h4>
+                <div className="stat-item">
+                  <span className="stat-icon">🪑</span>
+                  <span className="stat-label">Total Furniture:</span>
+                  <span className="stat-value">{canvasItems.length}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-icon">📐</span>
+                  <span className="stat-label">Grid:</span>
+                  <span className="stat-value">On</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-icon">🏠</span>
+                  <span className="stat-label">Room Size:</span>
+                  <span className="stat-value">5m × 4m</span>
+                </div>
               </div>
             </>
           ) : (
-            <p className="no-selection">Select an item to view properties</p>
+            <>
+              <p className="no-selection">Select an item to view properties</p>
+              
+              <div className="property-section status">
+                <h4>Room Statistics</h4>
+                <div className="stat-item">
+                  <span className="stat-icon">🪑</span>
+                  <span className="stat-label">Total Furniture:</span>
+                  <span className="stat-value">{canvasItems.length}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-icon">📐</span>
+                  <span className="stat-label">Grid:</span>
+                  <span className="stat-value">On</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-icon">🏠</span>
+                  <span className="stat-label">Room Size:</span>
+                  <span className="stat-value">5m × 4m</span>
+                </div>
+              </div>
+            </>
           )}
         </aside>
       </div>
