@@ -12,6 +12,8 @@ import Dashboard from './pages/shared/Dashboard';
 import LayoutEditor from './pages/shared/LayoutEditor';
 import ThreeDView from './pages/shared/ThreeDView';
 import Appearance from './pages/shared/Appearance';
+import Portfolio from './pages/shared/Portfolio';
+import Settings from './pages/shared/Settings';
 
 // Customer Pages
 import Home from './pages/customer/Home';
@@ -65,6 +67,16 @@ function App() {
           <Route path="/cart" element={
             <ProtectedRoute>
               <Cart />
+            </ProtectedRoute>
+          } />
+          <Route path="/portfolio" element={
+            <ProtectedRoute>
+              <Portfolio />
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           } />
           

@@ -79,11 +79,29 @@ const Navbar = ({ userRole }) => {
               </li>
               <li>
                 <Link 
+                  to="/portfolio" 
+                  className={isActive('/portfolio') ? 'active' : ''}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Portfolio
+                </Link>
+              </li>
+              <li>
+                <Link 
                   to="/products" 
                   className={isActive('/products') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Products
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/settings" 
+                  className={isActive('/settings') ? 'active' : ''}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Settings
                 </Link>
               </li>
               

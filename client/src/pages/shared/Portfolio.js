@@ -4,8 +4,9 @@ import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
 import './Portfolio.css';
 
-const Portfolio = ({ userRole = 'customer' }) => {
+const Portfolio = () => {
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('userRole');
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('All Rooms');
 
@@ -37,8 +38,7 @@ const Portfolio = ({ userRole = 'customer' }) => {
 
   return (
     <div className="portfolio-page">
-      {/* Hide navbar specifically for this page if needed, or keep it. The sketch doesn't show standard navbar, but we should probably keep consistency or just show the specific portfolio header. We'll show standard Navbar then the portfolio specific content. */}
-      {/* <Navbar userRole={userRole} /> */}
+      <Navbar userRole={userRole} />
 
       <div className="portfolio-container">
         {/* Header Section */}
