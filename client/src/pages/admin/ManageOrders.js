@@ -7,7 +7,6 @@ import './ManageOrders.css';
 
 const ManageOrders = () => {
   const navigate = useNavigate();
-  const userRole = localStorage.getItem('userRole');
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');

@@ -70,6 +70,15 @@ const Navbar = ({ userRole }) => {
               </li>
               <li>
                 <Link 
+                  to="/appearance" 
+                  className={isActive('/appearance') ? 'active' : ''}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Appearance
+                </Link>
+              </li>
+              <li>
+                <Link 
                   to="/products" 
                   className={isActive('/products') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
