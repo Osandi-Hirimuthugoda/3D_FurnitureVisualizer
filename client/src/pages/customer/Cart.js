@@ -119,7 +119,7 @@ const Cart = () => {
       <div className="cart-container with-sidebar">
         <div className="cart-header">
           <button className="back-btn" onClick={() => navigate('/products')}>
-            ← Back to Products
+            ← Back
           </button>
           <h1>Shopping Cart</h1>
           <p className="cart-subtitle">

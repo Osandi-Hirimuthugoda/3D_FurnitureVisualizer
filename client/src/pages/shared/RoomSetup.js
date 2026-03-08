@@ -38,7 +38,12 @@ const RoomSetup = ({ userRole = 'customer' }) => {
   };
 
   const handleBack = () => {
-    navigate('/dashboard');
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'admin') {
+      navigate('/admin/products');
+    } else {
+      navigate('/products');
+    }
   };
 
   return (
@@ -49,7 +54,7 @@ const RoomSetup = ({ userRole = 'customer' }) => {
       <div className="room-setup-wrapper with-sidebar">
         <div className="room-setup-header">
           <button className="back-btn" onClick={handleBack}>
-            ← Back to Dashboard
+            ← Back
           </button>
           <h1>Room Setup</h1>
         </div>

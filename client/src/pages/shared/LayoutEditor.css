@@ -4,6 +4,7 @@
   flex-direction: column;
   background: #f5f7fa;
   transition: margin-left 0.3s ease;
+  padding-top: 70px;
 }
 
 .layout-editor.with-sidebar {

@@ -105,8 +105,8 @@ const Products = () => {
       
       <div className="products-container with-sidebar">
         <div className="products-header">
-          <button className="back-btn" onClick={() => navigate('/dashboard')}>
-            ← Back to Dashboard
+          <button className="back-btn" onClick={() => navigate(userRole === 'customer' ? '/cart' : '/dashboard')}>
+            ← Back
           </button>
           <h1>Our Furniture Collection</h1>
           <p className="subtitle">Browse our wide selection of quality furniture</p>
