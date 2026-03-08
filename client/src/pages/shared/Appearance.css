@@ -10,12 +10,32 @@
   width: 100%;
   margin: 2rem auto;
   padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .appearance-header h1 {
   text-align: center;
   font-size: 2rem;
   color: #333;
+}
+
+.back-btn {
+  background: transparent;
+  border: 2px solid var(--primary-blue);
+  color: var(--primary-blue);
+  padding: 0.6rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: var(--primary-blue);
+  color: #ffffff;
+  transform: translateX(-4px);
 }
 
 .appearance-container {

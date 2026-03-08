@@ -6,7 +6,6 @@
   left: 0;
   top: 0;
   padding: 1.5rem 0;
-  padding-top: 80px;
   transition: all 0.3s ease;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1001;
@@ -18,9 +17,9 @@
 }
 
 .sidebar-toggle {
-  position: fixed;
-  left: 245px;
-  top: 80px;
+  position: absolute;
+  right: -15px;
+  top: 20px;
   background: #2F9E9E;
   border: 2px solid #4CB7A5;
   color: white;
@@ -34,11 +33,6 @@
   font-size: 1rem;
   transition: all 0.3s ease;
   z-index: 1002;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.sidebar.collapsed .sidebar-toggle {
-  left: 65px;
 }
 
 .sidebar-toggle:hover {
@@ -53,7 +47,6 @@
   padding: 0 1.5rem;
   margin-bottom: 2rem;
   color: white;
-  margin-top: 1rem;
 }
 
 .sidebar-icon {

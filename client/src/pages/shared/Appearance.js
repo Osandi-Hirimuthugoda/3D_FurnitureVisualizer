@@ -41,7 +41,7 @@ const Appearance = ({ userRole = 'customer' }) => {
   };
 
   const handleBack = () => {
-    navigate('/room-layout');
+    navigate('/room-3d');
   };
 
   return (
