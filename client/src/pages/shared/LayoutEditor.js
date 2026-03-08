@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
-import Sidebar from '../../components/admin/Sidebar';
 import './LayoutEditor.css';
 
 const LayoutEditor = () => {
@@ -92,8 +91,7 @@ const LayoutEditor = () => {
   return (
     <>
       <Navbar userRole={userRole} />
-      <Sidebar />
-      <div className="layout-editor with-sidebar">
+      <div className="layout-editor">
       <header className="editor-header">
         <button className="back-btn" onClick={() => navigate('/room-setup')}>
           ← Back

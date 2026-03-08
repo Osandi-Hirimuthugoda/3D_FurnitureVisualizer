@@ -19,7 +19,7 @@ const Navbar = ({ userRole }) => {
   };
 
   return (
-    <nav className={`navbar ${userRole ? 'with-sidebar' : ''}`}>
+    <nav className="navbar">
       <div className="nav-container">
         <div className="nav-brand">
           <Link to="/">

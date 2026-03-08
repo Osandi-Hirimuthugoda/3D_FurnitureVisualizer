@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
-import Sidebar from '../../components/admin/Sidebar';
 import Footer from '../../components/shared/Footer';
 import './RoomSetup.css';
 
@@ -49,9 +48,8 @@ const RoomSetup = ({ userRole = 'customer' }) => {
   return (
     <div className="room-setup-page">
       <Navbar userRole={actualUserRole} />
-      <Sidebar />
       
-      <div className="room-setup-wrapper with-sidebar">
+      <div className="room-setup-wrapper">
         <div className="room-setup-header">
           <button className="back-btn" onClick={handleBack}>
             ← Back

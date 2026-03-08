@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
-import Sidebar from '../../components/admin/Sidebar';
 import './ManageOrders.css';
 
 const ManageOrders = () => {
@@ -166,7 +165,6 @@ const ManageOrders = () => {
     <div className="manage-orders-page">
       <Navbar userRole="admin" />
       <div className="admin-layout">
-        <Sidebar />
         <main className="manage-orders-content">
           <div className="orders-header">
             <button className="back-btn" onClick={() => navigate('/admin/products')}>

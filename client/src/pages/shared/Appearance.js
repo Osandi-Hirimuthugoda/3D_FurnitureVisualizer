@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
-import Sidebar from '../../components/admin/Sidebar';
 import Footer from '../../components/shared/Footer';
 import './Appearance.css';
 
@@ -49,9 +48,8 @@ const Appearance = () => {
   return (
     <div className="appearance-page">
       <Navbar userRole={userRole} />
-      <Sidebar />
 
-      <div className="appearance-wrapper with-sidebar">
+      <div className="appearance-wrapper">
         <div className="appearance-header">
           <button className="back-btn" onClick={handleBack}>
             ← Back
@@ -300,7 +298,5 @@ const Appearance = () => {
     </div>
   );
 };
-
-export default Appearance;
 
 export default Appearance;

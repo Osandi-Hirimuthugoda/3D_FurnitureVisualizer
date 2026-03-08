@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
-import Sidebar from '../../components/admin/Sidebar';
 import Footer from '../../components/shared/Footer';
 import './Cart.css';
 
@@ -114,9 +113,8 @@ const Cart = () => {
   return (
     <div className="cart-page">
       <Navbar userRole={userRole} />
-      <Sidebar />
       
-      <div className="cart-container with-sidebar">
+      <div className="cart-container">
         <div className="cart-header">
           <button className="back-btn" onClick={() => navigate('/products')}>
             ← Back

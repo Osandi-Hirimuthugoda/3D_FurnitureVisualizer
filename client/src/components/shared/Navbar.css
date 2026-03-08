@@ -5,12 +5,7 @@
   top: 0;
   z-index: 1000;
   padding: 0;
-  transition: margin-left 0.3s ease, width 0.3s ease;
-}
-
-.navbar.with-sidebar {
-  margin-left: 260px;
-  width: calc(100% - 260px);
+  transition: all 0.3s ease;
 }
 
 .nav-container {
