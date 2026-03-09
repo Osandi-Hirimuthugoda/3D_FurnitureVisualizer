@@ -2,10 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import TemplateSelector from './TemplateSelector';
+import { getDesign, updateDesign, createDesign } from '../../api/designs';
 import './LayoutEditor.css';
 
 const LayoutEditor = () => {
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('userRole');
   const [designId, setDesignId] = useState(null);
   const [roomSpecs, setRoomSpecs] = useState({ length: 5, width: 4, unit: 'meters' });
   const [selectedItem, setSelectedItem] = useState(null);
