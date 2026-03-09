@@ -56,9 +56,23 @@ Create a `.env` file in the `server` folder:
 ```env
 PORT=5001
 MONGODB_URI=mongodb+srv://dbuser:DbuserPassword@cluster0.0xwfuyc.mongodb.net/?appName=Cluster0
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 ```
 
-### Step 4: Run the Application
+### Step 4: Seed Admin User
+
+Create the default admin account:
+
+```bash
+cd server
+npm run seed:admin
+```
+
+This will create an admin user with:
+- Email: `admin@furniture.com`
+- Password: `Admin@123`
+
+### Step 5: Run the Application
 
 #### Start Backend Server
 ```bash
@@ -78,8 +92,13 @@ Frontend will run on: http://localhost:3000
 
 ### Login Credentials
 
-- **Admin**: Use any email containing "admin" (e.g., admin@test.com)
-- **Customer**: Use any other email (e.g., user@test.com)
+#### Admin Login:
+- Email: `admin@furniture.com`
+- Password: `Admin@123`
+
+#### Customer Signup/Login:
+- Customers can create a new account using the signup form
+- After signup, they can login with their credentials
 
 ### Features by Role
 
@@ -107,9 +126,11 @@ Frontend will run on: http://localhost:3000
 │       ├── pages/          # Page components
 │       └── App.js
 ├── server/                 # Express backend
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
+│   ├── controllers/        # Route controllers
+│   ├── middleware/         # Auth middleware
+│   ├── models/             # MongoDB models
+│   ├── routes/             # API routes
+│   ├── scripts/            # Utility scripts
 │   └── server.js
 ├── .gitignore
 └── README.md
@@ -125,6 +146,7 @@ Frontend will run on: http://localhost:3000
 ### Backend (server/)
 - `npm start` - Start server
 - `npm run dev` - Start with nodemon (auto-restart)
+- `npm run seed:admin` - Create admin user in database
 
 ## Contributing
 
