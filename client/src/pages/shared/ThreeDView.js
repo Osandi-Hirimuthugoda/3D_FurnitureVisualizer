@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/admin/Sidebar';
+import { getRasterizedImage } from '../../api/designs';
 import './ThreeDView.css';
 
 const cameraOptions = [
@@ -19,6 +20,10 @@ const lightingOptions = [
 
 const ThreeDView = () => {
   const navigate = useNavigate();
+  const [designId, setDesignId] = useState(null);
+  const [rasterizedUrl, setRasterizedUrl] = useState(null);
+  const [rasterizeError, setRasterizeError] = useState(null);
+  const [isRasterizing, setIsRasterizing] = useState(false);
 
   const [activeCamera, setActiveCamera] = useState('perspective');
   const [activeLighting, setActiveLighting] = useState('day');
@@ -34,6 +39,42 @@ const ThreeDView = () => {
   const handleOpenAppearance = () => {
     navigate('/appearance');
   };
+
+  const fetchRasterized = useCallback(async () => {
+    const id = designId || localStorage.getItem('currentDesignId');
+    if (!id) {
+      setRasterizedUrl(null);
+      setRasterizeError('No design loaded. Go to Room Setup and continue to 2D Layout first.');
+      return;
+    }
+    setIsRasterizing(true);
+    setRasterizeError(null);
+    try {
+      const url = await getRasterizedImage(id, {
+        camera: activeCamera,
+        lighting: activeLighting,
+        shadows: shadowsEnabled
+      });
+      setRasterizedUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return url;
+      });
+    } catch (err) {
+      console.error(err);
+      setRasterizeError(err.response?.data?.error || 'Failed to render 3D view. Is the server running?');
+      setRasterizedUrl(null);
+    } finally {
+      setIsRasterizing(false);
+    }
+  }, [designId, activeCamera, activeLighting, shadowsEnabled]);
+
+  useEffect(() => {
+    setDesignId(localStorage.getItem('currentDesignId'));
+  }, []);
+
+  useEffect(() => {
+    fetchRasterized();
+  }, [fetchRasterized]);
 
   const handleZoomChange = (direction) => {
     setZoomLevel((current) => {
@@ -87,9 +128,8 @@ const ThreeDView = () => {
                 {cameraOptions.map((camera) => (
                   <button
                     key={camera.id}
-                    className={`pill-button ${
-                      activeCamera === camera.id ? 'active' : ''
-                    }`}
+                    className={`pill-button ${activeCamera === camera.id ? 'active' : ''
+                      }`}
                     onClick={() => setActiveCamera(camera.id)}
                   >
                     <span className="pill-label">{camera.label}</span>
@@ -111,9 +151,8 @@ const ThreeDView = () => {
                 {lightingOptions.map((lighting) => (
                   <button
                     key={lighting.id}
-                    className={`list-button ${
-                      activeLighting === lighting.id ? 'active' : ''
-                    }`}
+                    className={`list-button ${activeLighting === lighting.id ? 'active' : ''
+                      }`}
                     onClick={() => setActiveLighting(lighting.id)}
                   >
                     <span className="dot" />
@@ -140,9 +179,8 @@ const ThreeDView = () => {
                 </div>
 
                 <button
-                  className={`toggle-switch ${
-                    shadowsEnabled ? 'enabled' : 'disabled'
-                  }`}
+                  className={`toggle-switch ${shadowsEnabled ? 'enabled' : 'disabled'
+                    }`}
                   onClick={() => setShadowsEnabled(!shadowsEnabled)}
                   aria-pressed={shadowsEnabled}
                 >
@@ -177,9 +215,8 @@ const ThreeDView = () => {
 
               <div className="pill-group vertical">
                 <button
-                  className={`pill-button compact ${
-                    viewMode === '3d' ? 'active' : ''
-                  }`}
+                  className={`pill-button compact ${viewMode === '3d' ? 'active' : ''
+                    }`}
                   onClick={() => setViewMode('3d')}
                 >
                   <span className="pill-label">3D View</span>
@@ -216,39 +253,56 @@ const ThreeDView = () => {
             </div>
 
             <div className="three-d-viewport-wrapper">
-              <div
-                className={`room-scene ${activeLighting}`}
-                style={{ transform: `scale(${zoomLevel})` }}
-              >
-                <div className="room-back-wall" />
-                <div className="room-side-wall left" />
-                <div className="room-side-wall right" />
-                <div className="room-floor" />
-
-                <div className="room-window">
-                  <div className="window-pane" />
-                  <div className="window-pane" />
-                  <div className="window-pane" />
-                  <div className="window-pane" />
+              {isRasterizing && (
+                <div className="rasterize-loading">
+                  <div className="rasterize-spinner" />
+                  <p>Rendering 3D view...</p>
                 </div>
-
-                <div className="room-sofa">
-                  <div className="sofa-back" />
-                  <div className="sofa-seat" />
+              )}
+              {rasterizeError && !isRasterizing && (
+                <div className="rasterize-error">
+                  <p>{rasterizeError}</p>
+                  <button className="retry-btn" onClick={fetchRasterized}>Retry</button>
                 </div>
-
-                <div className="room-table">
-                  <div className="table-top" />
-                  <div className="table-leg" />
-                  <div className="table-leg right" />
+              )}
+              {rasterizedUrl && !isRasterizing && (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <img
+                    src={rasterizedUrl}
+                    alt="3D room visualization"
+                    className="rasterized-image"
+                    style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center', width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
                 </div>
-
-                <div className="room-plant">
-                  <div className="plant-pot" />
-                  <div className="plant-leaf" />
-                  <div className="plant-leaf right" />
+              )}
+              {!rasterizedUrl && !rasterizeError && !isRasterizing && (
+                <div className={`room-scene fallback ${activeLighting}`} style={{ transform: `scale(${zoomLevel})` }}>
+                  <div className="room-back-wall" />
+                  <div className="room-side-wall left" />
+                  <div className="room-side-wall right" />
+                  <div className="room-floor" />
+                  <div className="room-window">
+                    <div className="window-pane" />
+                    <div className="window-pane" />
+                    <div className="window-pane" />
+                    <div className="window-pane" />
+                  </div>
+                  <div className="room-sofa">
+                    <div className="sofa-back" />
+                    <div className="sofa-seat" />
+                  </div>
+                  <div className="room-table">
+                    <div className="table-top" />
+                    <div className="table-leg" />
+                    <div className="table-leg right" />
+                  </div>
+                  <div className="room-plant">
+                    <div className="plant-pot" />
+                    <div className="plant-leaf" />
+                    <div className="plant-leaf right" />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="three-d-viewport-footer">

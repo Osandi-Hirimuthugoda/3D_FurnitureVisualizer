@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Sidebar from '../../components/admin/Sidebar';
 import Footer from '../../components/shared/Footer';
+import { createDesign } from '../../api/designs';
 import './RoomSetup.css';
 
 const RoomSetup = ({ userRole = 'customer' }) => {
@@ -26,15 +27,31 @@ const RoomSetup = ({ userRole = 'customer' }) => {
   const safeLength = Math.max(1, Math.min(10, parseInt(roomSpecs.length) || 5));
   const safeWidth = Math.max(1, Math.min(10, parseInt(roomSpecs.width) || 4));
 
-  const handleContinue = () => {
-    // Save room specs and navigate to 2D layout
-    localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
-    navigate('/room-layout');
+  const handleContinue = async () => {
+    try {
+      const design = await createDesign(roomSpecs);
+      localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
+      localStorage.setItem('currentDesignId', design._id);
+      navigate('/room-layout');
+    } catch (err) {
+      console.error(err);
+      localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
+      localStorage.setItem('currentDesignId', '');
+      navigate('/room-layout');
+    }
   };
 
-  const handleSave = () => {
-    localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
-    alert('Room specifications saved!');
+  const handleSave = async () => {
+    try {
+      const design = await createDesign(roomSpecs);
+      localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
+      localStorage.setItem('currentDesignId', design._id);
+      alert('Room specifications saved!');
+    } catch (err) {
+      console.error(err);
+      localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
+      alert('Saved locally. Backend unavailable.');
+    }
   };
 
   const handleBack = () => {

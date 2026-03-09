@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/admin/Sidebar';
+import { getDesign, updateDesign, createDesign } from '../../api/designs';
 import './LayoutEditor.css';
 
 const LayoutEditor = () => {
   const navigate = useNavigate();
+  const [designId, setDesignId] = useState(null);
+  const [roomSpecs, setRoomSpecs] = useState({ length: 5, width: 4, unit: 'meters' });
   const [selectedItem, setSelectedItem] = useState(null);
   const [canvasItems, setCanvasItems] = useState([]);
   const [itemPosition, setItemPosition] = useState({ x: 1.5, y: 2.0 });
@@ -19,20 +22,10 @@ const LayoutEditor = () => {
   });
 
   useEffect(() => {
-    // Load products from localStorage (added by admin)
     const savedProducts = localStorage.getItem('furnitureProducts');
     if (savedProducts) {
       const products = JSON.parse(savedProducts);
-      
-      // Group products by category
-      const categorized = {
-        sofas: [],
-        chairs: [],
-        tables: [],
-        beds: [],
-        desks: []
-      };
-
+      const categorized = { sofas: [], chairs: [], tables: [], beds: [], desks: [] };
       products.forEach(product => {
         if (categorized[product.category]) {
           categorized[product.category].push({
@@ -43,14 +36,51 @@ const LayoutEditor = () => {
             image: product.image,
             dimensions: product.dimensions,
             price: product.price,
-            discount: product.discount
+            discount: product.discount,
+            category: product.category
           });
         }
       });
-
       setFurnitureCategories(categorized);
     }
   }, []);
+
+  useEffect(() => {
+    const loadDesign = async () => {
+      const id = localStorage.getItem('currentDesignId');
+      const savedSpecs = localStorage.getItem('roomSpecs');
+      if (id) {
+        try {
+          const design = await getDesign(id);
+          setDesignId(design._id);
+          setRoomSpecs(design.roomSpecs || {});
+          setCanvasItems(design.canvasItems || []);
+        } catch {
+          setDesignId(null);
+          if (savedSpecs) setRoomSpecs(JSON.parse(savedSpecs));
+        }
+      } else if (savedSpecs) {
+        setRoomSpecs(JSON.parse(savedSpecs));
+      }
+    };
+    loadDesign();
+  }, []);
+
+  const saveLayout = useCallback(async (items) => {
+    const id = designId || localStorage.getItem('currentDesignId');
+    if (!id) return;
+    try {
+      await updateDesign(id, { canvasItems: items });
+    } catch (err) {
+      console.error('Failed to save layout:', err);
+    }
+  }, [designId]);
+
+  useEffect(() => {
+    if (!designId) return;
+    const t = setTimeout(() => saveLayout(canvasItems), 800);
+    return () => clearTimeout(t);
+  }, [canvasItems, designId, saveLayout]);
 
   const [expandedCategory, setExpandedCategory] = useState('sofas');
 
@@ -62,7 +92,8 @@ const LayoutEditor = () => {
       y: 2.0,
       width: item.dimensions ? parseFloat(item.dimensions.length) : 2.0,
       height: item.dimensions ? parseFloat(item.dimensions.width) : 1.0,
-      rotation: 0
+      rotation: 0,
+      category: item.category || 'sofas'
     };
     setCanvasItems([...canvasItems, newItem]);
     setSelectedItem(newItem);
@@ -98,7 +129,24 @@ const LayoutEditor = () => {
         <h1>2D Layout Editor</h1>
         <button
           className="view-3d-btn"
-          onClick={() => navigate('/room-3d')}
+          onClick={async () => {
+            let id = designId || localStorage.getItem('currentDesignId');
+            if (!id) {
+              const savedSpecs = localStorage.getItem('roomSpecs');
+              if (savedSpecs) {
+                try {
+                  const design = await createDesign(JSON.parse(savedSpecs));
+                  id = design._id;
+                  await updateDesign(id, { canvasItems });
+                  localStorage.setItem('currentDesignId', id);
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+            }
+            if (id) localStorage.setItem('currentDesignId', id);
+            navigate('/room-3d');
+          }}
         >
           👁️ View in 3D
         </button>
@@ -202,7 +250,9 @@ const LayoutEditor = () => {
           </div>
 
           <div className="canvas-wrapper">
-            <div className="room-label">Room: 5m × 4m</div>
+            <div className="room-label">
+              Room: {roomSpecs.length || 5}{roomSpecs.unit === 'feet' ? 'ft' : 'm'} × {roomSpecs.width || 4}{roomSpecs.unit === 'feet' ? 'ft' : 'm'}
+            </div>
             <div className="canvas-grid">
               {canvasItems.map(item => (
                 <div
@@ -379,7 +429,7 @@ const LayoutEditor = () => {
                 <div className="stat-item">
                   <span className="stat-icon">🏠</span>
                   <span className="stat-label">Room Size:</span>
-                  <span className="stat-value">5m × 4m</span>
+                  <span className="stat-value">{roomSpecs.length || 5}{roomSpecs.unit === 'feet' ? 'ft' : 'm'} × {roomSpecs.width || 4}{roomSpecs.unit === 'feet' ? 'ft' : 'm'}</span>
                 </div>
               </div>
             </>
@@ -402,7 +452,7 @@ const LayoutEditor = () => {
                 <div className="stat-item">
                   <span className="stat-icon">🏠</span>
                   <span className="stat-label">Room Size:</span>
-                  <span className="stat-value">5m × 4m</span>
+                  <span className="stat-value">{roomSpecs.length || 5}{roomSpecs.unit === 'feet' ? 'ft' : 'm'} × {roomSpecs.width || 4}{roomSpecs.unit === 'feet' ? 'ft' : 'm'}</span>
                 </div>
               </div>
             </>
