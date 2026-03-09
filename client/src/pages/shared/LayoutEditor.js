@@ -1,22 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-import Sidebar from '../../components/admin/Sidebar';
-import { getDesign, updateDesign, createDesign } from '../../api/designs';
-=======
 import Navbar from '../../components/shared/Navbar';
 import TemplateSelector from './TemplateSelector';
->>>>>>> 21c49e73f8d401c86cd6b088e648e9c854f5f98f
 import './LayoutEditor.css';
 
 const LayoutEditor = () => {
   const navigate = useNavigate();
-<<<<<<< HEAD
   const [designId, setDesignId] = useState(null);
   const [roomSpecs, setRoomSpecs] = useState({ length: 5, width: 4, unit: 'meters' });
-=======
-  const userRole = localStorage.getItem('userRole');
->>>>>>> 21c49e73f8d401c86cd6b088e648e9c854f5f98f
   const [selectedItem, setSelectedItem] = useState(null);
   const [canvasItems, setCanvasItems] = useState([]);
   const [itemPosition, setItemPosition] = useState({ x: 1.5, y: 2.0 });
@@ -197,241 +188,236 @@ const LayoutEditor = () => {
     <>
       <Navbar userRole={userRole} />
       <div className="layout-editor">
-      <header className="editor-header">
-        <button className="back-btn" onClick={() => navigate('/room-setup')}>
-          ← Back
-        </button>
-        <h1>2D Layout Editor</h1>
-        <button
-          className="view-3d-btn"
-          onClick={async () => {
-            let id = designId || localStorage.getItem('currentDesignId');
-            if (!id) {
-              const savedSpecs = localStorage.getItem('roomSpecs');
-              if (savedSpecs) {
-                try {
-                  const design = await createDesign(JSON.parse(savedSpecs));
-                  id = design._id;
-                  await updateDesign(id, { canvasItems });
-                  localStorage.setItem('currentDesignId', id);
-                } catch (e) {
-                  console.error(e);
+        <header className="editor-header">
+          <button className="back-btn" onClick={() => navigate('/room-setup')}>
+            ← Back
+          </button>
+          <h1>2D Layout Editor</h1>
+          <button
+            className="view-3d-btn"
+            onClick={async () => {
+              let id = designId || localStorage.getItem('currentDesignId');
+              if (!id) {
+                const savedSpecs = localStorage.getItem('roomSpecs');
+                if (savedSpecs) {
+                  try {
+                    const design = await createDesign(JSON.parse(savedSpecs));
+                    id = design._id;
+                    await updateDesign(id, { canvasItems });
+                    localStorage.setItem('currentDesignId', id);
+                  } catch (e) {
+                    console.error(e);
+                  }
                 }
               }
-            }
-            if (id) localStorage.setItem('currentDesignId', id);
-            navigate('/room-3d');
-          }}
-        >
-          👁️ View in 3D
-        </button>
-      </header>
+              if (id) localStorage.setItem('currentDesignId', id);
+              navigate('/room-3d');
+            }}
+          >
+            👁️ View in 3D
+          </button>
+        </header>
 
-      <div className="editor-container">
-        {/* Left Sidebar - Furniture Items */}
-        <aside className="furniture-sidebar">
-          <h3>Furniture Items</h3>
-          <p className="sidebar-subtitle">Click to add to canvas</p>
+        <div className="editor-container">
+          {/* Left Sidebar - Furniture Items */}
+          <aside className="furniture-sidebar">
+            <h3>Furniture Items</h3>
+            <p className="sidebar-subtitle">Click to add to canvas</p>
 
-          <div className="furniture-categories">
-            {Object.entries(furnitureCategories).map(([category, items]) => (
-              <div key={category} className="category-section">
-                <button
-                  className={`category-header ${expandedCategory === category ? 'active' : ''}`}
-                  onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
-                >
-                  <span className="category-icon">
-                    {category === 'sofas' && '🛋️'}
-                    {category === 'chairs' && '🪑'}
-                    {category === 'tables' && '🪑'}
-                    {category === 'beds' && '🛏️'}
-                    {category === 'desks' && '🖥️'}
-                  </span>
-                  <span className="category-name">
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </span>
-                  <span className="expand-icon">{expandedCategory === category ? '▼' : '▶'}</span>
-                </button>
+            <div className="furniture-categories">
+              {Object.entries(furnitureCategories).map(([category, items]) => (
+                <div key={category} className="category-section">
+                  <button
+                    className={`category-header ${expandedCategory === category ? 'active' : ''}`}
+                    onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
+                  >
+                    <span className="category-icon">
+                      {category === 'sofas' && '🛋️'}
+                      {category === 'chairs' && '🪑'}
+                      {category === 'tables' && '🪑'}
+                      {category === 'beds' && '🛏️'}
+                      {category === 'desks' && '🖥️'}
+                    </span>
+                    <span className="category-name">
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </span>
+                    <span className="expand-icon">{expandedCategory === category ? '▼' : '▶'}</span>
+                  </button>
 
-                {expandedCategory === category && (
-                  <div className="furniture-items">
-                    {items.length > 0 ? (
-                      items.map(item => (
-                        <div
-                          key={item.id}
-                          className="furniture-item"
-                          onClick={() => handleAddToCanvas(item)}
-                        >
-                          <div className="item-icon">
-                            {item.image ? (
-                              item.image.startsWith('data:image') || item.image.startsWith('http') ? (
-                                <img src={item.image} alt={item.name} className="item-thumbnail" />
-                              ) : (
-                                <span>{item.image}</span>
-                              )
-                            ) : (
-                              <span>🪑</span>
-                            )}
-                          </div>
-                          <div className="item-details">
-                            <h4>{item.name}</h4>
-                            <p className="item-size">{item.size}</p>
-                            <span className="item-badge">{item.type}</span>
-                            {item.price && (
-                              <p className="item-price">
-                                {item.discount > 0 ? (
-                                  <>
-                                    <span className="discounted">Rs. {(item.price - (item.price * item.discount / 100)).toLocaleString()}</span>
-                                    <span className="original">Rs. {item.price.toLocaleString()}</span>
-                                  </>
+                  {expandedCategory === category && (
+                    <div className="furniture-items">
+                      {items.length > 0 ? (
+                        items.map(item => (
+                          <div
+                            key={item.id}
+                            className="furniture-item"
+                            onClick={() => handleAddToCanvas(item)}
+                          >
+                            <div className="item-icon">
+                              {item.image ? (
+                                item.image.startsWith('data:image') || item.image.startsWith('http') ? (
+                                  <img src={item.image} alt={item.name} className="item-thumbnail" />
                                 ) : (
-                                  <span>Rs. {item.price.toLocaleString()}</span>
-                                )}
-                              </p>
-                            )}
+                                  <span>{item.image}</span>
+                                )
+                              ) : (
+                                <span>🪑</span>
+                              )}
+                            </div>
+                            <div className="item-details">
+                              <h4>{item.name}</h4>
+                              <p className="item-size">{item.size}</p>
+                              <span className="item-badge">{item.type}</span>
+                              {item.price && (
+                                <p className="item-price">
+                                  {item.discount > 0 ? (
+                                    <>
+                                      <span className="discounted">Rs. {(item.price - (item.price * item.discount / 100)).toLocaleString()}</span>
+                                      <span className="original">Rs. {item.price.toLocaleString()}</span>
+                                    </>
+                                  ) : (
+                                    <span>Rs. {item.price.toLocaleString()}</span>
+                                  )}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="no-items">No items in this category</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </aside>
-
-        {/* Center - Canvas */}
-        <main className="canvas-area">
-          <div className="canvas-toolbar">
-            <div className="toolbar-left">
-              <button className="toolbar-btn">↶ Undo</button>
-              <button className="toolbar-btn">↷ Redo</button>
-              <button className="toolbar-btn" onClick={() => {
-                if (window.confirm('Are you sure you want to reset the layout?')) {
-                  setCanvasItems([]);
-                  setSelectedItem(null);
-                }
-              }}>Reset Layout</button>
-              <button className="toolbar-btn snap-btn">⊞ Snap to Grid</button>
-              <button
-                className="toolbar-btn"
-                onClick={() => setShowTemplateSelector(true)}
-              >
-                🧩 Explore Templates
-              </button>
-            </div>
-            <div className="toolbar-right">
-              <div className="furniture-count">
-                <span className="count-icon">🪑</span>
-                <span className="count-text">Total Furniture: {canvasItems.length}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="canvas-wrapper">
-            <div className="room-label">
-<<<<<<< HEAD
-              Room: {roomSpecs.length || 5}{roomSpecs.unit === 'feet' ? 'ft' : 'm'} × {roomSpecs.width || 4}{roomSpecs.unit === 'feet' ? 'ft' : 'm'}
-            </div>
-=======
-              Room: {roomDimensions.length}m × {roomDimensions.width}m
-            </div>
-
->>>>>>> 21c49e73f8d401c86cd6b088e648e9c854f5f98f
-            <div className="canvas-grid">
-              <svg
-                className="room-svg"
-                viewBox="0 0 500 400"
-                preserveAspectRatio="none"
-              >
-                {roomShape === 'rectangle' && (
-                  <rect x="0" y="0" width="500" height="400" fill="#f5f5dc" stroke="#333" strokeWidth="3"/>
-                )}
-
-                {roomShape === 'square' && (
-                  <rect x="50" y="0" width="400" height="400" fill="#f5f5dc" stroke="#333" strokeWidth="3"/>
-                )}
-
-                {roomShape === 'l-shape' && (
-                  <path
-                    d="M0 0 L500 0 L500 200 L250 200 L250 400 L0 400 Z"
-                    fill="#f5f5dc"
-                    stroke="#333"
-                    strokeWidth="3"
-                  />
-                )}
-
-                {roomShape === 'u-shape' && (
-                  <path
-                    d="M0 0 L500 0 L500 400 L400 400 L400 160 L100 160 L100 400 L0 400 Z"
-                    fill="#f5f5dc"
-                    stroke="#333"
-                    strokeWidth="3"
-                  />
-                )}
-              </svg>
-              {canvasItems.map(item => (
-                <div
-                  key={item.canvasId}
-                  className={`canvas-item ${selectedItem?.canvasId === item.canvasId ? 'selected' : ''}`}
-                  style={{
-                    left: `${item.x * 50}px`,
-                    top: `${item.y * 50}px`,
-                    width: `${item.width * 50}px`,
-                    height: `${item.height * 50}px`,
-                    transform: `rotate(${item.rotation}deg)`
-                  }}
-                  onClick={() => setSelectedItem(item)}
-                  draggable
-                  onDragStart={(e) => {
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('canvasId', item.canvasId.toString());
-                  }}
-                  onDragEnd={(e) => {
-                    const canvas = e.currentTarget.parentElement;
-                    const rect = canvas.getBoundingClientRect();
-                    const newX = (e.clientX - rect.left) / 50;
-                    const newY = (e.clientY - rect.top) / 50;
-                    
-                    setCanvasItems(canvasItems.map(i =>
-                      i.canvasId === item.canvasId
-                        ? { ...i, x: Math.max(0, Math.min(10 - i.width, newX)), y: Math.max(0, Math.min(8 - i.height, newY)) }
-                        : i
-                    ));
-                    if (selectedItem?.canvasId === item.canvasId) {
-                      setSelectedItem({ ...item, x: newX, y: newY });
-                    }
-                  }}
-                >
-                  {item.image ? (
-                    item.image.startsWith('data:image') || item.image.startsWith('http') ? (
-                      <img src={item.image} alt={item.name} className="canvas-item-image" />
-                    ) : (
-                      <span className="canvas-item-emoji">{item.image}</span>
-                    )
-                  ) : (
-                    <span className="canvas-item-emoji">🪑</span>
+                        ))
+                      ) : (
+                        <p className="no-items">No items in this category</p>
+                      )}
+                    </div>
                   )}
-                  <div className="item-label">{item.name}</div>
-                  <div className="resize-handles">
-                    <div className="handle top-left"></div>
-                    <div className="handle top-right"></div>
-                    <div className="handle bottom-left"></div>
-                    <div className="handle bottom-right"></div>
-                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        </main>
+          </aside>
 
-        {/* Right Sidebar - Properties */}
-        <aside className="properties-sidebar">
-          <h3>Item Properties</h3>
-          
-          {selectedItem ? (
+          {/* Center - Canvas */}
+          <main className="canvas-area">
+            <div className="canvas-toolbar">
+              <div className="toolbar-left">
+                <button className="toolbar-btn">↶ Undo</button>
+                <button className="toolbar-btn">↷ Redo</button>
+                <button className="toolbar-btn" onClick={() => {
+                  if (window.confirm('Are you sure you want to reset the layout?')) {
+                    setCanvasItems([]);
+                    setSelectedItem(null);
+                  }
+                }}>Reset Layout</button>
+                <button className="toolbar-btn snap-btn">⊞ Snap to Grid</button>
+                <button
+                  className="toolbar-btn"
+                  onClick={() => setShowTemplateSelector(true)}
+                >
+                  🧩 Explore Templates
+                </button>
+              </div>
+              <div className="toolbar-right">
+                <div className="furniture-count">
+                  <span className="count-icon">🪑</span>
+                  <span className="count-text">Total Furniture: {canvasItems.length}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="canvas-wrapper">
+              <div className="room-label">
+                Room: {roomDimensions.length}m × {roomDimensions.width}m
+              </div>
+
+              <div className="canvas-grid">
+                <svg
+                  className="room-svg"
+                  viewBox="0 0 500 400"
+                  preserveAspectRatio="none"
+                >
+                  {roomShape === 'rectangle' && (
+                    <rect x="0" y="0" width="500" height="400" fill="#f5f5dc" stroke="#333" strokeWidth="3" />
+                  )}
+
+                  {roomShape === 'square' && (
+                    <rect x="50" y="0" width="400" height="400" fill="#f5f5dc" stroke="#333" strokeWidth="3" />
+                  )}
+
+                  {roomShape === 'l-shape' && (
+                    <path
+                      d="M0 0 L500 0 L500 200 L250 200 L250 400 L0 400 Z"
+                      fill="#f5f5dc"
+                      stroke="#333"
+                      strokeWidth="3"
+                    />
+                  )}
+
+                  {roomShape === 'u-shape' && (
+                    <path
+                      d="M0 0 L500 0 L500 400 L400 400 L400 160 L100 160 L100 400 L0 400 Z"
+                      fill="#f5f5dc"
+                      stroke="#333"
+                      strokeWidth="3"
+                    />
+                  )}
+                </svg>
+                {canvasItems.map(item => (
+                  <div
+                    key={item.canvasId}
+                    className={`canvas-item ${selectedItem?.canvasId === item.canvasId ? 'selected' : ''}`}
+                    style={{
+                      left: `${item.x * 50}px`,
+                      top: `${item.y * 50}px`,
+                      width: `${item.width * 50}px`,
+                      height: `${item.height * 50}px`,
+                      transform: `rotate(${item.rotation}deg)`
+                    }}
+                    onClick={() => setSelectedItem(item)}
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = 'move';
+                      e.dataTransfer.setData('canvasId', item.canvasId.toString());
+                    }}
+                    onDragEnd={(e) => {
+                      const canvas = e.currentTarget.parentElement;
+                      const rect = canvas.getBoundingClientRect();
+                      const newX = (e.clientX - rect.left) / 50;
+                      const newY = (e.clientY - rect.top) / 50;
+
+                      setCanvasItems(canvasItems.map(i =>
+                        i.canvasId === item.canvasId
+                          ? { ...i, x: Math.max(0, Math.min(10 - i.width, newX)), y: Math.max(0, Math.min(8 - i.height, newY)) }
+                          : i
+                      ));
+                      if (selectedItem?.canvasId === item.canvasId) {
+                        setSelectedItem({ ...item, x: newX, y: newY });
+                      }
+                    }}
+                  >
+                    {item.image ? (
+                      item.image.startsWith('data:image') || item.image.startsWith('http') ? (
+                        <img src={item.image} alt={item.name} className="canvas-item-image" />
+                      ) : (
+                        <span className="canvas-item-emoji">{item.image}</span>
+                      )
+                    ) : (
+                      <span className="canvas-item-emoji">🪑</span>
+                    )}
+                    <div className="item-label">{item.name}</div>
+                    <div className="resize-handles">
+                      <div className="handle top-left"></div>
+                      <div className="handle top-right"></div>
+                      <div className="handle bottom-left"></div>
+                      <div className="handle bottom-right"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </main>
+
+          {/* Right Sidebar - Properties */}
+          <aside className="properties-sidebar">
+            <h3>Item Properties</h3>
+
+            {selectedItem ? (
               <><div className="property-section selected-item-info">
                 <div className="selected-item-header">
                   <div className="selected-item-icon">
@@ -529,84 +515,46 @@ const LayoutEditor = () => {
                     <span className="stat-label">Grid:</span>
                     <span className="stat-value">On</span>
                   </div>
-<<<<<<< HEAD
-                </div>
-              </div>
-
-              <div className="property-section">
-                <h4>Rotation: {rotation}°</h4>
-              </div>
-
-              <div className="property-actions">
-                <button className="action-btn rotate-btn" onClick={handleRotate}>
-                  🔄 Rotate 90°
-                </button>
-                <button className="action-btn delete-btn" onClick={handleDelete}>
-                  🗑️ Delete Item
-                </button>
-              </div>
-
-              <div className="property-section status">
-                <h4>Room Statistics</h4>
-                <div className="stat-item">
-                  <span className="stat-icon">🪑</span>
-                  <span className="stat-label">Total Furniture:</span>
-                  <span className="stat-value">{canvasItems.length}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-icon">📐</span>
-                  <span className="stat-label">Grid:</span>
-                  <span className="stat-value">On</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-icon">🏠</span>
-                  <span className="stat-label">Room Size:</span>
-                  <span className="stat-value">{roomSpecs.length || 5}{roomSpecs.unit === 'feet' ? 'ft' : 'm'} × {roomSpecs.width || 4}{roomSpecs.unit === 'feet' ? 'ft' : 'm'}</span>
-                </div>
-              </div>
-            </>
-=======
                   <div className="stat-item">
                     <span className="stat-icon">🏠</span>
                     <span className="stat-label">Room Size:</span>
                     <span className="stat-value">5m × 4m</span>
                   </div>
                 </div></>
->>>>>>> 21c49e73f8d401c86cd6b088e648e9c854f5f98f
-          ) : (
-            <>
-              <p className="no-selection">Select an item to view properties</p>
-              
-              <div className="property-section status">
-                <h4>Room Statistics</h4>
-                <div className="stat-item">
-                  <span className="stat-icon">🪑</span>
-                  <span className="stat-label">Total Furniture:</span>
-                  <span className="stat-value">{canvasItems.length}</span>
+            ) : (
+              <>
+                <p className="no-selection">Select an item to view properties</p>
+
+                <div className="property-section status">
+                  <h4>Room Statistics</h4>
+                  <div className="stat-item">
+                    <span className="stat-icon">🪑</span>
+                    <span className="stat-label">Total Furniture:</span>
+                    <span className="stat-value">{canvasItems.length}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-icon">📐</span>
+                    <span className="stat-label">Grid:</span>
+                    <span className="stat-value">On</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-icon">🏠</span>
+                    <span className="stat-label">Room Size:</span>
+                    <span className="stat-value">{roomSpecs.length || 5}{roomSpecs.unit === 'feet' ? 'ft' : 'm'} × {roomSpecs.width || 4}{roomSpecs.unit === 'feet' ? 'ft' : 'm'}</span>
+                  </div>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-icon">📐</span>
-                  <span className="stat-label">Grid:</span>
-                  <span className="stat-value">On</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-icon">🏠</span>
-                  <span className="stat-label">Room Size:</span>
-                  <span className="stat-value">{roomSpecs.length || 5}{roomSpecs.unit === 'feet' ? 'ft' : 'm'} × {roomSpecs.width || 4}{roomSpecs.unit === 'feet' ? 'ft' : 'm'}</span>
-                </div>
-              </div>
-            </>
-          )}
-        </aside>
+              </>
+            )}
+          </aside>
+        </div>
+        {showTemplateSelector && (
+          <TemplateSelector
+            roomShape={roomShape}
+            onApplyTemplate={handleApplyTemplate}
+            onClose={() => setShowTemplateSelector(false)}
+          />
+        )}
       </div>
-      {showTemplateSelector && (
-        <TemplateSelector
-          roomShape={roomShape}
-          onApplyTemplate={handleApplyTemplate}
-          onClose={() => setShowTemplateSelector(false)}
-        />
-      )}
-    </div>
     </>
   );
 };
