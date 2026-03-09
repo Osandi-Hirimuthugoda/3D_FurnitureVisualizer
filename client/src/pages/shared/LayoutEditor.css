@@ -300,16 +300,23 @@
   font-size: 0.9rem;
 }
 
-.canvas-grid {
-  width: 500px;
-  height: 400px;
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  background-size: 50px 50px;
-  border: 3px solid #333;
-  position: relative;
-  background-color: #f5f5dc;
+.canvas-grid{
+  width:500px;
+  height:400px;
+  position:relative;
+  background-image:
+    linear-gradient(#ddd 1px, transparent 1px),
+    linear-gradient(90deg,#ddd 1px, transparent 1px);
+  background-size:50px 50px;
+}
+
+.canvas-grid .room-svg{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
 }
 
 .canvas-item {
@@ -325,6 +332,7 @@
   transition: all 0.2s ease;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 5;
 }
 
 .canvas-item:hover {

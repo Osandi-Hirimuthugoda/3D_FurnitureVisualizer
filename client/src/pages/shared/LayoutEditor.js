@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
+import TemplateSelector from './TemplateSelector';
 import './LayoutEditor.css';
 
 const LayoutEditor = () => {
@@ -18,6 +19,9 @@ const LayoutEditor = () => {
     beds: [],
     desks: []
   });
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [roomShape, setRoomShape] = useState('rectangle');
+  const [roomDimensions, setRoomDimensions] = useState({ width: 5, length: 4 });
 
   useEffect(() => {
     // Load products from localStorage (added by admin)
@@ -51,6 +55,20 @@ const LayoutEditor = () => {
 
       setFurnitureCategories(categorized);
     }
+
+    // read room shape from specs
+    const specs = localStorage.getItem('roomSpecs');
+    if (specs) {
+      try {
+        const parsed = JSON.parse(specs);
+        if (parsed.shape) setRoomShape(parsed.shape);
+        if (parsed.width && parsed.length) {
+          setRoomDimensions({ width: parsed.width, length: parsed.length });
+        }
+      } catch (e) {
+        console.warn('failed to parse roomSpecs', e);
+      }
+    }
   }, []);
 
   const [expandedCategory, setExpandedCategory] = useState('sofas');
@@ -79,6 +97,55 @@ const LayoutEditor = () => {
           : item
       ));
     }
+  };
+
+  const handleApplyTemplate = (template) => {
+    if (!template || !template.furniture) return;
+
+    const getFurnitureEmoji = (type) => {
+      const t = type.toLowerCase();
+
+      if (t.includes('sofa')) return '🛋️';
+      if (t.includes('chair')) return '🪑';
+      if (t.includes('table')) return '⛩️';
+      if (t.includes('wardrobe')) return '🚪';
+      if (t.includes('bed')) return '🛏️';
+      if (t.includes('desk')) return '🖥️';
+      if (t.includes('lamp')) return '💡';
+      if (t.includes('cabinet')) return '🗄️';
+      if (t.includes('nightstand')) return '🗄️';
+      if (t.includes('bookshelf')) return '📚';
+
+      return '🪑';
+    };
+
+    const newItems = template.furniture.map((f, idx) => {
+      const x = f.position && f.position.length >= 1 ? f.position[0] : 0;
+      const y = f.position && f.position.length >= 3
+        ? f.position[2]
+        : (f.position && f.position.length >= 2 ? f.position[1] : 0);
+
+      const formattedName = f.type.replace(/([A-Z])/g, ' $1');
+
+      return {
+        canvasId: Date.now() + idx,
+        name: formattedName,
+        x,
+        y,
+
+        // slightly larger size so text fits
+        width: Math.max(2.2, formattedName.length * 0.15),
+        height: 1.4,
+
+        rotation: f.rotation || 0,
+        image: getFurnitureEmoji(f.type), //correct emoji
+        fromTemplate: true
+      };
+    });
+
+    const remainingItems = canvasItems.filter(item => !item.fromTemplate);
+
+    setCanvasItems([...remainingItems, ...newItems]);
   };
 
   const handleDelete = () => {
@@ -193,6 +260,12 @@ const LayoutEditor = () => {
                 }
               }}>Reset Layout</button>
               <button className="toolbar-btn snap-btn">⊞ Snap to Grid</button>
+              <button
+                className="toolbar-btn"
+                onClick={() => setShowTemplateSelector(true)}
+              >
+                🧩 Explore Templates
+              </button>
             </div>
             <div className="toolbar-right">
               <div className="furniture-count">
@@ -203,8 +276,42 @@ const LayoutEditor = () => {
           </div>
 
           <div className="canvas-wrapper">
-            <div className="room-label">Room: 5m × 4m</div>
+            <div className="room-label">
+              Room: {roomDimensions.length}m × {roomDimensions.width}m
+            </div>
+
             <div className="canvas-grid">
+              <svg
+                className="room-svg"
+                viewBox="0 0 500 400"
+                preserveAspectRatio="none"
+              >
+                {roomShape === 'rectangle' && (
+                  <rect x="0" y="0" width="500" height="400" fill="#f5f5dc" stroke="#333" strokeWidth="3"/>
+                )}
+
+                {roomShape === 'square' && (
+                  <rect x="50" y="0" width="400" height="400" fill="#f5f5dc" stroke="#333" strokeWidth="3"/>
+                )}
+
+                {roomShape === 'l-shape' && (
+                  <path
+                    d="M0 0 L500 0 L500 200 L250 200 L250 400 L0 400 Z"
+                    fill="#f5f5dc"
+                    stroke="#333"
+                    strokeWidth="3"
+                  />
+                )}
+
+                {roomShape === 'u-shape' && (
+                  <path
+                    d="M0 0 L500 0 L500 400 L400 400 L400 160 L100 160 L100 400 L0 400 Z"
+                    fill="#f5f5dc"
+                    stroke="#333"
+                    strokeWidth="3"
+                  />
+                )}
+              </svg>
               {canvasItems.map(item => (
                 <div
                   key={item.canvasId}
@@ -265,8 +372,7 @@ const LayoutEditor = () => {
           <h3>Item Properties</h3>
           
           {selectedItem ? (
-            <>
-              <div className="property-section selected-item-info">
+              <><div className="property-section selected-item-info">
                 <div className="selected-item-header">
                   <div className="selected-item-icon">
                     {selectedItem.image ? (
@@ -302,88 +408,73 @@ const LayoutEditor = () => {
                     <span className="price-text">Rs. {selectedItem.price.toLocaleString()}</span>
                   </div>
                 )}
-              </div>
-
-              <div className="property-section">
-                <h4>Position</h4>
-                <div className="input-row">
-                  <div className="input-group">
-                    <label>X (m)</label>
-                    <input
-                      type="number"
-                      value={itemPosition.x}
-                      onChange={(e) => setItemPosition({ ...itemPosition, x: e.target.value })}
-                      step="0.1"
-                    />
+              </div><div className="property-section">
+                  <h4>Position</h4>
+                  <div className="input-row">
+                    <div className="input-group">
+                      <label>X (m)</label>
+                      <input
+                        type="number"
+                        value={itemPosition.x}
+                        onChange={(e) => setItemPosition({ ...itemPosition, x: e.target.value })}
+                        step="0.1" />
+                    </div>
+                    <div className="input-group">
+                      <label>Y (m)</label>
+                      <input
+                        type="number"
+                        value={itemPosition.y}
+                        onChange={(e) => setItemPosition({ ...itemPosition, y: e.target.value })}
+                        step="0.1" />
+                    </div>
                   </div>
-                  <div className="input-group">
-                    <label>Y (m)</label>
-                    <input
-                      type="number"
-                      value={itemPosition.y}
-                      onChange={(e) => setItemPosition({ ...itemPosition, y: e.target.value })}
-                      step="0.1"
-                    />
+                </div><div className="property-section">
+                  <h4>Size</h4>
+                  <div className="input-row">
+                    <div className="input-group">
+                      <label>Width (m)</label>
+                      <input
+                        type="number"
+                        value={itemSize.width}
+                        onChange={(e) => setItemSize({ ...itemSize, width: e.target.value })}
+                        step="0.1" />
+                    </div>
+                    <div className="input-group">
+                      <label>Height (m)</label>
+                      <input
+                        type="number"
+                        value={itemSize.height}
+                        onChange={(e) => setItemSize({ ...itemSize, height: e.target.value })}
+                        step="0.1" />
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="property-section">
-                <h4>Size</h4>
-                <div className="input-row">
-                  <div className="input-group">
-                    <label>Width (m)</label>
-                    <input
-                      type="number"
-                      value={itemSize.width}
-                      onChange={(e) => setItemSize({ ...itemSize, width: e.target.value })}
-                      step="0.1"
-                    />
+                </div><div className="property-section">
+                  <h4>Rotation: {rotation}°</h4>
+                </div><div className="property-actions">
+                  <button className="action-btn rotate-btn" onClick={handleRotate}>
+                    🔄 Rotate 90°
+                  </button>
+                  <button className="action-btn delete-btn" onClick={handleDelete}>
+                    🗑️ Delete Item
+                  </button>
+                </div><div className="property-section status">
+                  <h4>Room Statistics</h4>
+                  <div className="stat-item">
+                    <span className="stat-icon">🪑</span>
+                    <span className="stat-label">Total Furniture:</span>
+                    <span className="stat-value">{canvasItems.length}</span>
                   </div>
-                  <div className="input-group">
-                    <label>Height (m)</label>
-                    <input
-                      type="number"
-                      value={itemSize.height}
-                      onChange={(e) => setItemSize({ ...itemSize, height: e.target.value })}
-                      step="0.1"
-                    />
+                  <div className="stat-item">
+                    <span className="stat-icon">📐</span>
+                    <span className="stat-label">Grid:</span>
+                    <span className="stat-value">On</span>
                   </div>
-                </div>
-              </div>
-
-              <div className="property-section">
-                <h4>Rotation: {rotation}°</h4>
-              </div>
-
-              <div className="property-actions">
-                <button className="action-btn rotate-btn" onClick={handleRotate}>
-                  🔄 Rotate 90°
-                </button>
-                <button className="action-btn delete-btn" onClick={handleDelete}>
-                  🗑️ Delete Item
-                </button>
-              </div>
-
-              <div className="property-section status">
-                <h4>Room Statistics</h4>
-                <div className="stat-item">
-                  <span className="stat-icon">🪑</span>
-                  <span className="stat-label">Total Furniture:</span>
-                  <span className="stat-value">{canvasItems.length}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-icon">📐</span>
-                  <span className="stat-label">Grid:</span>
-                  <span className="stat-value">On</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-icon">🏠</span>
-                  <span className="stat-label">Room Size:</span>
-                  <span className="stat-value">5m × 4m</span>
-                </div>
-              </div>
-            </>
+                  <div className="stat-item">
+                    <span className="stat-icon">🏠</span>
+                    <span className="stat-label">Room Size:</span>
+                    <span className="stat-value">5m × 4m</span>
+                  </div>
+                </div></>
           ) : (
             <>
               <p className="no-selection">Select an item to view properties</p>
@@ -410,6 +501,13 @@ const LayoutEditor = () => {
           )}
         </aside>
       </div>
+      {showTemplateSelector && (
+        <TemplateSelector
+          roomShape={roomShape}
+          onApplyTemplate={handleApplyTemplate}
+          onClose={() => setShowTemplateSelector(false)}
+        />
+      )}
     </div>
     </>
   );
