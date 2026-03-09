@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
-import Sidebar from '../../components/admin/Sidebar';
 import Footer from '../../components/shared/Footer';
 import './Products.css';
 
@@ -101,12 +100,11 @@ const Products = () => {
   return (
     <div className="products-page">
       <Navbar userRole={userRole} />
-      <Sidebar />
       
-      <div className="products-container with-sidebar">
+      <div className="products-container">
         <div className="products-header">
-          <button className="back-btn" onClick={() => navigate('/dashboard')}>
-            ← Back to Dashboard
+          <button className="back-btn" onClick={() => navigate(userRole === 'customer' ? '/cart' : '/dashboard')}>
+            ← Back
           </button>
           <h1>Our Furniture Collection</h1>
           <p className="subtitle">Browse our wide selection of quality furniture</p>

@@ -4,8 +4,9 @@ import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
 import './Appearance.css';
 
-const Appearance = ({ userRole = 'customer' }) => {
+const Appearance = () => {
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('userRole');
 
   const [settings, setSettings] = useState({
     target: 'room',
@@ -41,19 +42,20 @@ const Appearance = ({ userRole = 'customer' }) => {
   };
 
   const handleBack = () => {
-    navigate('/room-3d');
+    navigate('/room-layout');
   };
 
   return (
     <div className="appearance-page">
       <Navbar userRole={userRole} />
 
-      <div className="appearance-header">
-        <button className="back-btn" onClick={handleBack}>
-          ← Back to 3D View
-        </button>
-        <h1>Appearance & Shading</h1>
-      </div>
+      <div className="appearance-wrapper">
+        <div className="appearance-header">
+          <button className="back-btn" onClick={handleBack}>
+            ← Back
+          </button>
+          <h1>Appearance & Shading</h1>
+        </div>
 
       <div className="appearance-container">
 
@@ -292,6 +294,7 @@ const Appearance = ({ userRole = 'customer' }) => {
       </div>
 
       <Footer />
+      </div>
     </div>
   );
 };

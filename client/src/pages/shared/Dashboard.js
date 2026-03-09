@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
-import Sidebar from '../../components/admin/Sidebar';
 import Footer from '../../components/shared/Footer';
 import './Dashboard.css';
 
@@ -13,9 +12,8 @@ const Dashboard = () => {
   return (
     <div className="dashboard-page">
       <Navbar userRole={userRole} />
-      <Sidebar />
       
-      <div className="dashboard-container with-sidebar">
+      <div className="dashboard-container">
         <div className="dashboard-header">
           <h1>Welcome to Your Dashboard</h1>
           <p className="user-info">Logged in as: {userEmail}</p>

@@ -12,6 +12,7 @@ const Sidebar = () => {
     { path: '/dashboard', icon: '📊', label: 'Dashboard' },
     { path: '/room-setup', icon: '🏠', label: 'Room Setup' },
     { path: '/room-layout', icon: '📐', label: '2D Layout' },
+    { path: '/appearance', icon: '🎨', label: 'Appearance' },
     { path: '/products', icon: '🛋️', label: 'Browse Products' },
     { path: '/admin/products', icon: '🪑', label: 'Manage Products' },
     { path: '/admin/orders', icon: '📦', label: 'Manage Orders' },
@@ -21,6 +22,7 @@ const Sidebar = () => {
     { path: '/dashboard', icon: '📊', label: 'Dashboard' },
     { path: '/room-setup', icon: '🏠', label: 'Room Setup' },
     { path: '/room-layout', icon: '📐', label: '2D Layout' },
+    { path: '/appearance', icon: '🎨', label: 'Appearance' },
     { path: '/products', icon: '🛋️', label: 'Browse Products' },
     { path: '/cart', icon: '🛒', label: 'My Cart' },
   ];
@@ -31,17 +33,16 @@ const Sidebar = () => {
 
   return (
     <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      <button 
-        className="sidebar-toggle"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        aria-label="Toggle sidebar"
-      >
-        {isCollapsed ? '→' : '←'}
-      </button>
-
       <div className="sidebar-header">
         <span className="sidebar-icon">{panelIcon}</span>
         {!isCollapsed && <h2>{panelTitle}</h2>}
+        <button 
+          className="sidebar-toggle"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label="Toggle sidebar"
+        >
+          {isCollapsed ? '→' : '←'}
+        </button>
       </div>
 
       <nav className="sidebar-nav">

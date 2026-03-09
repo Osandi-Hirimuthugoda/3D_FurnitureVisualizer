@@ -4,8 +4,9 @@ import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
 import './Settings.css';
 
-const Settings = ({ userRole = 'customer' }) => {
+const Settings = () => {
     const navigate = useNavigate();
+    const userRole = localStorage.getItem('userRole');
 
     // Profile State
     const [profile, setProfile] = useState({
@@ -50,7 +51,7 @@ const Settings = ({ userRole = 'customer' }) => {
 
     return (
         <div className="settings-page">
-            {/* <Navbar userRole={userRole} /> */}
+            <Navbar userRole={userRole} />
 
             <div className="settings-container">
                 {/* Header Section */}

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
-import Sidebar from '../../components/admin/Sidebar';
 import Footer from '../../components/shared/Footer';
 import './ManageProducts.css';
 
 const ManageProducts = () => {
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('userRole');
   const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -155,12 +155,11 @@ const ManageProducts = () => {
   return (
     <div className="manage-products-page">
       <Navbar userRole="admin" />
-      <Sidebar />
       
-      <div className="manage-products-container with-sidebar">
+      <div className="manage-products-container">
         <div className="page-header">
-          <button className="back-btn" onClick={() => navigate('/dashboard')}>
-            ← Back to Dashboard
+          <button className="back-btn" onClick={() => navigate(userRole === 'admin' ? '/admin/orders' : '/dashboard')}>
+            ← Back
           </button>
           <h1>Manage Products</h1>
           <button className="btn-add-product" onClick={() => setShowModal(true)}>
