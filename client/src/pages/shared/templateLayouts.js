@@ -10,8 +10,8 @@ export const templateLayouts = [
     shape: 'rectangle',
     furniture: [
       { type: 'sofa', position: [2, 0, 1], rotation: 0 },
-      { type: 'coffeeTable', position: [3, 0, 2], rotation: 0 },
-      { type: 'floorLamp', position: [1, 0, 3], rotation: 0 }
+      { type: 'coffeeTable', position: [5, 0, 2], rotation: 0 },
+      { type: 'floorLamp', position: [1, 0, 5], rotation: 0 }
     ]
   },
 
@@ -20,8 +20,8 @@ export const templateLayouts = [
     name: 'Modern Living Room',
     shape: 'square',
     furniture: [
-      { type: 'sofa', position: [2, 0, 2], rotation: 0 },
-      { type: 'coffeeTable', position: [3, 0, 3], rotation: 0 },
+      { type: 'sofa', position: [2, 0, 0], rotation: 0 },
+      { type: 'coffeeTable', position: [5, 0, 3], rotation: 0 },
       { type: 'floorLamp', position: [1, 0, 4], rotation: 0 }
     ]
   },
@@ -32,7 +32,7 @@ export const templateLayouts = [
     shape: 'l-shape',
     furniture: [
       { type: 'sofa', position: [2, 0, 1], rotation: 0 },
-      { type: 'coffeeTable', position: [3, 0, 2], rotation: 0 },
+      { type: 'coffeeTable', position: [5, 0, 2], rotation: 0 },
       { type: 'floorLamp', position: [1, 0, 4], rotation: 0 }
     ]
   },
@@ -43,8 +43,8 @@ export const templateLayouts = [
     shape: 'u-shape',
     furniture: [
       { type: 'sofa', position: [3, 0, 1], rotation: 0 },
-      { type: 'coffeeTable', position: [7, 0, 3], rotation: 0 },
-      { type: 'floorLamp', position: [1, 0, 4], rotation: 0 }
+      { type: 'coffeeTable', position: [8, 0, 3], rotation: 0 },
+      { type: 'floorLamp', position: [7, 0, 0], rotation: 0 }
     ]
   },
 
@@ -55,8 +55,8 @@ export const templateLayouts = [
     name: 'Minimalist Bedroom',
     shape: 'rectangle',
     furniture: [
-      { type: 'bed', position: [2, 0, 2], rotation: 0 },
-      { type: 'nightstand', position: [3, 0, 2], rotation: 0 },
+      { type: 'bed', position: [1, 0, 0], rotation: 0 },
+      { type: 'nightstand', position: [1, 0, 1], rotation: 0 },
       { type: 'wardrobe', position: [1, 0, 4], rotation: 90 }
     ]
   },
@@ -66,8 +66,8 @@ export const templateLayouts = [
     name: 'Minimalist Bedroom',
     shape: 'square',
     furniture: [
-      { type: 'bed', position: [2, 0, 2], rotation: 0 },
-      { type: 'nightstand', position: [3, 0, 2], rotation: 0 },
+      { type: 'bed', position: [1, 0, 0], rotation: 0 },
+      { type: 'nightstand', position: [1, 0, 1], rotation: 0 },
       { type: 'wardrobe', position: [1, 0, 4], rotation: 90 }
     ]
   },
@@ -77,9 +77,9 @@ export const templateLayouts = [
     name: 'Minimalist Bedroom',
     shape: 'l-shape',
     furniture: [
-      { type: 'bed', position: [2, 0, 1], rotation: 0 },
-      { type: 'nightstand', position: [3, 0, 1], rotation: 0 },
-      { type: 'wardrobe', position: [4, 0, 4], rotation: 90 }
+      { type: 'bed', position: [1, 0, 0], rotation: 0 },
+      { type: 'nightstand', position: [1, 0, 1], rotation: 0 },
+      { type: 'wardrobe', position: [3, 0, 4], rotation: 90 }
     ]
   },
 
@@ -88,9 +88,9 @@ export const templateLayouts = [
     name: 'Minimalist Bedroom',
     shape: 'u-shape',
     furniture: [
-      { type: 'bed', position: [3, 0, 1], rotation: 0 },
-      { type: 'nightstand', position: [5, 0, 1], rotation: 0 },
-      { type: 'wardrobe', position: [1, 0, 4], rotation: 90 }
+      { type: 'bed', position: [3, 0, 0], rotation: 0 },
+      { type: 'nightstand', position: [3, 0, 1], rotation: 0 },
+      { type: 'wardrobe', position: [0, 0, 3], rotation: 90 }
     ]
   },
 
@@ -114,7 +114,7 @@ export const templateLayouts = [
     furniture: [
       { type: 'desk', position: [2, 0, 2], rotation: 0 },
       { type: 'officeChair', position: [2, 0, 3], rotation: 180 },
-      { type: 'bookshelf', position: [4, 0, 1], rotation: 90 }
+      { type: 'bookshelf', position: [6, 0, 1], rotation: 90 }
     ]
   },
 
@@ -125,7 +125,7 @@ export const templateLayouts = [
     furniture: [
       { type: 'desk', position: [2, 0, 1], rotation: 0 },
       { type: 'officeChair', position: [2, 0, 2], rotation: 180 },
-      { type: 'bookshelf', position: [4, 0, 4], rotation: 90 }
+      { type: 'bookshelf', position: [7, 0, 2], rotation: 90 }
     ]
   },
 
@@ -134,9 +134,9 @@ export const templateLayouts = [
     name: 'Office Workspace',
     shape: 'u-shape',
     furniture: [
-      { type: 'desk', position: [3, 0, 1], rotation: 0 },
-      { type: 'officeChair', position: [3, 0, 2], rotation: 180 },
-      { type: 'bookshelf', position: [1, 0, 4], rotation: 90 }
+      { type: 'desk', position: [4, 0, 0], rotation: 0 },
+      { type: 'officeChair', position: [4, 0, 1], rotation: 180 },
+      { type: 'bookshelf', position: [0, 0, 1], rotation: 90 }
     ]
   },
 
@@ -149,7 +149,7 @@ export const templateLayouts = [
     furniture: [
       { type: 'bed', position: [1, 0, 3], rotation: 0 },
       { type: 'sofa', position: [4, 0, 1], rotation: 0 },
-      { type: 'diningTable', position: [3, 0, 3], rotation: 0 }
+      { type: 'diningTable', position: [3, 0, 5], rotation: 0 }
     ]
   },
 
@@ -160,7 +160,7 @@ export const templateLayouts = [
     furniture: [
       { type: 'bed', position: [1, 0, 3], rotation: 0 },
       { type: 'sofa', position: [3, 0, 1], rotation: 0 },
-      { type: 'diningTable', position: [3, 0, 3], rotation: 0 }
+      { type: 'diningTable', position: [5, 0, 5], rotation: 0 }
     ]
   },
 
@@ -169,9 +169,9 @@ export const templateLayouts = [
     name: 'Studio Apartment Layout',
     shape: 'l-shape',
     furniture: [
-      { type: 'bed', position: [1, 0, 3], rotation: 0 },
-      { type: 'sofa', position: [4, 0, 1], rotation: 0 },
-      { type: 'diningTable', position: [4, 0, 4], rotation: 0 }
+      { type: 'bed', position: [1, 0, 0], rotation: 0 },
+      { type: 'sofa', position: [7, 0, 1], rotation: 0 },
+      { type: 'diningTable', position: [2, 0, 6], rotation: 0 }
     ]
   },
 
@@ -180,9 +180,9 @@ export const templateLayouts = [
     name: 'Studio Apartment Layout',
     shape: 'u-shape',
     furniture: [
-      { type: 'bed', position: [1, 0, 4], rotation: 0 },
-      { type: 'sofa', position: [4, 0, 1], rotation: 0 },
-      { type: 'diningTable', position: [7, 0, 3], rotation: 0 }
+      { type: 'bed', position: [1, 0, 0], rotation: 0 },
+      { type: 'sofa', position: [7, 0, 0], rotation: 0 },
+      { type: 'diningTable', position: [7, 0, 2], rotation: 0 }
     ]
   }
 
