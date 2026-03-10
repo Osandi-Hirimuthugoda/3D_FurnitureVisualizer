@@ -6,6 +6,16 @@ const Home = () => {
   const navigate = useNavigate();
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
+  const handleGetStarted = () => {
+    // Always go to login page for Get Started
+    navigate('/login');
+  };
+
+  const handleGoToDashboard = () => {
+    // Always go to login page
+    navigate('/login');
+  };
+
   return (
     <div className="home-page">
       <nav className="home-navbar">
@@ -18,7 +28,7 @@ const Home = () => {
             {isAuthenticated ? (
               <button 
                 className="btn-dashboard"
-                onClick={() => navigate('/dashboard')}
+                onClick={handleGoToDashboard}
               >
                 Go to Dashboard
               </button>
@@ -43,7 +53,7 @@ const Home = () => {
           </p>
           <button 
             className="cta-button"
-            onClick={() => navigate('/login')}
+            onClick={handleGetStarted}
           >
             🎨 Get Started
           </button>
@@ -198,7 +208,7 @@ const Home = () => {
               <li>✓ 2D View</li>
               <li>✓ Save Designs</li>
             </ul>
-            <button className="pricing-btn" onClick={() => navigate('/login')}>
+            <button className="pricing-btn" onClick={handleGetStarted}>
               Get Started
             </button>
           </div>
@@ -217,7 +227,7 @@ const Home = () => {
               <li>✓ Export & Share</li>
               <li>✓ Priority Support</li>
             </ul>
-            <button className="pricing-btn primary" onClick={() => navigate('/login')}>
+            <button className="pricing-btn primary" onClick={handleGetStarted}>
               Start Free Trial
             </button>
           </div>
@@ -235,7 +245,7 @@ const Home = () => {
               <li>✓ API Access</li>
               <li>✓ Dedicated Support</li>
             </ul>
-            <button className="pricing-btn" onClick={() => navigate('/login')}>
+            <button className="pricing-btn" onClick={handleGetStarted}>
               Contact Sales
             </button>
           </div>
