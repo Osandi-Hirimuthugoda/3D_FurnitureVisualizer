@@ -29,7 +29,13 @@ const TemplateSelector = ({ roomShape, onApplyTemplate, onClose }) => {
           ) : (
             filtered.map(template => (
               <div key={template.id} className="template-card">
-                <div className="template-preview">📐</div>
+                <div className="template-preview">
+                  <img
+                    src={template.image}
+                    alt={template.name}
+                    className="template-img"
+                  />
+                </div>
                 <h3 className="template-name">{template.name}</h3>
                 <button
                   className="apply-btn"
