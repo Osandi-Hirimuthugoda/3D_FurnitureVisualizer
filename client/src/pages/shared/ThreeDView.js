@@ -33,7 +33,7 @@ const ThreeDView = () => {
   const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleBackTo2D = () => {
-    navigate('/room-layout');
+    navigate('/dashboard');
   };
 
   const handleOpenAppearance = () => {

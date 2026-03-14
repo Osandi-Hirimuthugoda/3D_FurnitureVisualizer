@@ -42,7 +42,7 @@ const Appearance = () => {
   };
 
   const handleBack = () => {
-    navigate('/room-layout');
+    navigate('/dashboard');
   };
 
   return (

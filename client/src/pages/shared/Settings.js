@@ -29,11 +29,7 @@ const Settings = () => {
     });
 
     const handleBack = () => {
-        if (userRole === 'admin') {
-            navigate('/admin/dashboard');
-        } else {
-            navigate('/');
-        }
+        navigate('/dashboard');
     };
 
     const [expandedFaq, setExpandedFaq] = useState(null);

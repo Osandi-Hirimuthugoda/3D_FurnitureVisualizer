@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
+import { getAllOrders, updateOrderStatus, deleteOrder as deleteOrderAPI } from '../../api/orders';
 import './ManageOrders.css';
 
 const ManageOrders = () => {
@@ -12,77 +13,31 @@ const ManageOrders = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Load orders from localStorage
-    const savedOrders = localStorage.getItem('orders');
-    if (savedOrders) {
-      const parsedOrders = JSON.parse(savedOrders);
-      setOrders(parsedOrders);
-      setFilteredOrders(parsedOrders);
-    } else {
-      // Create sample orders for demo
-      const sampleOrders = [
-        {
-          _id: 'ORD001',
-          customerName: 'Kasun Perera',
-          customerEmail: 'kasun@example.com',
-          customerPhone: '0771234567',
-          orderDate: '2026-03-05',
-          status: 'pending',
-          totalAmount: 45000,
-          items: [
-            { name: 'Modern Sofa', quantity: 1, price: 35000 },
-            { name: 'Coffee Table', quantity: 1, price: 10000 }
-          ],
-          shippingAddress: 'No. 123, Galle Road, Colombo 03'
-        },
-        {
-          _id: 'ORD002',
-          customerName: 'Nimal Silva',
-          customerEmail: 'nimal@example.com',
-          customerPhone: '0779876543',
-          orderDate: '2026-03-04',
-          status: 'processing',
-          totalAmount: 28000,
-          items: [
-            { name: 'Office Chair', quantity: 2, price: 14000 }
-          ],
-          shippingAddress: 'No. 45, Kandy Road, Peradeniya'
-        },
-        {
-          _id: 'ORD003',
-          customerName: 'Amara Fernando',
-          customerEmail: 'amara@example.com',
-          customerPhone: '0765432109',
-          orderDate: '2026-03-03',
-          status: 'shipped',
-          totalAmount: 65000,
-          items: [
-            { name: 'King Size Bed', quantity: 1, price: 55000 },
-            { name: 'Bedside Table', quantity: 2, price: 5000 }
-          ],
-          shippingAddress: 'No. 78, Main Street, Gampaha'
-        },
-        {
-          _id: 'ORD004',
-          customerName: 'Saman Kumara',
-          customerEmail: 'saman@example.com',
-          customerPhone: '0712345678',
-          orderDate: '2026-03-01',
-          status: 'delivered',
-          totalAmount: 22000,
-          items: [
-            { name: 'Study Desk', quantity: 1, price: 22000 }
-          ],
-          shippingAddress: 'No. 234, Temple Road, Negombo'
-        }
-      ];
-      localStorage.setItem('orders', JSON.stringify(sampleOrders));
-      setOrders(sampleOrders);
-      setFilteredOrders(sampleOrders);
-    }
+    fetchOrders();
   }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllOrders();
+      const formattedOrders = data.orders.map(order => ({
+        ...order,
+        _id: order._id,
+        orderDate: order.createdAt
+      }));
+      setOrders(formattedOrders);
+      setFilteredOrders(formattedOrders);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching orders:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let filtered = [...orders];
@@ -95,7 +50,7 @@ const ManageOrders = () => {
     // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(order =>
-        order._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (order.orderNumber && order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
         order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.customerEmail.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -104,25 +59,49 @@ const ManageOrders = () => {
     setFilteredOrders(filtered);
   }, [statusFilter, searchQuery, orders]);
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    const updatedOrders = orders.map(order =>
-      order._id === orderId ? { ...order, status: newStatus } : order
-    );
-    setOrders(updatedOrders);
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
-    
-    if (selectedOrder && selectedOrder._id === orderId) {
-      setSelectedOrder({ ...selectedOrder, status: newStatus });
+  const updateStatus = async (orderId, newStatus) => {
+    try {
+      setLoading(true);
+      await updateOrderStatus(orderId, newStatus);
+      
+      // Update local state
+      const updatedOrders = orders.map(order =>
+        order._id === orderId ? { ...order, status: newStatus } : order
+      );
+      setOrders(updatedOrders);
+      
+      if (selectedOrder && selectedOrder._id === orderId) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
+      }
+      
+      alert('Order status updated successfully!');
+    } catch (err) {
+      setError(err.message);
+      alert('Error: ' + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const deleteOrder = (orderId) => {
+  const deleteOrderHandler = async (orderId) => {
     if (window.confirm('Are you sure you want to delete this order?')) {
-      const updatedOrders = orders.filter(order => order._id !== orderId);
-      setOrders(updatedOrders);
-      localStorage.setItem('orders', JSON.stringify(updatedOrders));
-      setShowModal(false);
-      setSelectedOrder(null);
+      try {
+        setLoading(true);
+        await deleteOrderAPI(orderId);
+        
+        // Update local state
+        const updatedOrders = orders.filter(order => order._id !== orderId);
+        setOrders(updatedOrders);
+        
+        setShowModal(false);
+        setSelectedOrder(null);
+        alert('Order deleted successfully!');
+      } catch (err) {
+        setError(err.message);
+        alert('Error: ' + err.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -167,7 +146,7 @@ const ManageOrders = () => {
       <div className="admin-layout">
         <main className="manage-orders-content">
           <div className="orders-header">
-            <button className="back-btn" onClick={() => navigate('/admin/products')}>
+            <button className="back-btn" onClick={() => navigate('/dashboard')}>
               ← Back
             </button>
             <h1>Manage Orders</h1>
@@ -278,7 +257,7 @@ const ManageOrders = () => {
                 <tbody>
                   {filteredOrders.map(order => (
                     <tr key={order._id}>
-                      <td className="order-id">{order._id}</td>
+                      <td className="order-id">{order.orderNumber || order._id}</td>
                       <td>
                         <div className="customer-info">
                           <strong>{order.customerName}</strong>
@@ -305,7 +284,8 @@ const ManageOrders = () => {
                           <select
                             className="status-select"
                             value={order.status}
-                            onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                            onChange={(e) => updateStatus(order._id, e.target.value)}
+                            disabled={loading}
                           >
                             <option value="pending">Pending</option>
                             <option value="processing">Processing</option>
@@ -343,7 +323,7 @@ const ManageOrders = () => {
                 <h3>Order Information</h3>
                 <div className="detail-row">
                   <span className="label">Order ID:</span>
-                  <span className="value">{selectedOrder._id}</span>
+                  <span className="value">{selectedOrder.orderNumber || selectedOrder._id}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Order Date:</span>
@@ -411,7 +391,8 @@ const ManageOrders = () => {
                 <select
                   className="status-update-select"
                   value={selectedOrder.status}
-                  onChange={(e) => updateOrderStatus(selectedOrder._id, e.target.value)}
+                  onChange={(e) => updateStatus(selectedOrder._id, e.target.value)}
+                  disabled={loading}
                 >
                   <option value="pending">Pending</option>
                   <option value="processing">Processing</option>
@@ -421,7 +402,8 @@ const ManageOrders = () => {
                 </select>
                 <button
                   className="btn-delete"
-                  onClick={() => deleteOrder(selectedOrder._id)}
+                  onClick={() => deleteOrderHandler(selectedOrder._id)}
+                  disabled={loading}
                 >
                   🗑️ Delete Order
                 </button>

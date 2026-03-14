@@ -116,7 +116,7 @@ const Cart = () => {
       
       <div className="cart-container">
         <div className="cart-header">
-          <button className="back-btn" onClick={() => navigate('/products')}>
+          <button className="back-btn" onClick={() => navigate('/dashboard')}>
             ← Back
           </button>
           <h1>Shopping Cart</h1>

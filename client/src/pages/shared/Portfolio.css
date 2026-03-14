@@ -275,3 +275,102 @@
 .delete-btn:hover {
   background-color: #4A5568;
 }
+
+/* Favourite Toggle Button */
+.favourites-toggle-btn {
+  background-color: #FFFFFF;
+  color: #4A5568;
+  border: 1px solid #E2E8F0;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 160px;
+  justify-content: center;
+}
+
+.favourites-toggle-btn:hover {
+  background-color: #F7FAFC;
+  border-color: #CBD5E0;
+}
+
+.favourites-toggle-btn.active {
+  background-color: #FFE6E6;
+  color: #DC2626;
+  border-color: #FCA5A5;
+}
+
+.favourites-toggle-btn.active:hover {
+  background-color: #FEE2E2;
+}
+
+/* Favourite Button on Card */
+.favourite-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.favourite-btn:hover {
+  transform: scale(1.1);
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.favourite-btn.active {
+  background-color: #FFE6E6;
+  animation: favouriteAdded 0.3s ease;
+}
+
+@keyframes favouriteAdded {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Empty State for Favourites */
+.empty-favourites {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #A0AEC0;
+}
+
+.empty-favourites-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.empty-favourites h3 {
+  font-size: 20px;
+  color: #4A5568;
+  margin-bottom: 10px;
+}
+
+.empty-favourites p {
+  font-size: 14px;
+  color: #A0AEC0;
+}

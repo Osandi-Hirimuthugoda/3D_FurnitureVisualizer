@@ -191,7 +191,7 @@ const LayoutEditor = () => {
       <Navbar userRole={userRole} />
       <div className="layout-editor">
         <header className="editor-header">
-          <button className="back-btn" onClick={() => navigate('/room-setup')}>
+          <button className="back-btn" onClick={() => navigate('/dashboard')}>
             ← Back
           </button>
           <h1>2D Layout Editor</h1>

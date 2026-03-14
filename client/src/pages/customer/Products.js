@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
+import { getAllProducts } from '../../api/products';
 import './Products.css';
 
 const Products = () => {
@@ -13,22 +14,32 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Load products from localStorage
-    const savedProducts = localStorage.getItem('furnitureProducts');
-    if (savedProducts) {
-      const parsedProducts = JSON.parse(savedProducts);
-      setProducts(parsedProducts);
-      setFilteredProducts(parsedProducts);
-    }
-
+    fetchProducts();
+    
     // Load cart from localStorage
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllProducts();
+      setProducts(data.products);
+      setFilteredProducts(data.products);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching products:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let filtered = [...products];
@@ -103,7 +114,7 @@ const Products = () => {
       
       <div className="products-container">
         <div className="products-header">
-          <button className="back-btn" onClick={() => navigate(userRole === 'customer' ? '/cart' : '/dashboard')}>
+          <button className="back-btn" onClick={() => navigate('/dashboard')}>
             ← Back
           </button>
           <h1>Our Furniture Collection</h1>

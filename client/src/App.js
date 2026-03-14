@@ -81,6 +81,11 @@ function App() {
           } />
           
           {/* Admin Only Routes */}
+          <Route path="/admin/dashboard" element={
+            <ProtectedRoute adminOnly={true}>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
           <Route path="/admin/products" element={
             <ProtectedRoute adminOnly={true}>
               <ManageProducts />

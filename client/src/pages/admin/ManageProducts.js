@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
+import { getAllProducts, createProduct, updateProduct, deleteProduct } from '../../api/products';
 import './ManageProducts.css';
 
 const ManageProducts = () => {
@@ -11,6 +12,8 @@ const ManageProducts = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     category: 'sofas',
@@ -23,30 +26,21 @@ const ManageProducts = () => {
   });
 
   useEffect(() => {
-    // Fetch products from localStorage (shared with ManageProducts)
-    const savedProducts = localStorage.getItem('furnitureProducts');
-    if (savedProducts) {
-      const parsedProducts = JSON.parse(savedProducts);
-      setProducts(parsedProducts);
-    } else {
-      // Default mock products if none exist
-      const mockProducts = [
-        {
-          _id: '1',
-          name: '2-Seater Sofa',
-          category: 'sofas',
-          price: 45000,
-          discount: 10,
-          dimensions: { length: 1.8, width: 0.9, height: 0.8 },
-          description: 'Comfortable compact sofa',
-          image: '🛋️',
-          inStock: true
-        }
-      ];
-      setProducts(mockProducts);
-      localStorage.setItem('furnitureProducts', JSON.stringify(mockProducts));
-    }
+    fetchProducts();
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllProducts();
+      setProducts(data.products);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching products:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -92,28 +86,46 @@ const ManageProducts = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    let updatedProducts;
+    setLoading(true);
+    setError('');
     
-    if (editingProduct) {
-      // Update existing product
-      updatedProducts = products.map(p => 
-        p._id === editingProduct._id ? { ...formData, _id: p._id } : p
-      );
-    } else {
-      // Add new product
-      const newProduct = {
-        ...formData,
-        _id: Date.now().toString()
+    try {
+      const productData = {
+        name: formData.name,
+        category: formData.category,
+        price: parseFloat(formData.price),
+        discount: parseFloat(formData.discount) || 0,
+        dimensions: {
+          length: parseFloat(formData.dimensions.length),
+          width: parseFloat(formData.dimensions.width),
+          height: parseFloat(formData.dimensions.height)
+        },
+        description: formData.description,
+        image: formData.image || '🪑',
+        inStock: formData.inStock
       };
-      updatedProducts = [...products, newProduct];
+
+      if (editingProduct) {
+        // Update existing product
+        await updateProduct(editingProduct._id, productData);
+        alert('Product updated successfully!');
+      } else {
+        // Create new product
+        await createProduct(productData);
+        alert('Product created successfully!');
+      }
+      
+      // Refresh products list
+      await fetchProducts();
+      resetForm();
+    } catch (err) {
+      setError(err.message);
+      alert('Error: ' + err.message);
+    } finally {
+      setLoading(false);
     }
-    
-    setProducts(updatedProducts);
-    // Save to localStorage
-    localStorage.setItem('furnitureProducts', JSON.stringify(updatedProducts));
-    resetForm();
   };
 
   const handleEdit = (product) => {
@@ -123,12 +135,19 @@ const ManageProducts = () => {
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      const updatedProducts = products.filter(p => p._id !== id);
-      setProducts(updatedProducts);
-      // Update localStorage
-      localStorage.setItem('furnitureProducts', JSON.stringify(updatedProducts));
+      try {
+        setLoading(true);
+        await deleteProduct(id);
+        alert('Product deleted successfully!');
+        await fetchProducts();
+      } catch (err) {
+        setError(err.message);
+        alert('Error: ' + err.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -158,7 +177,7 @@ const ManageProducts = () => {
       
       <div className="manage-products-container">
         <div className="page-header">
-          <button className="back-btn" onClick={() => navigate(userRole === 'admin' ? '/admin/orders' : '/dashboard')}>
+          <button className="back-btn" onClick={() => navigate('/dashboard')}>
             ← Back
           </button>
           <h1>Manage Products</h1>

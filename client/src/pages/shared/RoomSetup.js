@@ -54,12 +54,7 @@ const RoomSetup = ({ userRole = 'customer' }) => {
   };
 
   const handleBack = () => {
-    const userRole = localStorage.getItem('userRole');
-    if (userRole === 'admin') {
-      navigate('/admin/products');
-    } else {
-      navigate('/products');
-    }
+    navigate('/dashboard');
   };
 
   return (
