@@ -23,6 +23,7 @@ const canvasItemSchema = new mongoose.Schema({
 }, { _id: false });
 
 const designSchema = new mongoose.Schema({
+  title: { type: String, default: 'Untitled Design' },
   roomSpecs: {
     length: { type: Number, default: 5 },
     width: { type: Number, default: 4 },

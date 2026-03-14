@@ -11,6 +11,9 @@ const Navbar = ({ userRole }) => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token');
     navigate('/login');
   };
 
@@ -129,15 +132,26 @@ const Navbar = ({ userRole }) => {
               )}
               
               {userRole === 'customer' && (
-                <li>
-                  <Link 
-                    to="/cart" 
-                    className={isActive('/cart') ? 'active' : ''}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span className="cart-icon">🛒</span> Cart
-                  </Link>
-                </li>
+                <>
+                  <li>
+                    <Link 
+                      to="/cart" 
+                      className={isActive('/cart') ? 'active' : ''}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span className="cart-icon">🛒</span> Cart
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/my-orders" 
+                      className={isActive('/my-orders') ? 'active' : ''}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      📦 My Orders
+                    </Link>
+                  </li>
+                </>
               )}
               
               <li className="nav-user">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import TemplateSelector from './TemplateSelector';
 import { getDesign, updateDesign, createDesign } from '../../api/designs';
+import { getAllProducts } from '../../api/products';
 import './LayoutEditor.css';
 
 const LayoutEditor = () => {
@@ -27,27 +28,35 @@ const LayoutEditor = () => {
   const [roomDimensions, setRoomDimensions] = useState({ width: 5, length: 4 });
 
   useEffect(() => {
-    const savedProducts = localStorage.getItem('furnitureProducts');
-    if (savedProducts) {
-      const products = JSON.parse(savedProducts);
-      const categorized = { sofas: [], chairs: [], tables: [], beds: [], desks: [] };
-      products.forEach(product => {
-        if (categorized[product.category]) {
-          categorized[product.category].push({
-            id: product._id,
-            name: product.name,
-            size: `${product.dimensions.length}m × ${product.dimensions.width}m`,
-            type: product.inStock ? 'Available' : 'Out of Stock',
-            image: product.image,
-            dimensions: product.dimensions,
-            price: product.price,
-            discount: product.discount,
-            category: product.category
-          });
-        }
-      });
-      setFurnitureCategories(categorized);
-    }
+    // Fetch products from backend
+    const fetchProducts = async () => {
+      try {
+        const data = await getAllProducts();
+        const products = data.products || [];
+        const categorized = { sofas: [], chairs: [], tables: [], beds: [], desks: [] };
+        products.forEach(product => {
+          if (categorized[product.category]) {
+            categorized[product.category].push({
+              id: product._id,
+              name: product.name,
+              size: `${product.dimensions.length}m × ${product.dimensions.width}m`,
+              type: product.inStock ? 'Available' : 'Out of Stock',
+              image: product.image,
+              dimensions: product.dimensions,
+              price: product.price,
+              discount: product.discount,
+              category: product.category
+            });
+          }
+        });
+        setFurnitureCategories(categorized);
+      } catch (err) {
+        console.error('Failed to load furniture from backend:', err);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+    fetchProducts();
 
     // read room shape from specs
     const specs = localStorage.getItem('roomSpecs');
@@ -102,6 +111,7 @@ const LayoutEditor = () => {
   }, [canvasItems, designId, saveLayout]);
 
   const [expandedCategory, setExpandedCategory] = useState('sofas');
+  const [productsLoading, setProductsLoading] = useState(true);
 
   const handleAddToCanvas = (item) => {
     const newItem = {
@@ -226,6 +236,9 @@ const LayoutEditor = () => {
             <h3>Furniture Items</h3>
             <p className="sidebar-subtitle">Click to add to canvas</p>
 
+            {productsLoading ? (
+              <div className="sidebar-loading">⏳ Loading furniture...</div>
+            ) : (
             <div className="furniture-categories">
               {Object.entries(furnitureCategories).map(([category, items]) => (
                 <div key={category} className="category-section">
@@ -293,6 +306,7 @@ const LayoutEditor = () => {
                 </div>
               ))}
             </div>
+            )}
           </aside>
 
           {/* Center - Canvas */}

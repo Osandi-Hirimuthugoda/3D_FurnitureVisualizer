@@ -19,6 +19,7 @@ import Settings from './pages/shared/Settings';
 import Home from './pages/customer/Home';
 import Products from './pages/customer/Products';
 import Cart from './pages/customer/Cart';
+import MyOrders from './pages/customer/MyOrders';
 
 // Admin Pages
 import ManageProducts from './pages/admin/ManageProducts';
@@ -26,7 +27,7 @@ import ManageOrders from './pages/admin/ManageOrders';
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="App">
         <Routes>
           {/* Public Routes */}
@@ -67,6 +68,11 @@ function App() {
           <Route path="/cart" element={
             <ProtectedRoute>
               <Cart />
+            </ProtectedRoute>
+          } />
+          <Route path="/my-orders" element={
+            <ProtectedRoute>
+              <MyOrders />
             </ProtectedRoute>
           } />
           <Route path="/portfolio" element={

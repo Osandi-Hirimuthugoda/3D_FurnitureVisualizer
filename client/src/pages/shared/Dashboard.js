@@ -1,13 +1,73 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
 import './Dashboard.css';
 
+const API_URL = 'http://localhost:5001/api';
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
   const userEmail = localStorage.getItem('userEmail');
+  const userName = localStorage.getItem('userName');
+  const token = localStorage.getItem('token');
+
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    totalOrders: 0,
+    pendingOrders: 0,
+    revenue: 0,
+    myOrders: 0,
+    myDesigns: 0
+  });
+
+  useEffect(() => {
+    if (!token) return;
+    if (userRole === 'admin') {
+      fetchAdminStats();
+    } else {
+      fetchCustomerStats();
+    }
+  }, [userRole, token]);
+
+  const fetchAdminStats = async () => {
+    try {
+      const [productsRes, ordersRes] = await Promise.all([
+        fetch(`${API_URL}/products`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`${API_URL}/orders/stats/summary`, { headers: { 'Authorization': `Bearer ${token}` } })
+      ]);
+      const productsData = await productsRes.json();
+      const ordersData = await ordersRes.json();
+      setStats(s => ({
+        ...s,
+        totalProducts: productsData.count || 0,
+        totalOrders: ordersData.stats?.total || 0,
+        pendingOrders: ordersData.stats?.pending || 0,
+        revenue: ordersData.stats?.revenue || 0
+      }));
+    } catch (err) {
+      console.error('Failed to load admin stats:', err);
+    }
+  };
+
+  const fetchCustomerStats = async () => {
+    try {
+      const [ordersRes, designsRes] = await Promise.all([
+        fetch(`${API_URL}/orders/my-orders`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`${API_URL}/designs/my-designs`, { headers: { 'Authorization': `Bearer ${token}` } })
+      ]);
+      const ordersData = await ordersRes.json();
+      const designsData = await designsRes.json();
+      setStats(s => ({
+        ...s,
+        myOrders: ordersData.count || 0,
+        myDesigns: designsData.designs?.length || 0
+      }));
+    } catch (err) {
+      console.error('Failed to load customer stats:', err);
+    }
+  };
 
   return (
     <div className="dashboard-page">
@@ -15,8 +75,8 @@ const Dashboard = () => {
       
       <div className="dashboard-container">
         <div className="dashboard-header">
-          <h1>Welcome to Your Dashboard</h1>
-          <p className="user-info">Logged in as: {userEmail}</p>
+          <h1>Welcome{userName ? `, ${userName}` : ''} 👋</h1>
+          <p className="user-info">Logged in as: {userEmail} ({userRole})</p>
         </div>
 
         <div className="dashboard-content">
@@ -52,11 +112,18 @@ const Dashboard = () => {
               )}
 
               {userRole === 'customer' && (
-                <div className="action-card" onClick={() => navigate('/cart')}>
-                  <div className="card-icon">🛒</div>
-                  <h3>My Cart</h3>
-                  <p>View your shopping cart</p>
-                </div>
+                <>
+                  <div className="action-card" onClick={() => navigate('/cart')}>
+                    <div className="card-icon">🛒</div>
+                    <h3>My Cart</h3>
+                    <p>View your shopping cart</p>
+                  </div>
+                  <div className="action-card" onClick={() => navigate('/my-orders')}>
+                    <div className="card-icon">📦</div>
+                    <h3>My Orders</h3>
+                    <p>Track your orders</p>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -67,7 +134,7 @@ const Dashboard = () => {
               <div className="stat-card">
                 <div className="stat-icon">🎨</div>
                 <div className="stat-info">
-                  <h3>0</h3>
+                  <h3>{userRole === 'customer' ? stats.myDesigns : 0}</h3>
                   <p>Designs Created</p>
                 </div>
               </div>
@@ -75,17 +142,27 @@ const Dashboard = () => {
               <div className="stat-card">
                 <div className="stat-icon">💾</div>
                 <div className="stat-info">
-                  <h3>0</h3>
+                  <h3>{userRole === 'customer' ? stats.myDesigns : 0}</h3>
                   <p>Saved Projects</p>
                 </div>
               </div>
+
+              {userRole === 'customer' && (
+                <div className="stat-card">
+                  <div className="stat-icon">📦</div>
+                  <div className="stat-info">
+                    <h3>{stats.myOrders}</h3>
+                    <p>My Orders</p>
+                  </div>
+                </div>
+              )}
 
               {userRole === 'admin' && (
                 <>
                   <div className="stat-card">
                     <div className="stat-icon">📦</div>
                     <div className="stat-info">
-                      <h3>0</h3>
+                      <h3>{stats.totalProducts}</h3>
                       <p>Total Products</p>
                     </div>
                   </div>
@@ -93,8 +170,24 @@ const Dashboard = () => {
                   <div className="stat-card">
                     <div className="stat-icon">📋</div>
                     <div className="stat-info">
-                      <h3>0</h3>
+                      <h3>{stats.totalOrders}</h3>
                       <p>Total Orders</p>
+                    </div>
+                  </div>
+
+                  <div className="stat-card">
+                    <div className="stat-icon">⏳</div>
+                    <div className="stat-info">
+                      <h3>{stats.pendingOrders}</h3>
+                      <p>Pending Orders</p>
+                    </div>
+                  </div>
+
+                  <div className="stat-card">
+                    <div className="stat-icon">💰</div>
+                    <div className="stat-info">
+                      <h3>Rs. {stats.revenue.toLocaleString()}</h3>
+                      <p>Total Revenue</p>
                     </div>
                   </div>
                 </>

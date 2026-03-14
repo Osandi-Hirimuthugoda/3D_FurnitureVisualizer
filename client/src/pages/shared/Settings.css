@@ -448,3 +448,24 @@
 .quick-tips-box p:last-child {
     margin: 0;
 }
+
+/* Settings feedback messages */
+.settings-msg {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.settings-msg.success {
+    background: #e6f9f0;
+    color: #1a7a4a;
+    border-left: 4px solid #2F9E9E;
+}
+
+.settings-msg.error {
+    background: #fee;
+    color: #c33;
+    border-left: 4px solid #c33;
+}

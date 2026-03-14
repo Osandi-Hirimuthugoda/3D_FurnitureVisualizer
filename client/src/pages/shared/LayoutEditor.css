@@ -99,7 +99,14 @@
 .sidebar-subtitle {
   color: var(--text-light);
   font-size: 0.85rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar-loading {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
 }
 
 .furniture-categories {

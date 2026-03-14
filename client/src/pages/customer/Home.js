@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
+
+const API_URL = 'http://localhost:5001/api';
 
 const Home = () => {
   const navigate = useNavigate();
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const [discountedProducts, setDiscountedProducts] = useState([]);
+
+  useEffect(() => {
+    // Fetch products with discounts from backend
+    const fetchDiscountedProducts = async () => {
+      try {
+        const res = await fetch(`${API_URL}/products?sortBy=discount`);
+        const data = await res.json();
+        if (data.success) {
+          // Only show products with discount > 0, max 4
+          const deals = data.products.filter(p => p.discount > 0).slice(0, 4);
+          setDiscountedProducts(deals);
+        }
+      } catch (err) {
+        console.error('Failed to load deals:', err);
+      }
+    };
+    fetchDiscountedProducts();
+  }, []);
 
   const handleGetStarted = () => {
     // Always go to login page for Get Started
@@ -123,6 +144,49 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Hot Deals Section */}
+      {discountedProducts.length > 0 && (
+        <section className="deals-section">
+          <div className="deals-header">
+            <div className="deals-badge">🔥 HOT DEALS</div>
+            <h2>Special Discounts</h2>
+            <p className="section-subtitle">Limited time offers on our best furniture</p>
+          </div>
+          <div className="deals-grid">
+            {discountedProducts.map(product => (
+              <div key={product._id} className="deal-card">
+                <div className="deal-discount-badge">-{product.discount}%</div>
+                <div className="deal-image">
+                  {product.image && (product.image.startsWith('data:') || product.image.startsWith('http')) ? (
+                    <img src={product.image} alt={product.name} />
+                  ) : (
+                    <span className="deal-emoji">{product.image || '🪑'}</span>
+                  )}
+                </div>
+                <div className="deal-info">
+                  <h3>{product.name}</h3>
+                  <p className="deal-category">{product.category}</p>
+                  <div className="deal-pricing">
+                    <span className="deal-original">Rs. {product.price.toLocaleString()}</span>
+                    <span className="deal-discounted">
+                      Rs. {Math.round(product.price - (product.price * product.discount / 100)).toLocaleString()}
+                    </span>
+                  </div>
+                  <button className="deal-btn" onClick={handleGetStarted}>
+                    Shop Now
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="deals-cta">
+            <button className="view-all-deals-btn" onClick={handleGetStarted}>
+              🛍️ View All Deals
+            </button>
+          </div>
+        </section>
+      )}
 
       <section className="gallery-section">
         <h2>Design Gallery</h2>

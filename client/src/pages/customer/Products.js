@@ -45,7 +45,9 @@ const Products = () => {
     let filtered = [...products];
 
     // Filter by category
-    if (selectedCategory !== 'all') {
+    if (selectedCategory === 'discounts') {
+      filtered = filtered.filter(p => p.discount > 0);
+    } else if (selectedCategory !== 'all') {
       filtered = filtered.filter(p => p.category === selectedCategory);
     }
 
@@ -101,6 +103,7 @@ const Products = () => {
 
   const categories = [
     { id: 'all', name: 'All Products', icon: '🏠' },
+    { id: 'discounts', name: '🔥 Discounts', icon: '🏷️' },
     { id: 'sofas', name: 'Sofas', icon: '🛋️' },
     { id: 'chairs', name: 'Chairs', icon: '🪑' },
     { id: 'tables', name: 'Tables', icon: '🪑' },
@@ -159,7 +162,9 @@ const Products = () => {
                   <span className="category-count">
                     ({category.id === 'all'
                       ? products.length
-                      : products.filter(p => p.category === category.id).length})
+                      : category.id === 'discounts'
+                        ? products.filter(p => p.discount > 0).length
+                        : products.filter(p => p.category === category.id).length})
                   </span>
                 </button>
               ))}

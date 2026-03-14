@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
+import { createOrder } from '../../api/orders';
 import './Cart.css';
 
 const Cart = () => {
@@ -75,39 +76,31 @@ const Cart = () => {
     setShowCheckoutModal(true);
   };
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     
-    // Create order object
-    const order = {
-      _id: 'ORD' + Date.now(),
-      customerName: customerInfo.name,
-      customerEmail: customerInfo.email,
-      customerPhone: customerInfo.phone,
-      orderDate: new Date().toISOString().split('T')[0],
-      status: 'pending',
-      totalAmount: calculateTotal(),
-      items: cartItems.map(item => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.discount > 0 
-          ? item.price - (item.price * item.discount / 100)
-          : item.price
-      })),
-      shippingAddress: customerInfo.address
-    };
+    try {
+      // Build items array with product IDs for backend
+      const items = cartItems.map(item => ({
+        product: item._id,
+        quantity: item.quantity
+      }));
 
-    // Save order to localStorage
-    const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-    existingOrders.push(order);
-    localStorage.setItem('orders', JSON.stringify(existingOrders));
+      await createOrder({
+        items,
+        shippingAddress: customerInfo.address,
+        customerPhone: customerInfo.phone,
+        notes: ''
+      });
 
-    // Clear cart
-    updateCart([]);
-    setShowCheckoutModal(false);
-    
-    alert('Order placed successfully! Order ID: ' + order._id);
-    navigate('/dashboard');
+      // Clear cart
+      updateCart([]);
+      setShowCheckoutModal(false);
+      alert('Order placed successfully! Check your orders in the dashboard.');
+      navigate('/dashboard');
+    } catch (err) {
+      alert('Failed to place order: ' + err.message);
+    }
   };
 
   return (

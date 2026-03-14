@@ -10,7 +10,9 @@ router.post('/admin/login', authController.adminLogin);
 router.post('/customer/signup', authController.customerSignup);
 router.post('/customer/login', authController.customerLogin);
 
-// Protected route
+// Protected routes
 router.get('/me', protect, authController.getCurrentUser);
+router.put('/profile', protect, authController.updateProfile);
+router.put('/change-password', protect, authController.changePassword);
 
 module.exports = router;
