@@ -31,6 +31,16 @@ router.get('/my-designs', protect, async (req, res) => {
   }
 });
 
+// Get all designs for a user
+router.get('/user/:userId', async (req, res) => {
+  try {
+    const designs = await Design.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+    res.json(designs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get design by ID
 router.get('/:id', async (req, res) => {
   try {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import TemplateSelector from './TemplateSelector';
+import CompareDesignModal from './CompareDesignModal';
 import { getDesign, updateDesign, createDesign } from '../../api/designs';
 import { getAllProducts } from '../../api/products';
 import './LayoutEditor.css';
@@ -26,6 +27,8 @@ const LayoutEditor = () => {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [roomShape, setRoomShape] = useState('rectangle');
   const [roomDimensions, setRoomDimensions] = useState({ width: 5, length: 4 });
+  const [showCompareModal, setShowCompareModal] = useState(false);
+  const [currentTemplate, setCurrentTemplate] = useState(null);
 
   useEffect(() => {
     // Fetch products from backend
@@ -143,6 +146,8 @@ const LayoutEditor = () => {
   const handleApplyTemplate = (template) => {
     if (!template || !template.furniture) return;
 
+    const templateName = template.name || `template-${Date.now()}`;
+
     const newItems = template.furniture.map((f, idx) => ({
       canvasId: Date.now() + idx,
       id: f.id,
@@ -163,12 +168,26 @@ const LayoutEditor = () => {
     const remainingItems = canvasItems.filter(item => !item.fromTemplate);
 
     setCanvasItems([...remainingItems, ...newItems]);
+    setCurrentTemplate(template);
   };
 
   const handleDelete = () => {
     if (selectedItem) {
       setCanvasItems(canvasItems.filter(item => item.canvasId !== selectedItem.canvasId));
       setSelectedItem(null);
+    }
+  };
+
+  const handleSelectDesignForComparison = (selectedDesign) => {
+    const currentId = designId || localStorage.getItem('currentDesignId');
+    if (currentId) {
+      setShowCompareModal(false);
+      navigate('/design-comparison', {
+        state: {
+          designA: currentId,
+          designB: selectedDesign._id
+        }
+      });
     }
   };
 
@@ -181,31 +200,38 @@ const LayoutEditor = () => {
             ← Back
           </button>
           <h1>2D Layout Editor</h1>
-          <button
-            className="view-3d-btn"
-            onClick={async () => {
-              let id = designId || localStorage.getItem('currentDesignId');
-              // Save current canvas items to localStorage so 3D view can read them
-              localStorage.setItem('canvasItems', JSON.stringify(canvasItems));
-              if (!id) {
-                const savedSpecs = localStorage.getItem('roomSpecs');
-                if (savedSpecs) {
-                  try {
-                    const design = await createDesign(JSON.parse(savedSpecs));
-                    id = design._id;
-                    await updateDesign(id, { canvasItems });
-                    localStorage.setItem('currentDesignId', id);
-                  } catch (e) {
-                    console.error(e);
+          <div className="header-actions">
+            <button
+              className="toolbar-btn compare-btn"
+              onClick={() => setShowCompareModal(true)}
+              title="Compare with previous designs"
+            >
+              🔍 Compare Design
+            </button>
+            <button
+              className="view-3d-btn"
+              onClick={async () => {
+                let id = designId || localStorage.getItem('currentDesignId');
+                if (!id) {
+                  const savedSpecs = localStorage.getItem('roomSpecs');
+                  if (savedSpecs) {
+                    try {
+                      const design = await createDesign(JSON.parse(savedSpecs));
+                      id = design._id;
+                      await updateDesign(id, { canvasItems });
+                      localStorage.setItem('currentDesignId', id);
+                    } catch (e) {
+                      console.error(e);
+                    }
                   }
                 }
-              }
-              if (id) localStorage.setItem('currentDesignId', id);
-              navigate('/room-3d');
-            }}
-          >
-            👁️ View in 3D
-          </button>
+                if (id) localStorage.setItem('currentDesignId', id);
+                navigate('/room-3d');
+              }}
+            >
+              👁️ View in 3D
+            </button>
+          </div>
         </header>
 
         <div className="editor-container">
@@ -546,7 +572,15 @@ const LayoutEditor = () => {
             onApplyTemplate={handleApplyTemplate}
             onClose={() => setShowTemplateSelector(false)}
           />
+          
         )}
+        <CompareDesignModal
+          isOpen={showCompareModal}
+          onClose={() => setShowCompareModal(false)}
+          currentDesignId={designId || localStorage.getItem('currentDesignId')}
+          userId={localStorage.getItem('userEmail')}
+          onSelectDesign={handleSelectDesignForComparison}
+        />
       </div>
     </>
   );

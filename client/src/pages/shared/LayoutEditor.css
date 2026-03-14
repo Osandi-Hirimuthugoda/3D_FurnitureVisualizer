@@ -38,6 +38,12 @@
   transform: translateX(-5px);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .view-3d-btn {
   background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
   border: none;
@@ -281,6 +287,22 @@
   background: var(--accent-green);
   color: white;
   border-color: var(--accent-green);
+}
+
+.compare-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  position: relative;
+}
+
+.compare-btn:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6d3a8a 100%);
+  border-color: #5568d3;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
 }
 
 .canvas-wrapper {

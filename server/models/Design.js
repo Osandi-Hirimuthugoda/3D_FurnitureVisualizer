@@ -15,6 +15,7 @@ const canvasItemSchema = new mongoose.Schema({
   price: Number,
   discount: Number,
   category: String,
+  templateName: String,
   x: { type: Number, default: 1.5 },
   y: { type: Number, default: 2.0 },
   width: { type: Number, default: 2.0 },
@@ -23,6 +24,7 @@ const canvasItemSchema = new mongoose.Schema({
 }, { _id: false });
 
 const designSchema = new mongoose.Schema({
+  name: { type: String, default: '' },
   title: { type: String, default: 'Untitled Design' },
   roomSpecs: {
     length: { type: Number, default: 5 },
