@@ -116,6 +116,67 @@ function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, ca
   );
 }
 
+function HumanFigure({ height, position }) {
+  const headSize = height * 0.12;
+  const torsoHeight = height * 0.4;
+  const legHeight = height * 0.48;
+  const armLength = height * 0.4;
+  
+  const material = new THREE.MeshStandardMaterial({ color: '#333', roughness: 0.5 });
+
+  return (
+    <group position={[position[0], height/2, position[1]]}>
+      {/* Head */}
+      <mesh position={[0, height/2 - headSize/2, 0]} castShadow>
+        <sphereGeometry args={[headSize / 2, 16, 16]} />
+        <meshStandardMaterial color="#555" />
+      </mesh>
+      
+      {/* Torso */}
+      <mesh position={[0, legHeight + torsoHeight/2 - height/2, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.05, torsoHeight]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+      
+      {/* Legs */}
+      <mesh position={[-0.08, legHeight/2 - height/2, 0]} castShadow>
+        <cylinderGeometry args={[0.02, 0.02, legHeight]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+      <mesh position={[0.08, legHeight/2 - height/2, 0]} castShadow>
+        <cylinderGeometry args={[0.02, 0.02, legHeight]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+      
+      {/* Arms */}
+      <mesh position={[-0.15, legHeight + torsoHeight - 0.1 - height/2, 0]} rotation={[0, 0, 0.2]} castShadow>
+        <cylinderGeometry args={[0.015, 0.015, armLength]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+      <mesh position={[0.15, legHeight + torsoHeight - 0.1 - height/2, 0]} rotation={[0, 0, -0.2]} castShadow>
+        <cylinderGeometry args={[0.015, 0.015, armLength]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+      
+      <Html distanceFactor={5} position={[0, height/2 + 0.2, 0]} center>
+        <div style={{ 
+          background: 'rgba(255,255,255,0.8)', 
+          color: '#333', 
+          padding: '2px 6px', 
+          borderRadius: '4px',
+          fontSize: '10px',
+          fontWeight: 'bold',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          border: '1px solid #333'
+        }}>
+          Human ({height.toFixed(2)}m)
+        </div>
+      </Html>
+    </group>
+  );
+}
+
 function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
   const cameraRef = React.useRef();
   const controlsRef = React.useRef();
@@ -158,7 +219,7 @@ function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
   );
 }
 
-function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled }) {
+function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman, humanHeight }) {
   const L = parseFloat(roomSpecs?.length) || 5;
   const W = parseFloat(roomSpecs?.width) || 4;
   const H = parseFloat(roomSpecs?.height) || 3;
@@ -278,6 +339,11 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled }) {
           shadowsEnabled={shadowsEnabled} 
         />
       ))}
+
+      {/* Human Reference */}
+      {showHuman && (
+        <HumanFigure height={humanHeight} position={[L * 0.2, W * 0.2]} />
+      )}
     </>
   );
 }
@@ -296,6 +362,8 @@ const ThreeDView = () => {
   const [shadowQuality, setShadowQuality] = useState(80);
   const [viewMode, setViewMode] = useState('3d');
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [showHuman, setShowHuman] = useState(true);
+  const [humanHeight, setHumanHeight] = useState(1.70);
 
   const handleBackTo2D = () => {
     navigate('/dashboard');
@@ -467,6 +535,51 @@ const ThreeDView = () => {
 
             <section className="control-section">
               <div className="control-header">
+                <h3>Scale Reference</h3>
+                <p className="control-subtitle">
+                  Use a human figure to judge furniture size.
+                </p>
+              </div>
+
+              <div className="control-row shadows-row">
+                <div>
+                  <span className="row-label">Show Human</span>
+                  <p className="row-description">
+                    Display a stick figure for proportion.
+                  </p>
+                </div>
+
+                <button
+                  className={`toggle-switch ${showHuman ? 'enabled' : 'disabled'
+                    }`}
+                  onClick={() => setShowHuman(!showHuman)}
+                >
+                  <span className="toggle-knob" />
+                </button>
+              </div>
+
+              <div className="control-row slider-row">
+                <div className="slider-labels">
+                  <span className="row-label">Human Height</span>
+                  <span className="slider-value">
+                    {humanHeight.toFixed(2)}m
+                  </span>
+                </div>
+
+                <input
+                  type="range"
+                  min="1.0"
+                  max="2.2"
+                  step="0.05"
+                  value={humanHeight}
+                  onChange={(e) => setHumanHeight(Number(e.target.value))}
+                  className="shadow-slider"
+                />
+              </div>
+            </section>
+
+            <section className="control-section">
+              <div className="control-header">
                 <h3>View Mode</h3>
               </div>
 
@@ -526,7 +639,14 @@ const ThreeDView = () => {
                 <Canvas shadows={shadowsEnabled} gl={{ preserveDrawingBuffer: true }}>
                   <Suspense fallback={null}>
                     <CameraController activeCamera={activeCamera} roomSpecs={roomSpecs} zoomLevel={zoomLevel} />
-                    <RoomScene roomSpecs={roomSpecs} canvasItems={canvasItems} lighting={activeLighting} shadowsEnabled={shadowsEnabled} />
+                    <RoomScene 
+                      roomSpecs={roomSpecs} 
+                      canvasItems={canvasItems} 
+                      lighting={activeLighting} 
+                      shadowsEnabled={shadowsEnabled} 
+                      showHuman={showHuman}
+                      humanHeight={humanHeight}
+                    />
                   </Suspense>
                 </Canvas>
               )}
