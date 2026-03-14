@@ -11,7 +11,7 @@ router.post('/', protect, async (req, res) => {
       title: title || 'Untitled Design',
       roomSpecs: roomSpecs || {},
       canvasItems: [],
-      userId: req.user.id
+      userId: (req.user._id || req.user.id).toString()
     });
     await design.save();
     res.status(201).json(design);
@@ -23,7 +23,15 @@ router.post('/', protect, async (req, res) => {
 // Get current user's designs
 router.get('/my-designs', protect, async (req, res) => {
   try {
-    const designs = await Design.find({ userId: req.user.id }).sort({ updatedAt: -1 });
+    const userId = req.user._id || req.user.id;
+    const userEmail = req.user.email;
+    // Match by ObjectId OR by email (legacy designs stored email as userId)
+    const designs = await Design.find({
+      $or: [
+        { userId: userId.toString() },
+        { userId: userEmail }
+      ]
+    }).sort({ updatedAt: -1 });
     res.json({ success: true, designs });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -44,13 +52,14 @@ router.get('/:id', async (req, res) => {
 // Update design (room specs and/or canvas items)
 router.put('/:id', async (req, res) => {
   try {
-    const { roomSpecs, canvasItems, title } = req.body;
+    const { roomSpecs, canvasItems, title, previewImage } = req.body;
     const design = await Design.findById(req.params.id);
     if (!design) return res.status(404).json({ error: 'Design not found' });
 
     if (title !== undefined) design.title = title;
-    if (roomSpecs) design.roomSpecs = { ...design.roomSpecs.toObject(), ...roomSpecs };
+    if (roomSpecs) design.roomSpecs = { ...(design.roomSpecs?.toObject ? design.roomSpecs.toObject() : design.roomSpecs), ...roomSpecs };
     if (canvasItems !== undefined) design.canvasItems = canvasItems;
+    if (previewImage !== undefined) design.previewImage = previewImage;
 
     await design.save();
     res.json(design);

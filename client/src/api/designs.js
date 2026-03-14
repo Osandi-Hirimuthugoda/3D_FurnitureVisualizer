@@ -17,8 +17,8 @@ export const getDesign = async (id) => {
   return data;
 };
 
-export const updateDesign = async (id, { roomSpecs, canvasItems, title }) => {
-  const { data } = await axios.put(`${API_BASE}/${id}`, { roomSpecs, canvasItems, title }, { headers: authHeader() });
+export const updateDesign = async (id, { roomSpecs, canvasItems, title, previewImage }) => {
+  const { data } = await axios.put(`${API_BASE}/${id}`, { roomSpecs, canvasItems, title, previewImage }, { headers: authHeader() });
   return data;
 };
 

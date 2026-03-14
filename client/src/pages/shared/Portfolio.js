@@ -151,6 +151,14 @@ const Portfolio = () => {
               filteredDesigns.map((design) => (
                 <div className="design-card" key={design._id}>
                   <div className="card-image-placeholder">
+                    {design.previewImage ? (
+                      <img src={design.previewImage} alt={design.title} className="design-preview-img" />
+                    ) : (
+                      <div className="design-preview-placeholder">
+                        <span>🏠</span>
+                        <p>{design.canvasItems?.length || 0} items</p>
+                      </div>
+                    )}
                     <span className="room-tag">{getRoomTag(design)}</span>
                     <button
                       className={`favourite-btn ${favourites.includes(design._id) ? 'active' : ''}`}

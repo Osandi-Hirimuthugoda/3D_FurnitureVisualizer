@@ -183,6 +183,35 @@
   display: flex;
   justify-content: flex-end;
   padding: 10px;
+  overflow: hidden;
+}
+
+.design-preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.design-preview-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #888;
+}
+
+.design-preview-placeholder span {
+  font-size: 2.5rem;
+}
+
+.design-preview-placeholder p {
+  font-size: 0.85rem;
+  margin: 0;
 }
 
 .room-tag {
