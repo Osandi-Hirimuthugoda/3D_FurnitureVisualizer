@@ -366,7 +366,7 @@ const ThreeDView = () => {
   const [humanHeight, setHumanHeight] = useState(1.70);
 
   const handleBackTo2D = () => {
-    navigate('/dashboard');
+    navigate('/room-layout');
   };
 
   const handleOpenAppearance = () => {

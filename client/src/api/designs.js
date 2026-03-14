@@ -13,12 +13,12 @@ export const createDesign = async (roomSpecs, title = 'Untitled Design') => {
 };
 
 export const getDesign = async (id) => {
-  const { data } = await axios.get(`${API_BASE}/${id}`);
+  const { data } = await axios.get(`${API_BASE}/${id}`, { headers: authHeader() });
   return data;
 };
 
 export const updateDesign = async (id, { roomSpecs, canvasItems, title }) => {
-  const { data } = await axios.put(`${API_BASE}/${id}`, { roomSpecs, canvasItems, title });
+  const { data } = await axios.put(`${API_BASE}/${id}`, { roomSpecs, canvasItems, title }, { headers: authHeader() });
   return data;
 };
 

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
-import { createDesign } from '../../api/designs';
+import TemplateSelector from './TemplateSelector';
+import { createDesign, updateDesign } from '../../api/designs';
 import './RoomSetup.css';
 
 const RoomSetup = ({ userRole = 'customer' }) => {
@@ -51,6 +52,41 @@ const RoomSetup = ({ userRole = 'customer' }) => {
       localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
       alert('Saved locally. Backend unavailable.');
     }
+  };
+
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+
+  const handleApplyTemplate = async (template) => {
+    // Scale furniture positions to fit the actual room size
+    const roomL = parseFloat(roomSpecs.length) || 5;
+    const roomW = parseFloat(roomSpecs.width) || 4;
+
+    const scaledItems = template.furniture.map((f, idx) => {
+      // Clamp positions so items stay inside the room
+      const x = Math.min(f.x, Math.max(0, roomL - (f.width || 2)));
+      const y = Math.min(f.y, Math.max(0, roomW - (f.height || 1)));
+      return {
+        ...f,
+        canvasId: Date.now() + idx,
+        x,
+        y,
+        fromTemplate: true
+      };
+    });
+
+    // Save room specs + create design + save canvas items
+    try {
+      const design = await createDesign(roomSpecs);
+      await updateDesign(design._id, { canvasItems: scaledItems });
+      localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
+      localStorage.setItem('currentDesignId', design._id);
+      localStorage.setItem('canvasItems', JSON.stringify(scaledItems));
+    } catch (err) {
+      console.error(err);
+      localStorage.setItem('roomSpecs', JSON.stringify(roomSpecs));
+      localStorage.setItem('canvasItems', JSON.stringify(scaledItems));
+    }
+    navigate('/room-layout');
   };
 
   const handleBack = () => {
@@ -186,6 +222,9 @@ const RoomSetup = ({ userRole = 'customer' }) => {
           <div className="action-buttons">
             <button className="save-btn" onClick={handleSave}>
               💾 Save
+            </button>
+            <button className="explore-templates-btn" onClick={() => setShowTemplateSelector(true)}>
+              🧩 Explore Templates
             </button>
             <button className="continue-btn" onClick={handleContinue}>
               Continue to 2D Layout →
@@ -362,6 +401,13 @@ const RoomSetup = ({ userRole = 'customer' }) => {
       </div>
 
       <Footer />
+
+      {showTemplateSelector && (
+        <TemplateSelector
+          onApplyTemplate={handleApplyTemplate}
+          onClose={() => setShowTemplateSelector(false)}
+        />
+      )}
     </div>
   );
 };
