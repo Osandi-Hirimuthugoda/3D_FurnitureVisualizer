@@ -342,23 +342,23 @@ const LayoutEditor = () => {
                 Room: {roomDimensions.length}m × {roomDimensions.width}m
               </div>
 
-              <div className="canvas-grid">
+              <div className="canvas-grid" style={{ width: `${roomDimensions.length * 50}px`, height: `${roomDimensions.width * 50}px` }}>
                 <svg
                   className="room-svg"
-                  viewBox="0 0 500 400"
+                  viewBox={`0 0 ${roomDimensions.length * 50} ${roomDimensions.width * 50}`}
                   preserveAspectRatio="none"
                 >
                   {roomShape === 'rectangle' && (
-                    <rect x="0" y="0" width="500" height="400" fill="#f5f5dc" stroke="#333" strokeWidth="3" />
+                    <rect x="0" y="0" width={roomDimensions.length * 50} height={roomDimensions.width * 50} fill="#f5f5dc" stroke="#333" strokeWidth="3" />
                   )}
 
                   {roomShape === 'square' && (
-                    <rect x="50" y="0" width="400" height="400" fill="#f5f5dc" stroke="#333" strokeWidth="3" />
+                    <rect x="0" y="0" width={roomDimensions.length * 50} height={roomDimensions.width * 50} fill="#f5f5dc" stroke="#333" strokeWidth="3" />
                   )}
 
                   {roomShape === 'l-shape' && (
                     <path
-                      d="M0 0 L500 0 L500 200 L250 200 L250 400 L0 400 Z"
+                      d={`M0 0 L${roomDimensions.length * 50} 0 L${roomDimensions.length * 50} ${roomDimensions.width * 25} L${roomDimensions.length * 25} ${roomDimensions.width * 25} L${roomDimensions.length * 25} ${roomDimensions.width * 50} L0 ${roomDimensions.width * 50} Z`}
                       fill="#f5f5dc"
                       stroke="#333"
                       strokeWidth="3"
@@ -367,7 +367,7 @@ const LayoutEditor = () => {
 
                   {roomShape === 'u-shape' && (
                     <path
-                      d="M0 0 L500 0 L500 400 L400 400 L400 160 L100 160 L100 400 L0 400 Z"
+                      d={`M0 0 L${roomDimensions.length * 50} 0 L${roomDimensions.length * 50} ${roomDimensions.width * 50} L${roomDimensions.length * 40} ${roomDimensions.width * 50} L${roomDimensions.length * 40} ${roomDimensions.width * 20} L${roomDimensions.length * 10} ${roomDimensions.width * 20} L${roomDimensions.length * 10} ${roomDimensions.width * 50} L0 ${roomDimensions.width * 50} Z`}
                       fill="#f5f5dc"
                       stroke="#333"
                       strokeWidth="3"
@@ -399,7 +399,7 @@ const LayoutEditor = () => {
 
                       setCanvasItems(canvasItems.map(i =>
                         i.canvasId === item.canvasId
-                          ? { ...i, x: Math.max(0, Math.min(10 - i.width, newX)), y: Math.max(0, Math.min(8 - i.height, newY)) }
+                          ? { ...i, x: Math.max(0, Math.min(roomDimensions.length - i.width, newX)), y: Math.max(0, Math.min(roomDimensions.width - i.height, newY)) }
                           : i
                       ));
                       if (selectedItem?.canvasId === item.canvasId) {

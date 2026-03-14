@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/admin/Sidebar';
-import { getRasterizedImage } from '../../api/designs';
+import { getDesign } from '../../api/designs';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera, useTexture, Html } from '@react-three/drei';
+import * as THREE from 'three';
 import './ThreeDView.css';
 
 const cameraOptions = [
@@ -18,12 +21,274 @@ const lightingOptions = [
   { id: 'spotlight', label: 'Dramatic Spotlight' }
 ];
 
+const colors = { sofas: '#D4A574', chairs: '#8B7355', tables: '#87CEEB', beds: '#C4B896', desks: '#708090' };
+
+function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
+  const w = parseFloat(item.width) || 1;
+  const d = parseFloat(item.height) || 1;
+  const h = (item.dimensions && item.dimensions.height) ? parseFloat(item.dimensions.height) : 0.8;
+  const centerX = (parseFloat(item.x) || 0) + w / 2;
+  const centerZ = (parseFloat(item.y) || 0) + d / 2;
+  const rot = -(parseFloat(item.rotation) || 0) * Math.PI / 180;
+  const hex = colors[item.category] || '#808080';
+
+  const isImage = item.image && typeof item.image === 'string' && (item.image.startsWith('data:image') || item.image.startsWith('http'));
+
+  if (isImage) {
+    return (
+      <TexturedFurniture 
+        mapUrl={item.image} 
+        name={item.name}
+        position={[centerX, h / 2, centerZ]} 
+        rotation={[0, rot, 0]} 
+        w={w} 
+        h={h} 
+        d={d}
+        categoryColor={hex}
+      />
+    );
+  }
+
+  return (
+    <mesh key={idx} position={[centerX, h / 2, centerZ]} rotation={[0, rot, 0]} castShadow receiveShadow>
+      <boxGeometry args={[w, h, d]} />
+      <meshLambertMaterial color={hex} transparent opacity={0.7} />
+      <Html distanceFactor={5} position={[0, h/2 + 0.2, 0]} center>
+        <div style={{ 
+          background: 'rgba(0,0,0,0.6)', 
+          color: 'white', 
+          padding: '2px 8px', 
+          borderRadius: '4px',
+          fontSize: '12px',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none'
+        }}>
+          {item.name}
+        </div>
+      </Html>
+    </mesh>
+  );
+}
+
+function TexturedFurniture({ mapUrl, name, position, rotation, w, h, d, categoryColor }) {
+  // Defensive check to avoid useTexture hanging on wrong type
+  if (typeof mapUrl !== 'string') return null;
+  
+  return (
+    <Suspense fallback={<mesh position={position}><boxGeometry args={[w, h, d]} /><meshBasicMaterial color="#ccc" wireframe /></mesh>}>
+      <ActualTexturedFurniture mapUrl={mapUrl} name={name} position={position} rotation={rotation} w={w} h={h} d={d} categoryColor={categoryColor} />
+    </Suspense>
+  );
+}
+
+function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, categoryColor }) {
+  const texture = useTexture(mapUrl);
+  
+  // Create 6 materials for the box
+  // 0:Right, 1:Left, 2:Top, 3:Bottom, 4:Front, 5:Back
+  const sideMaterial = new THREE.MeshStandardMaterial({ color: categoryColor, roughness: 0.8 });
+  const faceMaterial = new THREE.MeshStandardMaterial({ map: texture, transparent: true, alphaTest: 0.3 });
+  const materials = [sideMaterial, sideMaterial, sideMaterial, sideMaterial, faceMaterial, faceMaterial];
+
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh castShadow receiveShadow material={materials}>
+        <boxGeometry args={[w, h, d]} />
+      </mesh>
+      
+      {/* Label above the object */}
+      <Html distanceFactor={5} position={[0, h / 2 + 0.3, 0]} center>
+        <div style={{ 
+          background: 'rgba(0,0,0,0.7)', 
+          color: 'white', 
+          padding: '2px 10px', 
+          borderRadius: '4px',
+          fontSize: '11px',
+          fontWeight: 'bold',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+        }}>
+          {name}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
+  const cameraRef = React.useRef();
+  const controlsRef = React.useRef();
+
+  const L = parseFloat(roomSpecs?.length) || 5;
+  const W = parseFloat(roomSpecs?.width) || 4;
+  const H = parseFloat(roomSpecs?.height) || 3;
+
+  React.useEffect(() => {
+    if (!cameraRef.current || !controlsRef.current) return;
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+
+    let targetPos = [L * 0.8, H * 1.2, W * 1.2];
+    let lookAt = [L/2, H/2, W/2];
+
+    if (activeCamera === 'front') {
+      targetPos = [L / 2, H / 2, W * 1.8];
+    } else if (activeCamera === 'side') {
+      targetPos = [L * 1.8, H / 2, W / 2];
+    } else if (activeCamera === 'top') {
+      targetPos = [L / 2, Math.max(L, W) * 1.5, W / 2 + 0.1];
+      lookAt = [L/2, 0, W/2];
+    }
+
+    camera.position.set(...targetPos);
+    camera.zoom = zoomLevel;
+    camera.updateProjectionMatrix();
+
+    controls.target.set(...lookAt);
+    controls.update();
+
+  }, [activeCamera, roomSpecs, L, W, H, zoomLevel]);
+
+  return (
+    <>
+      <PerspectiveCamera ref={cameraRef} makeDefault fov={45} near={0.1} far={100} />
+      <OrbitControls ref={controlsRef} enableDamping dampingFactor={0.05} />
+    </>
+  );
+}
+
+function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled }) {
+  const L = parseFloat(roomSpecs?.length) || 5;
+  const W = parseFloat(roomSpecs?.width) || 4;
+  const H = parseFloat(roomSpecs?.height) || 3;
+  const wallColor = roomSpecs?.wallColor || '#F5F5DC';
+  const floorColor = roomSpecs?.floorType === 'carpet' ? '#8B7355' : '#6B5344';
+
+  const roomShapePoints = React.useMemo(() => {
+    const pts = [];
+    const shape = roomSpecs?.shape || 'rectangle';
+    if (shape === 'l-shape') {
+      pts.push(
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(L, 0),
+        new THREE.Vector2(L, W * 0.5),
+        new THREE.Vector2(L * 0.5, W * 0.5),
+        new THREE.Vector2(L * 0.5, W),
+        new THREE.Vector2(0, W)
+      );
+    } else if (shape === 'u-shape') {
+      pts.push(
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(L, 0),
+        new THREE.Vector2(L, W),
+        new THREE.Vector2(L * 0.8, W),
+        new THREE.Vector2(L * 0.8, W * 0.4),
+        new THREE.Vector2(L * 0.2, W * 0.4),
+        new THREE.Vector2(L * 0.2, W),
+        new THREE.Vector2(0, W)
+      );
+    } else {
+      pts.push(
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(L, 0),
+        new THREE.Vector2(L, W),
+        new THREE.Vector2(0, W)
+      );
+    }
+    return pts;
+  }, [roomSpecs?.shape, L, W]);
+
+  const floorShape = React.useMemo(() => {
+    const s = new THREE.Shape();
+    if (roomShapePoints.length > 0) {
+      s.moveTo(roomShapePoints[0].x, roomShapePoints[0].y);
+      for(let i=1; i<roomShapePoints.length; i++) {
+        s.lineTo(roomShapePoints[i].x, roomShapePoints[i].y);
+      }
+      s.lineTo(roomShapePoints[0].x, roomShapePoints[0].y);
+    }
+    return s;
+  }, [roomShapePoints]);
+
+  const wallSegments = React.useMemo(() => {
+    const segs = [];
+    for(let i=0; i<roomShapePoints.length; i++) {
+      const p1 = roomShapePoints[i];
+      const p2 = roomShapePoints[(i + 1) % roomShapePoints.length];
+      
+      // Keep front open
+      if (Math.abs(p1.y - W) < 0.01 && Math.abs(p2.y - W) < 0.01) continue;
+
+      const dx = p2.x - p1.x;
+      const dz = p2.y - p1.y;
+      const length = Math.sqrt(dx*dx + dz*dz);
+      const cx = (p1.x + p2.x) / 2;
+      const cz = (p1.y + p2.y) / 2;
+      const rotY = Math.atan2(-dz, dx);
+      
+      segs.push({ cx, cz, length, rotY, key: `wall-${i}` });
+    }
+    return segs;
+  }, [roomShapePoints, W]);
+
+  let bkgColor = '#0a0a0a', ambColor = '#404040', ambInt = 0.5, dirColor = '#ffffff', dirInt = 0.8;
+  if (lighting === 'day') {
+    bkgColor = '#e3f2fd'; ambInt = 0.8; dirInt = 1.0;
+  } else if (lighting === 'evening') {
+    bkgColor = '#2d1b15'; ambColor = '#503030'; ambInt = 0.6; dirColor = '#ff9955'; dirInt = 1.0;
+  } else if (lighting === 'cool') {
+    bkgColor = '#0f172a'; ambColor = '#406080'; ambInt = 0.7; dirColor = '#ddedff'; dirInt = 0.9;
+  } else if (lighting === 'spotlight') {
+    bkgColor = '#020617'; ambInt = 0.2; dirInt = 1.5;
+  }
+
+  return (
+    <>
+      <color attach="background" args={[bkgColor]} />
+      <ambientLight color={ambColor} intensity={ambInt} />
+      <directionalLight 
+        color={dirColor} 
+        intensity={dirInt} 
+        position={[L/2, H * 2, W/2]} 
+        castShadow={shadowsEnabled} 
+        shadow-mapSize={[1024, 1024]}
+      />
+
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+        <extrudeGeometry args={[floorShape, { depth: 0.05, bevelEnabled: false }]} />
+        <meshLambertMaterial color={floorColor} />
+      </mesh>
+
+      {/* Walls */}
+      {wallSegments.map((ws) => (
+        <mesh key={ws.key} position={[ws.cx, H/2, ws.cz]} rotation={[0, ws.rotY, 0]} receiveShadow>
+          <boxGeometry args={[ws.length, H, 0.1]} />
+          <meshLambertMaterial color={wallColor} />
+        </mesh>
+      ))}
+
+      {/* Furniture */}
+      {canvasItems?.map((item, idx) => (
+        <FurnitureItem 
+          key={item.canvasId || idx} 
+          item={item} 
+          idx={idx} 
+          colors={colors} 
+          shadowsEnabled={shadowsEnabled} 
+        />
+      ))}
+    </>
+  );
+}
+
 const ThreeDView = () => {
   const navigate = useNavigate();
   const [designId, setDesignId] = useState(null);
-  const [rasterizedUrl, setRasterizedUrl] = useState(null);
   const [rasterizeError, setRasterizeError] = useState(null);
   const [isRasterizing, setIsRasterizing] = useState(false);
+  const [roomSpecs, setRoomSpecs] = useState(null);
+  const [canvasItems, setCanvasItems] = useState([]);
 
   const [activeCamera, setActiveCamera] = useState('perspective');
   const [activeLighting, setActiveLighting] = useState('day');
@@ -40,41 +305,33 @@ const ThreeDView = () => {
     navigate('/appearance');
   };
 
-  const fetchRasterized = useCallback(async () => {
+  const fetchDesign = useCallback(async () => {
     const id = designId || localStorage.getItem('currentDesignId');
     if (!id) {
-      setRasterizedUrl(null);
       setRasterizeError('No design loaded. Go to Room Setup and continue to 2D Layout first.');
       return;
     }
     setIsRasterizing(true);
     setRasterizeError(null);
     try {
-      const url = await getRasterizedImage(id, {
-        camera: activeCamera,
-        lighting: activeLighting,
-        shadows: shadowsEnabled
-      });
-      setRasterizedUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return url;
-      });
+      const design = await getDesign(id);
+      setRoomSpecs(design.roomSpecs || {});
+      setCanvasItems(design.canvasItems || []);
     } catch (err) {
       console.error(err);
-      setRasterizeError(err.response?.data?.error || 'Failed to render 3D view. Is the server running?');
-      setRasterizedUrl(null);
+      setRasterizeError('Failed to load design mapping.');
     } finally {
       setIsRasterizing(false);
     }
-  }, [designId, activeCamera, activeLighting, shadowsEnabled]);
+  }, [designId]);
 
   useEffect(() => {
     setDesignId(localStorage.getItem('currentDesignId'));
   }, []);
 
   useEffect(() => {
-    fetchRasterized();
-  }, [fetchRasterized]);
+    fetchDesign();
+  }, [fetchDesign]);
 
   const handleZoomChange = (direction) => {
     setZoomLevel((current) => {
@@ -256,52 +513,22 @@ const ThreeDView = () => {
               {isRasterizing && (
                 <div className="rasterize-loading">
                   <div className="rasterize-spinner" />
-                  <p>Rendering 3D view...</p>
+                  <p>Loading 3D experience...</p>
                 </div>
               )}
               {rasterizeError && !isRasterizing && (
                 <div className="rasterize-error">
                   <p>{rasterizeError}</p>
-                  <button className="retry-btn" onClick={fetchRasterized}>Retry</button>
+                  <button className="retry-btn" onClick={fetchDesign}>Retry</button>
                 </div>
               )}
-              {rasterizedUrl && !isRasterizing && (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                  <img
-                    src={rasterizedUrl}
-                    alt="3D room visualization"
-                    className="rasterized-image"
-                    style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center', width: '100%', height: '100%', objectFit: 'contain' }}
-                  />
-                </div>
-              )}
-              {!rasterizedUrl && !rasterizeError && !isRasterizing && (
-                <div className={`room-scene fallback ${activeLighting}`} style={{ transform: `scale(${zoomLevel})` }}>
-                  <div className="room-back-wall" />
-                  <div className="room-side-wall left" />
-                  <div className="room-side-wall right" />
-                  <div className="room-floor" />
-                  <div className="room-window">
-                    <div className="window-pane" />
-                    <div className="window-pane" />
-                    <div className="window-pane" />
-                    <div className="window-pane" />
-                  </div>
-                  <div className="room-sofa">
-                    <div className="sofa-back" />
-                    <div className="sofa-seat" />
-                  </div>
-                  <div className="room-table">
-                    <div className="table-top" />
-                    <div className="table-leg" />
-                    <div className="table-leg right" />
-                  </div>
-                  <div className="room-plant">
-                    <div className="plant-pot" />
-                    <div className="plant-leaf" />
-                    <div className="plant-leaf right" />
-                  </div>
-                </div>
+              {!isRasterizing && !rasterizeError && roomSpecs && (
+                <Canvas shadows={shadowsEnabled} gl={{ preserveDrawingBuffer: true }}>
+                  <Suspense fallback={null}>
+                    <CameraController activeCamera={activeCamera} roomSpecs={roomSpecs} zoomLevel={zoomLevel} />
+                    <RoomScene roomSpecs={roomSpecs} canvasItems={canvasItems} lighting={activeLighting} shadowsEnabled={shadowsEnabled} />
+                  </Suspense>
+                </Canvas>
               )}
             </div>
 
