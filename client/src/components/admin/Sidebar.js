@@ -34,8 +34,11 @@ const Sidebar = () => {
   return (
     <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
-        <span className="sidebar-icon">{panelIcon}</span>
-        {!isCollapsed && <h2>{panelTitle}</h2>}
+        <img
+          src={process.env.PUBLIC_URL + '/logo.png'}
+          alt="Living Trend"
+          style={{ height: isCollapsed ? '30px' : '45px', filter: 'brightness(0) invert(1)', transition: 'height 0.2s' }}
+        />
         <button 
           className="sidebar-toggle"
           onClick={() => setIsCollapsed(!isCollapsed)}

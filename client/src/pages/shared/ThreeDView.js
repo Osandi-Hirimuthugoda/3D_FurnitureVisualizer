@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/admin/Sidebar';
+import Navbar from '../../components/shared/Navbar';
 import { getDesign } from '../../api/designs';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, useTexture, Html } from '@react-three/drei';
@@ -375,8 +375,22 @@ const ThreeDView = () => {
 
   const fetchDesign = useCallback(async () => {
     const id = designId || localStorage.getItem('currentDesignId');
+
+    // Always try to load canvasItems from localStorage first (covers template items not yet saved)
+    const localItems = localStorage.getItem('canvasItems');
+    if (localItems) {
+      try { setCanvasItems(JSON.parse(localItems)); } catch {}
+    }
+
+    const localSpecs = localStorage.getItem('roomSpecs');
+    if (localSpecs) {
+      try { setRoomSpecs(JSON.parse(localSpecs)); } catch {}
+    }
+
     if (!id) {
-      setRasterizeError('No design loaded. Go to Room Setup and continue to 2D Layout first.');
+      if (!localSpecs) {
+        setRasterizeError('No design loaded. Go to Room Setup and continue to 2D Layout first.');
+      }
       return;
     }
     setIsRasterizing(true);
@@ -384,10 +398,14 @@ const ThreeDView = () => {
     try {
       const design = await getDesign(id);
       setRoomSpecs(design.roomSpecs || {});
-      setCanvasItems(design.canvasItems || []);
+      // Prefer backend canvasItems if they exist, else keep localStorage ones
+      if (design.canvasItems && design.canvasItems.length > 0) {
+        setCanvasItems(design.canvasItems);
+      }
     } catch (err) {
       console.error(err);
-      setRasterizeError('Failed to load design mapping.');
+      // Don't show error if we already have local data
+      if (!localSpecs) setRasterizeError('Failed to load design.');
     } finally {
       setIsRasterizing(false);
     }
@@ -417,10 +435,12 @@ const ThreeDView = () => {
   const shadowLabel =
     shadowQuality >= 75 ? 'High' : shadowQuality >= 45 ? 'Medium' : 'Low';
 
+  const userRole = localStorage.getItem('userRole');
+
   return (
     <>
-      <Sidebar />
-      <div className="three-d-page with-sidebar">
+      <Navbar userRole={userRole} />
+      <div className="three-d-page">
         <header className="three-d-header">
           <button className="back-btn" onClick={handleBackTo2D}>
             ← Back to 2D Layout

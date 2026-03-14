@@ -143,46 +143,22 @@ const LayoutEditor = () => {
   const handleApplyTemplate = (template) => {
     if (!template || !template.furniture) return;
 
-    const getFurnitureEmoji = (type) => {
-      const t = type.toLowerCase();
-
-      if (t.includes('sofa')) return '🛋️';
-      if (t.includes('chair')) return '🪑';
-      if (t.includes('table')) return '⛩️';
-      if (t.includes('wardrobe')) return '🚪';
-      if (t.includes('bed')) return '🛏️';
-      if (t.includes('desk')) return '🖥️';
-      if (t.includes('lamp')) return '💡';
-      if (t.includes('cabinet')) return '🗄️';
-      if (t.includes('nightstand')) return '🗄️';
-      if (t.includes('bookshelf')) return '📚';
-
-      return '🪑';
-    };
-
-    const newItems = template.furniture.map((f, idx) => {
-      const x = f.position && f.position.length >= 1 ? f.position[0] : 0;
-      const y = f.position && f.position.length >= 3
-        ? f.position[2]
-        : (f.position && f.position.length >= 2 ? f.position[1] : 0);
-
-      const formattedName = f.type.replace(/([A-Z])/g, ' $1');
-
-      return {
-        canvasId: Date.now() + idx,
-        name: formattedName,
-        x,
-        y,
-
-        // slightly larger size so text fits
-        width: Math.max(2.2, formattedName.length * 0.15),
-        height: 1.4,
-
-        rotation: f.rotation || 0,
-        image: getFurnitureEmoji(f.type), //correct emoji
-        fromTemplate: true
-      };
-    });
+    const newItems = template.furniture.map((f, idx) => ({
+      canvasId: Date.now() + idx,
+      id: f.id,
+      name: f.name,
+      image: f.image,
+      price: f.price,
+      discount: f.discount,
+      dimensions: f.dimensions,
+      category: f.category,
+      x: f.x || 0,
+      y: f.y || 0,
+      width: f.width || 2,
+      height: f.height || 1,
+      rotation: f.rotation || 0,
+      fromTemplate: true
+    }));
 
     const remainingItems = canvasItems.filter(item => !item.fromTemplate);
 
@@ -209,6 +185,8 @@ const LayoutEditor = () => {
             className="view-3d-btn"
             onClick={async () => {
               let id = designId || localStorage.getItem('currentDesignId');
+              // Save current canvas items to localStorage so 3D view can read them
+              localStorage.setItem('canvasItems', JSON.stringify(canvasItems));
               if (!id) {
                 const savedSpecs = localStorage.getItem('roomSpecs');
                 if (savedSpecs) {
@@ -565,7 +543,6 @@ const LayoutEditor = () => {
         </div>
         {showTemplateSelector && (
           <TemplateSelector
-            roomShape={roomShape}
             onApplyTemplate={handleApplyTemplate}
             onClose={() => setShowTemplateSelector(false)}
           />

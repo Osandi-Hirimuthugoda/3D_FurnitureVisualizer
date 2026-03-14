@@ -6,7 +6,11 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-section">
-          <h3>🪑 3D Furniture Visualizer</h3>
+          <img
+            src={process.env.PUBLIC_URL + '/logo.png'}
+            alt="Living Trend"
+            style={{ height: '60px', marginBottom: '0.5rem' }}
+          />
           <p>Transform your space with our innovative 3D furniture visualization technology.</p>
         </div>
         
@@ -42,7 +46,7 @@ const Footer = () => {
       </div>
       
       <div className="footer-bottom">
-        <p>&copy; 2024 3D Furniture Visualizer. All rights reserved.</p>
+        <p>&copy; 2024 Living Trend. All rights reserved.</p>
       </div>
     </footer>
   );

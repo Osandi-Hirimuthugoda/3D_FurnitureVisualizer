@@ -103,7 +103,11 @@ const Login = () => {
       <div className="login-container">
         <div className="login-left">
           <div className="brand-section">
-            <h1>🪑 3D Furniture Visualizer</h1>
+            <img
+              src={process.env.PUBLIC_URL + '/logo.png'}
+              alt="Living Trend"
+              style={{ height: '140px', marginBottom: '1rem' }}
+            />
             <p>Design your dream space with our innovative 3D visualization technology</p>
           </div>
         </div>

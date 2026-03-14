@@ -4,11 +4,7 @@
   flex-direction: column;
   background: radial-gradient(circle at top, #111827 0%, #020617 55%, #000000 100%);
   color: #e5e7eb;
-}
-
-.three-d-page.with-sidebar {
-  margin-left: 260px;
-  width: calc(100% - 260px);
+  padding-top: 70px;
 }
 
 .three-d-header {

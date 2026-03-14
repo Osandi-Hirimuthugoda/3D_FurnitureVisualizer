@@ -42,8 +42,11 @@ const Home = () => {
       <nav className="home-navbar">
         <div className="nav-container">
           <div className="nav-brand">
-            <span className="brand-icon">🪑</span>
-            <span className="brand-text">3D Furniture Visualizer</span>
+            <img
+              src={process.env.PUBLIC_URL + '/logo.png'}
+              alt="Living Trend"
+              style={{ height: '50px', filter: 'brightness(0) invert(1)' }}
+            />
           </div>
           <div className="nav-actions">
             {isAuthenticated ? (
@@ -67,7 +70,7 @@ const Home = () => {
       
       <section className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">Welcome to 3D Furniture Visualizer</h1>
+          <h1 className="hero-title">Welcome to Living Trend</h1>
           <p className="hero-subtitle">
             Transform your space with our innovative 3D furniture visualization technology. 
             Design your dream room before you buy.
@@ -334,7 +337,7 @@ const Home = () => {
       </section>
 
       <footer className="home-footer">
-        <p>&copy; 2024 3D Furniture Visualizer. All rights reserved.</p>
+        <p>&copy; 2024 Living Trend. All rights reserved.</p>
       </footer>
     </div>
   );
