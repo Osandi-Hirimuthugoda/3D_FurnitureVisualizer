@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Design = require('../models/Design');
-const { rasterizeDesign } = require('../services/rasterizeService');
 const { protect } = require('../middleware/auth');
 
 // Create a new design (from Room Setup)
@@ -90,6 +89,13 @@ router.post('/:id/rasterize', async (req, res) => {
   try {
     const design = await Design.findById(req.params.id);
     if (!design) return res.status(404).json({ error: 'Design not found' });
+
+    let rasterizeDesign;
+    try {
+      rasterizeDesign = require('../services/rasterizeService').rasterizeDesign;
+    } catch (e) {
+      return res.status(503).json({ error: 'Rasterization service unavailable (puppeteer not installed)' });
+    }
 
     const { camera = 'perspective', lighting = 'day', shadows = true } = req.body;
     const imageBuffer = await rasterizeDesign(design, { camera, lighting, shadows });

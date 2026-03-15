@@ -157,6 +157,17 @@ const DesignComparison = () => {
           </button>
           <h1>Design Comparison</h1>
           <div className="header-spacer"></div>
+          <button
+            className="compare-3d-btn"
+            onClick={() => navigate('/design-comparison-3d', {
+              state: {
+                designA: location.state?.designA,
+                designB: location.state?.designB
+              }
+            })}
+          >
+            👁️ View in 3D
+          </button>
         </header>
 
         <div className="design-comparison-container">

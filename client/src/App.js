@@ -15,6 +15,7 @@ import Appearance from './pages/shared/Appearance';
 import Portfolio from './pages/shared/Portfolio';
 import Settings from './pages/shared/Settings';
 import DesignComparison from './pages/shared/DesignComparison';
+import DesignComparison3D from './pages/shared/DesignComparison3D';
 
 // Customer Pages
 import Home from './pages/customer/Home';
@@ -90,6 +91,11 @@ function App() {
             <ProtectedRoute>
               <DesignComparison />
             </ProtectedRoute>
+          } />
+          <Route path="/design-comparison-3d" element={
+          <ProtectedRoute>
+            <DesignComparison3D />
+          </ProtectedRoute>
           } />
           {/* Admin Only Routes */}
           <Route path="/admin/dashboard" element={

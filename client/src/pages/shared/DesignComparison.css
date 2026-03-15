@@ -40,6 +40,23 @@
   flex: 1;
 }
 
+.compare-3d-btn {
+  background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.compare-3d-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
 .design-comparison-page .design-comparison-container {
   display: grid;
   grid-template-columns: 1fr auto 1fr;

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const canvasItemSchema = new mongoose.Schema({
-  canvasId: { type: Number, required: true },
-  id: { type: String, required: true },
-  name: { type: String, required: true },
+  canvasId: { type: Number },
+  id: { type: String },
+  name: { type: String },
   size: String,
   type: String,
   image: String,

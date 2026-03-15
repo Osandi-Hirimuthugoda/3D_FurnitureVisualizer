@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import { getDesign } from '../../api/designs';
 import { Canvas } from '@react-three/fiber';
@@ -11,7 +11,7 @@ const cameraOptions = [
   { id: 'perspective', label: 'Perspective View', description: 'Immersive angled view of the entire room.' },
   { id: 'front', label: 'Front View', description: 'Look straight at the main wall.' },
   { id: 'side', label: 'Side View', description: 'Focus on the side wall and furniture depth.' },
-  { id: 'top', label: 'Top View', description: 'Bird\u2019s eye view of your layout.' }
+  { id: 'top', label: 'Top View', description: 'Bird’s eye view of your layout.' }
 ];
 
 const lightingOptions = [
@@ -36,13 +36,13 @@ function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
 
   if (isImage) {
     return (
-      <TexturedFurniture 
-        mapUrl={item.image} 
+      <TexturedFurniture
+        mapUrl={item.image}
         name={item.name}
-        position={[centerX, h / 2, centerZ]} 
-        rotation={[0, rot, 0]} 
-        w={w} 
-        h={h} 
+        position={[centerX, h / 2, centerZ]}
+        rotation={[0, rot, 0]}
+        w={w}
+        h={h}
         d={d}
         categoryColor={hex}
       />
@@ -53,11 +53,11 @@ function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
     <mesh key={idx} position={[centerX, h / 2, centerZ]} rotation={[0, rot, 0]} castShadow receiveShadow>
       <boxGeometry args={[w, h, d]} />
       <meshLambertMaterial color={hex} transparent opacity={0.7} />
-      <Html distanceFactor={5} position={[0, h/2 + 0.2, 0]} center>
-        <div style={{ 
-          background: 'rgba(0,0,0,0.6)', 
-          color: 'white', 
-          padding: '2px 8px', 
+      <Html distanceFactor={5} position={[0, h / 2 + 0.2, 0]} center>
+        <div style={{
+          background: 'rgba(0,0,0,0.6)',
+          color: 'white',
+          padding: '2px 8px',
           borderRadius: '4px',
           fontSize: '12px',
           whiteSpace: 'nowrap',
@@ -71,9 +71,8 @@ function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
 }
 
 function TexturedFurniture({ mapUrl, name, position, rotation, w, h, d, categoryColor }) {
-  // Defensive check to avoid useTexture hanging on wrong type
   if (typeof mapUrl !== 'string') return null;
-  
+
   return (
     <Suspense fallback={<mesh position={position}><boxGeometry args={[w, h, d]} /><meshBasicMaterial color="#ccc" wireframe /></mesh>}>
       <ActualTexturedFurniture mapUrl={mapUrl} name={name} position={position} rotation={rotation} w={w} h={h} d={d} categoryColor={categoryColor} />
@@ -83,9 +82,7 @@ function TexturedFurniture({ mapUrl, name, position, rotation, w, h, d, category
 
 function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, categoryColor }) {
   const texture = useTexture(mapUrl);
-  
-  // Create 6 materials for the box
-  // 0:Right, 1:Left, 2:Top, 3:Bottom, 4:Front, 5:Back
+
   const sideMaterial = new THREE.MeshStandardMaterial({ color: categoryColor, roughness: 0.8 });
   const faceMaterial = new THREE.MeshStandardMaterial({ map: texture, transparent: true, alphaTest: 0.3 });
   const materials = [sideMaterial, sideMaterial, sideMaterial, sideMaterial, faceMaterial, faceMaterial];
@@ -95,13 +92,12 @@ function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, ca
       <mesh castShadow receiveShadow material={materials}>
         <boxGeometry args={[w, h, d]} />
       </mesh>
-      
-      {/* Label above the object */}
+
       <Html distanceFactor={5} position={[0, h / 2 + 0.3, 0]} center>
-        <div style={{ 
-          background: 'rgba(0,0,0,0.7)', 
-          color: 'white', 
-          padding: '2px 10px', 
+        <div style={{
+          background: 'rgba(0,0,0,0.7)',
+          color: 'white',
+          padding: '2px 10px',
           borderRadius: '4px',
           fontSize: '11px',
           fontWeight: 'bold',
@@ -121,48 +117,44 @@ function HumanFigure({ height, position }) {
   const torsoHeight = height * 0.4;
   const legHeight = height * 0.48;
   const armLength = height * 0.4;
-  
+
   const material = new THREE.MeshStandardMaterial({ color: '#333', roughness: 0.5 });
 
   return (
-    <group position={[position[0], height/2, position[1]]}>
-      {/* Head */}
-      <mesh position={[0, height/2 - headSize/2, 0]} castShadow>
+    <group position={[position[0], height / 2, position[1]]}>
+      <mesh position={[0, height / 2 - headSize / 2, 0]} castShadow>
         <sphereGeometry args={[headSize / 2, 16, 16]} />
         <meshStandardMaterial color="#555" />
       </mesh>
-      
-      {/* Torso */}
-      <mesh position={[0, legHeight + torsoHeight/2 - height/2, 0]} castShadow>
+
+      <mesh position={[0, legHeight + torsoHeight / 2 - height / 2, 0]} castShadow>
         <cylinderGeometry args={[0.05, 0.05, torsoHeight]} />
         <primitive object={material} attach="material" />
       </mesh>
-      
-      {/* Legs */}
-      <mesh position={[-0.08, legHeight/2 - height/2, 0]} castShadow>
+
+      <mesh position={[-0.08, legHeight / 2 - height / 2, 0]} castShadow>
         <cylinderGeometry args={[0.02, 0.02, legHeight]} />
         <primitive object={material} attach="material" />
       </mesh>
-      <mesh position={[0.08, legHeight/2 - height/2, 0]} castShadow>
+      <mesh position={[0.08, legHeight / 2 - height / 2, 0]} castShadow>
         <cylinderGeometry args={[0.02, 0.02, legHeight]} />
         <primitive object={material} attach="material" />
       </mesh>
-      
-      {/* Arms */}
-      <mesh position={[-0.15, legHeight + torsoHeight - 0.1 - height/2, 0]} rotation={[0, 0, 0.2]} castShadow>
+
+      <mesh position={[-0.15, legHeight + torsoHeight - 0.1 - height / 2, 0]} rotation={[0, 0, 0.2]} castShadow>
         <cylinderGeometry args={[0.015, 0.015, armLength]} />
         <primitive object={material} attach="material" />
       </mesh>
-      <mesh position={[0.15, legHeight + torsoHeight - 0.1 - height/2, 0]} rotation={[0, 0, -0.2]} castShadow>
+      <mesh position={[0.15, legHeight + torsoHeight - 0.1 - height / 2, 0]} rotation={[0, 0, -0.2]} castShadow>
         <cylinderGeometry args={[0.015, 0.015, armLength]} />
         <primitive object={material} attach="material" />
       </mesh>
-      
-      <Html distanceFactor={5} position={[0, height/2 + 0.2, 0]} center>
-        <div style={{ 
-          background: 'rgba(255,255,255,0.8)', 
-          color: '#333', 
-          padding: '2px 6px', 
+
+      <Html distanceFactor={5} position={[0, height / 2 + 0.2, 0]} center>
+        <div style={{
+          background: 'rgba(255,255,255,0.8)',
+          color: '#333',
+          padding: '2px 6px',
           borderRadius: '4px',
           fontSize: '10px',
           fontWeight: 'bold',
@@ -191,7 +183,7 @@ function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
     const controls = controlsRef.current;
 
     let targetPos = [L * 0.8, H * 1.2, W * 1.2];
-    let lookAt = [L/2, H/2, W/2];
+    let lookAt = [L / 2, H / 2, W / 2];
 
     if (activeCamera === 'front') {
       targetPos = [L / 2, H / 2, W * 1.8];
@@ -199,7 +191,7 @@ function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
       targetPos = [L * 1.8, H / 2, W / 2];
     } else if (activeCamera === 'top') {
       targetPos = [L / 2, Math.max(L, W) * 1.5, W / 2 + 0.1];
-      lookAt = [L/2, 0, W/2];
+      lookAt = [L / 2, 0, W / 2];
     }
 
     camera.position.set(...targetPos);
@@ -264,7 +256,7 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
     const s = new THREE.Shape();
     if (roomShapePoints.length > 0) {
       s.moveTo(roomShapePoints[0].x, roomShapePoints[0].y);
-      for(let i=1; i<roomShapePoints.length; i++) {
+      for (let i = 1; i < roomShapePoints.length; i++) {
         s.lineTo(roomShapePoints[i].x, roomShapePoints[i].y);
       }
       s.lineTo(roomShapePoints[0].x, roomShapePoints[0].y);
@@ -274,20 +266,19 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
 
   const wallSegments = React.useMemo(() => {
     const segs = [];
-    for(let i=0; i<roomShapePoints.length; i++) {
+    for (let i = 0; i < roomShapePoints.length; i++) {
       const p1 = roomShapePoints[i];
       const p2 = roomShapePoints[(i + 1) % roomShapePoints.length];
-      
-      // Keep front open
+
       if (Math.abs(p1.y - W) < 0.01 && Math.abs(p2.y - W) < 0.01) continue;
 
       const dx = p2.x - p1.x;
       const dz = p2.y - p1.y;
-      const length = Math.sqrt(dx*dx + dz*dz);
+      const length = Math.sqrt(dx * dx + dz * dz);
       const cx = (p1.x + p2.x) / 2;
       const cz = (p1.y + p2.y) / 2;
       const rotY = Math.atan2(-dz, dx);
-      
+
       segs.push({ cx, cz, length, rotY, key: `wall-${i}` });
     }
     return segs;
@@ -308,11 +299,11 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
     <>
       <color attach="background" args={[bkgColor]} />
       <ambientLight color={ambColor} intensity={ambInt} />
-      <directionalLight 
-        color={dirColor} 
-        intensity={dirInt} 
-        position={[L/2, H * 2, W/2]} 
-        castShadow={shadowsEnabled} 
+      <directionalLight
+        color={dirColor}
+        intensity={dirInt}
+        position={[L / 2, H * 2, W / 2]}
+        castShadow={shadowsEnabled}
         shadow-mapSize={[1024, 1024]}
       />
 
@@ -321,26 +312,23 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
         <meshLambertMaterial color={floorColor} />
       </mesh>
 
-      {/* Walls */}
       {wallSegments.map((ws) => (
-        <mesh key={ws.key} position={[ws.cx, H/2, ws.cz]} rotation={[0, ws.rotY, 0]} receiveShadow>
+        <mesh key={ws.key} position={[ws.cx, H / 2, ws.cz]} rotation={[0, ws.rotY, 0]} receiveShadow>
           <boxGeometry args={[ws.length, H, 0.1]} />
           <meshLambertMaterial color={wallColor} />
         </mesh>
       ))}
 
-      {/* Furniture */}
       {canvasItems?.map((item, idx) => (
-        <FurnitureItem 
-          key={item.canvasId || idx} 
-          item={item} 
-          idx={idx} 
-          colors={colors} 
-          shadowsEnabled={shadowsEnabled} 
+        <FurnitureItem
+          key={item.canvasId || idx}
+          item={item}
+          idx={idx}
+          colors={colors}
+          shadowsEnabled={shadowsEnabled}
         />
       ))}
 
-      {/* Human Reference */}
       {showHuman && (
         <HumanFigure height={humanHeight} position={[L * 0.2, W * 0.2]} />
       )}
@@ -348,76 +336,56 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
   );
 }
 
-const ThreeDView = () => {
+const DesignComparison3D = () => {
   const navigate = useNavigate();
-  const [designId, setDesignId] = useState(null);
-  const [rasterizeError, setRasterizeError] = useState(null);
-  const [isRasterizing, setIsRasterizing] = useState(false);
-  const [roomSpecs, setRoomSpecs] = useState(null);
-  const [canvasItems, setCanvasItems] = useState([]);
+  const location = useLocation();
+  const userRole = localStorage.getItem('userRole');
+
+  const [layoutA, setLayoutA] = useState(null);
+  const [layoutB, setLayoutB] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [activeCamera, setActiveCamera] = useState('perspective');
   const [activeLighting, setActiveLighting] = useState('day');
   const [shadowsEnabled, setShadowsEnabled] = useState(true);
   const [shadowQuality, setShadowQuality] = useState(80);
-  const [viewMode, setViewMode] = useState('3d');
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showHuman, setShowHuman] = useState(true);
-  const [humanHeight, setHumanHeight] = useState(1.70);
+  const [humanHeight, setHumanHeight] = useState(1.7);
 
-  const handleBackTo2D = () => {
-    navigate('/room-layout');
-  };
+  const loadDesigns = useCallback(async () => {
+    const designAId = location.state?.designA;
+    const designBId = location.state?.designB;
 
-  const handleOpenAppearance = () => {
-    navigate('/appearance');
-  };
-
-  const fetchDesign = useCallback(async () => {
-    const id = designId || localStorage.getItem('currentDesignId');
-
-    // Always try to load canvasItems from localStorage first (covers template items not yet saved)
-    const localItems = localStorage.getItem('canvasItems');
-    if (localItems) {
-      try { setCanvasItems(JSON.parse(localItems)); } catch {}
-    }
-
-    const localSpecs = localStorage.getItem('roomSpecs');
-    if (localSpecs) {
-      try { setRoomSpecs(JSON.parse(localSpecs)); } catch {}
-    }
-
-    if (!id) {
-      if (!localSpecs) {
-        setRasterizeError('No design loaded. Go to Room Setup and continue to 2D Layout first.');
-      }
+    if (!designAId || !designBId) {
+      setError('Missing design IDs for 3D comparison.');
+      setLoading(false);
       return;
     }
-    setIsRasterizing(true);
-    setRasterizeError(null);
+
     try {
-      const design = await getDesign(id);
-      setRoomSpecs(design.roomSpecs || {});
-      // Prefer backend canvasItems if they exist, else keep localStorage ones
-      if (design.canvasItems && design.canvasItems.length > 0) {
-        setCanvasItems(design.canvasItems);
-      }
+      setLoading(true);
+      setError(null);
+
+      const [designAData, designBData] = await Promise.all([
+        getDesign(designAId),
+        getDesign(designBId)
+      ]);
+
+      setLayoutA(designAData);
+      setLayoutB(designBData);
     } catch (err) {
-      console.error(err);
-      // Don't show error if we already have local data
-      if (!localSpecs) setRasterizeError('Failed to load design.');
+      console.error('Failed to load designs for 3D comparison:', err);
+      setError('Failed to load designs for 3D comparison.');
     } finally {
-      setIsRasterizing(false);
+      setLoading(false);
     }
-  }, [designId]);
+  }, [location.state]);
 
   useEffect(() => {
-    setDesignId(localStorage.getItem('currentDesignId'));
-  }, []);
-
-  useEffect(() => {
-    fetchDesign();
-  }, [fetchDesign]);
+    loadDesigns();
+  }, [loadDesigns]);
 
   const handleZoomChange = (direction) => {
     setZoomLevel((current) => {
@@ -429,43 +397,81 @@ const ThreeDView = () => {
     });
   };
 
+  const handleBackTo2DComparison = () => {
+    const designAId = location.state?.designA;
+    const designBId = location.state?.designB;
+    if (designAId && designBId) {
+      navigate('/design-comparison', { state: { designA: designAId, designB: designBId } });
+    } else {
+      navigate(-1);
+    }
+  };
+
   const currentCamera = cameraOptions.find((option) => option.id === activeCamera);
   const currentLighting = lightingOptions.find((option) => option.id === activeLighting);
 
   const shadowLabel =
     shadowQuality >= 75 ? 'High' : shadowQuality >= 45 ? 'Medium' : 'Low';
 
-  const userRole = localStorage.getItem('userRole');
+  if (loading) {
+    return (
+      <>
+        <Navbar userRole={userRole} />
+        <div className="three-d-page">
+          <div className="three-d-content" style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <div className="rasterize-loading">
+              <div className="rasterize-spinner" />
+              <p>Loading 3D comparison...</p>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error || !layoutA || !layoutB) {
+    return (
+      <>
+        <Navbar userRole={userRole} />
+        <div className="three-d-page">
+          <div className="three-d-content" style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <div className="rasterize-error">
+              <p>{error || 'Failed to load designs for 3D comparison.'}</p>
+              <button className="retry-btn" onClick={loadDesigns}>Retry</button>
+              <button className="back-btn" onClick={handleBackTo2DComparison}>← Back to 2D comparison</button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Navbar userRole={userRole} />
       <div className="three-d-page">
         <header className="three-d-header">
-          <button className="back-btn" onClick={handleBackTo2D}>
-            ← Back to 2D Layout
+          <button className="back-btn" onClick={handleBackTo2DComparison}>
+            ← Back to 2D Comparison
           </button>
 
           <div className="three-d-header-center">
-            <h1>3D Room Visualization</h1>
+            <h1>3D Design Comparison</h1>
             <span className="current-view-pill">
-              Current view: {currentCamera?.label}
+              Current view: {currentCamera?.label} • Lighting: {currentLighting?.label}
             </span>
           </div>
 
-          <button className="appearance-btn" onClick={handleOpenAppearance}>
-            Appearance
-          </button>
+          <div style={{ width: '120px' }} />
         </header>
 
         <div className="three-d-content">
-          {/* LEFT PANEL \u2013 Controls */}
           <aside className="three-d-controls">
             <section className="control-section">
               <div className="control-header">
                 <h3>Camera Angles</h3>
                 <p className="control-subtitle">
-                  Choose how you want to explore the room.
+                  Choose how you want to explore both rooms.
                 </p>
               </div>
 
@@ -473,8 +479,7 @@ const ThreeDView = () => {
                 {cameraOptions.map((camera) => (
                   <button
                     key={camera.id}
-                    className={`pill-button ${activeCamera === camera.id ? 'active' : ''
-                      }`}
+                    className={`pill-button ${activeCamera === camera.id ? 'active' : ''}`}
                     onClick={() => setActiveCamera(camera.id)}
                   >
                     <span className="pill-label">{camera.label}</span>
@@ -488,7 +493,7 @@ const ThreeDView = () => {
               <div className="control-header">
                 <h3>Lighting Presets</h3>
                 <p className="control-subtitle">
-                  Quickly preview your room under different moods.
+                  Preview each room under different moods.
                 </p>
               </div>
 
@@ -496,8 +501,7 @@ const ThreeDView = () => {
                 {lightingOptions.map((lighting) => (
                   <button
                     key={lighting.id}
-                    className={`list-button ${activeLighting === lighting.id ? 'active' : ''
-                      }`}
+                    className={`list-button ${activeLighting === lighting.id ? 'active' : ''}`}
                     onClick={() => setActiveLighting(lighting.id)}
                   >
                     <span className="dot" />
@@ -524,8 +528,7 @@ const ThreeDView = () => {
                 </div>
 
                 <button
-                  className={`toggle-switch ${shadowsEnabled ? 'enabled' : 'disabled'
-                    }`}
+                  className={`toggle-switch ${shadowsEnabled ? 'enabled' : 'disabled'}`}
                   onClick={() => setShadowsEnabled(!shadowsEnabled)}
                   aria-pressed={shadowsEnabled}
                 >
@@ -570,8 +573,7 @@ const ThreeDView = () => {
                 </div>
 
                 <button
-                  className={`toggle-switch ${showHuman ? 'enabled' : 'disabled'
-                    }`}
+                  className={`toggle-switch ${showHuman ? 'enabled' : 'disabled'}`}
                   onClick={() => setShowHuman(!showHuman)}
                 >
                   <span className="toggle-knob" />
@@ -597,38 +599,8 @@ const ThreeDView = () => {
                 />
               </div>
             </section>
-
-            <section className="control-section">
-              <div className="control-header">
-                <h3>View Mode</h3>
-              </div>
-
-              <div className="pill-group vertical">
-                <button
-                  className={`pill-button compact ${viewMode === '3d' ? 'active' : ''
-                    }`}
-                  onClick={() => setViewMode('3d')}
-                >
-                  <span className="pill-label">3D View</span>
-                  <span className="pill-description">
-                    Rotate, orbit and zoom around the room.
-                  </span>
-                </button>
-
-                <button
-                  className="pill-button compact secondary"
-                  onClick={handleBackTo2D}
-                >
-                  <span className="pill-label">Switch to 2D Layout</span>
-                  <span className="pill-description">
-                    Go back to precise top-down editing.
-                  </span>
-                </button>
-              </div>
-            </section>
           </aside>
 
-          {/* RIGHT PANEL \u2013 3D Room Preview */}
           <main className="three-d-viewport-area">
             <div className="three-d-status-row">
               <span className="status-chip">
@@ -642,44 +614,54 @@ const ThreeDView = () => {
               </span>
             </div>
 
-            <div className="three-d-viewport-wrapper">
-              {isRasterizing && (
-                <div className="rasterize-loading">
-                  <div className="rasterize-spinner" />
-                  <p>Loading 3D experience...</p>
+            <div className="three-d-viewport-wrapper three-d-compare-wrapper">
+              <div className="three-d-compare-column">
+                <h2 className="three-d-compare-title">Design A (Current)</h2>
+                <div className="three-d-compare-canvas">
+                  <Canvas shadows={shadowsEnabled} gl={{ preserveDrawingBuffer: true }}>
+                    <Suspense fallback={null}>
+                      <CameraController activeCamera={activeCamera} roomSpecs={layoutA.roomSpecs} zoomLevel={zoomLevel} />
+                      <RoomScene
+                        roomSpecs={layoutA.roomSpecs}
+                        canvasItems={layoutA.canvasItems}
+                        lighting={activeLighting}
+                        shadowsEnabled={shadowsEnabled}
+                        showHuman={showHuman}
+                        humanHeight={humanHeight}
+                      />
+                    </Suspense>
+                  </Canvas>
                 </div>
-              )}
-              {rasterizeError && !isRasterizing && (
-                <div className="rasterize-error">
-                  <p>{rasterizeError}</p>
-                  <button className="retry-btn" onClick={fetchDesign}>Retry</button>
+              </div>
+
+              <div className="three-d-compare-column">
+                <h2 className="three-d-compare-title">Design B (Selected)</h2>
+                <div className="three-d-compare-canvas">
+                  <Canvas shadows={shadowsEnabled} gl={{ preserveDrawingBuffer: true }}>
+                    <Suspense fallback={null}>
+                      <CameraController activeCamera={activeCamera} roomSpecs={layoutB.roomSpecs} zoomLevel={zoomLevel} />
+                      <RoomScene
+                        roomSpecs={layoutB.roomSpecs}
+                        canvasItems={layoutB.canvasItems}
+                        lighting={activeLighting}
+                        shadowsEnabled={shadowsEnabled}
+                        showHuman={showHuman}
+                        humanHeight={humanHeight}
+                      />
+                    </Suspense>
+                  </Canvas>
                 </div>
-              )}
-              {!isRasterizing && !rasterizeError && roomSpecs && (
-                <Canvas shadows={shadowsEnabled} gl={{ preserveDrawingBuffer: true }}>
-                  <Suspense fallback={null}>
-                    <CameraController activeCamera={activeCamera} roomSpecs={roomSpecs} zoomLevel={zoomLevel} />
-                    <RoomScene 
-                      roomSpecs={roomSpecs} 
-                      canvasItems={canvasItems} 
-                      lighting={activeLighting} 
-                      shadowsEnabled={shadowsEnabled} 
-                      showHuman={showHuman}
-                      humanHeight={humanHeight}
-                    />
-                  </Suspense>
-                </Canvas>
-              )}
+              </div>
             </div>
 
             <div className="three-d-viewport-footer">
-
               <div className="zoom-controls">
                 <button
                   className="zoom-btn"
                   onClick={() => handleZoomChange('out')}
                   aria-label="Zoom out"
-                >-
+                >
+                  -
                 </button>
                 <span className="zoom-label">Zoom</span>
                 <button
@@ -704,5 +686,5 @@ const ThreeDView = () => {
   );
 };
 
-export default ThreeDView;
+export default DesignComparison3D;
 
