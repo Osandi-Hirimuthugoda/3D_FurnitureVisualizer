@@ -285,28 +285,7 @@ const LayoutEditor = () => {
             >
               🔍 Compare Design
             </button>
-            <button
-              className="view-3d-btn"
-              onClick={async () => {
-                let id = designId || localStorage.getItem('currentDesignId');
-                if (!id) {
-                  const savedSpecs = localStorage.getItem('roomSpecs');
-                  if (savedSpecs) {
-                    try {
-                      const design = await createDesign(JSON.parse(savedSpecs));
-                      id = design._id;
-                      await updateDesign(id, { canvasItems });
-                      localStorage.setItem('currentDesignId', id);
-                    } catch (e) {
-                      console.error(e);
-                    }
-                  }
-                }
-                if (id) localStorage.setItem('currentDesignId', id);
-                navigate('/room-3d');
-              }}
-            >
-              👁️ View in 3D
+            
             <button className={"save-btn " + saveStatus} onClick={handleSave} disabled={saveStatus === 'saving'}>
               {saveStatus === 'saving' && 'Saving...'}
               {saveStatus === 'saved' && 'Saved!'}
@@ -330,7 +309,7 @@ const LayoutEditor = () => {
               if (id) localStorage.setItem('currentDesignId', id);
               navigate('/room-3d');
             }}>
-              View in 3D
+              👁️View in 3D
             </button>
           </div>
         </header>
