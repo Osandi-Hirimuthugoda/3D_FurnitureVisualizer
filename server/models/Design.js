@@ -36,6 +36,7 @@ const designSchema = new mongoose.Schema({
     floorType: { type: String, default: 'hardwood' }
   },
   canvasItems: { type: [canvasItemSchema], default: [] },
+  previewImage: { type: String, default: null },
   userId: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
