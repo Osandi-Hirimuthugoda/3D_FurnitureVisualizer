@@ -315,10 +315,39 @@
   position: relative;
 }
 
+/* Human Color Picker */
+.human-color-picker {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.color-swatch.active {
+  border-color: white;
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+}
+
 .three-d-status-row {
   display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
-  gap: 0.6rem;
   justify-content: flex-start;
 }
 
