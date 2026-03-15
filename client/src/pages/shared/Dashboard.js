@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
+import { submitReview } from '../../api/reviews';
 import './Dashboard.css';
 
 const API_URL = 'http://localhost:5001/api';
@@ -21,6 +22,28 @@ const Dashboard = () => {
     myOrders: 0,
     myDesigns: 0
   });
+
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewStatus, setReviewStatus] = useState('idle'); // idle | submitting | done | error
+  const [reviewError, setReviewError] = useState('');
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!reviewComment.trim()) return;
+    setReviewStatus('submitting');
+    setReviewError('');
+    try {
+      await submitReview({ rating: reviewRating, comment: reviewComment });
+      setReviewStatus('done');
+      setReviewComment('');
+    } catch (err) {
+      const msg = err?.response?.data?.error || err?.response?.data?.message || err.message || 'Unknown error';
+      setReviewError(msg);
+      setReviewStatus('error');
+      setTimeout(() => setReviewStatus('idle'), 4000);
+    }
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -196,6 +219,48 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {userRole === 'customer' && (
+        <div className="review-section-wrapper">
+          <div className="review-form-card">
+            <h3>⭐ Leave a Review</h3>
+            <p>Share your experience with Living Trend</p>
+            {reviewStatus === 'done' ? (
+              <div className="review-success">✅ Thank you for your review! It will appear on the home page.</div>
+            ) : (
+              <form onSubmit={handleReviewSubmit} className="review-form">
+                <div className="star-rating">
+                  {[1,2,3,4,5].map(star => (
+                    <span
+                      key={star}
+                      className={`star ${star <= reviewRating ? 'active' : ''}`}
+                      onClick={() => setReviewRating(star)}
+                    >★</span>
+                  ))}
+                </div>
+                <textarea
+                  className="review-textarea"
+                  placeholder="Write your review here..."
+                  value={reviewComment}
+                  onChange={e => setReviewComment(e.target.value)}
+                  rows={4}
+                  required
+                />
+                <button
+                  type="submit"
+                  className="review-submit-btn"
+                  disabled={reviewStatus === 'submitting' || !reviewComment.trim()}
+                >
+                  {reviewStatus === 'submitting' ? 'Submitting...' : reviewStatus === 'error' ? 'Failed, try again' : 'Submit Review'}
+                </button>
+                {reviewStatus === 'error' && reviewError && (
+                  <div className="review-error">❌ {reviewError}</div>
+                )}
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

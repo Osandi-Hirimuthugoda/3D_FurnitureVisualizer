@@ -7,6 +7,7 @@ import Login from './pages/auth/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Shared Pages
+import Register from './pages/shared/Register';
 import RoomSetup from './pages/shared/RoomSetup';
 import Dashboard from './pages/shared/Dashboard';
 import LayoutEditor from './pages/shared/LayoutEditor';
@@ -35,6 +36,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           
           {/* Protected Routes - Both Admin & Customer */}
           <Route path="/dashboard" element={

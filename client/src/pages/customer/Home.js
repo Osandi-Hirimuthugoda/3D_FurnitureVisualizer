@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getReviews } from '../../api/reviews';
 import './Home.css';
 
 const API_URL = 'http://localhost:5001/api';
@@ -8,15 +9,14 @@ const Home = () => {
   const navigate = useNavigate();
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const [discountedProducts, setDiscountedProducts] = useState([]);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    // Fetch products with discounts from backend
     const fetchDiscountedProducts = async () => {
       try {
         const res = await fetch(`${API_URL}/products?sortBy=discount`);
         const data = await res.json();
         if (data.success) {
-          // Only show products with discount > 0, max 4
           const deals = data.products.filter(p => p.discount > 0).slice(0, 4);
           setDiscountedProducts(deals);
         }
@@ -24,7 +24,16 @@ const Home = () => {
         console.error('Failed to load deals:', err);
       }
     };
+    const fetchReviews = async () => {
+      try {
+        const data = await getReviews();
+        setReviews(data.reviews || []);
+      } catch (err) {
+        console.error('Failed to load reviews:', err);
+      }
+    };
     fetchDiscountedProducts();
+    fetchReviews();
   }, []);
 
   const handleGetStarted = () => {
@@ -217,45 +226,46 @@ const Home = () => {
       <section className="testimonials-section">
         <h2>What Our Customers Say</h2>
         <div className="testimonials-grid">
-          <div className="testimonial-card">
-            <div className="stars">⭐⭐⭐⭐⭐</div>
-            <p className="testimonial-text">
-              "This tool helped me visualize my living room perfectly before buying furniture. Saved me from making costly mistakes!"
-            </p>
-            <div className="testimonial-author">
-              <div className="author-avatar">👤</div>
-              <div>
-                <h4>Sarah Johnson</h4>
-                <p>Interior Designer</p>
+          {reviews.length > 0 ? reviews.slice(0, 6).map((r, idx) => (
+            <div className="testimonial-card" key={r._id || idx}>
+              <div className="stars">{'⭐'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</div>
+              <p className="testimonial-text">"{r.comment}"</p>
+              <div className="testimonial-author">
+                <div className="author-avatar">👤</div>
+                <div>
+                  <h4>{r.userName}</h4>
+                  <p>{new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="testimonial-card">
-            <div className="stars">⭐⭐⭐⭐⭐</div>
-            <p className="testimonial-text">
-              "Amazing 3D visualization! I could see exactly how my furniture would fit and look. Highly recommended!"
-            </p>
-            <div className="testimonial-author">
-              <div className="author-avatar">👤</div>
-              <div>
-                <h4>Michael Chen</h4>
-                <p>Homeowner</p>
+          )) : (
+            <>
+              <div className="testimonial-card">
+                <div className="stars">⭐⭐⭐⭐⭐</div>
+                <p className="testimonial-text">"This tool helped me visualize my living room perfectly before buying furniture. Saved me from making costly mistakes!"</p>
+                <div className="testimonial-author">
+                  <div className="author-avatar">👤</div>
+                  <div><h4>Sarah Johnson</h4><p>Interior Designer</p></div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="testimonial-card">
-            <div className="stars">⭐⭐⭐⭐⭐</div>
-            <p className="testimonial-text">
-              "The best room planning tool I've used. Intuitive, accurate, and the 3D view is incredible!"
-            </p>
-            <div className="testimonial-author">
-              <div className="author-avatar">👤</div>
-              <div>
-                <h4>Emma Williams</h4>
-                <p>Architect</p>
+              <div className="testimonial-card">
+                <div className="stars">⭐⭐⭐⭐⭐</div>
+                <p className="testimonial-text">"Amazing 3D visualization! I could see exactly how my furniture would fit and look. Highly recommended!"</p>
+                <div className="testimonial-author">
+                  <div className="author-avatar">👤</div>
+                  <div><h4>Michael Chen</h4><p>Homeowner</p></div>
+                </div>
               </div>
-            </div>
-          </div>
+              <div className="testimonial-card">
+                <div className="stars">⭐⭐⭐⭐⭐</div>
+                <p className="testimonial-text">"The best room planning tool I've used. Intuitive, accurate, and the 3D view is incredible!"</p>
+                <div className="testimonial-author">
+                  <div className="author-avatar">👤</div>
+                  <div><h4>Emma Williams</h4><p>Architect</p></div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
