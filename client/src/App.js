@@ -14,6 +14,8 @@ import ThreeDView from './pages/shared/ThreeDView';
 import Appearance from './pages/shared/Appearance';
 import Portfolio from './pages/shared/Portfolio';
 import Settings from './pages/shared/Settings';
+import DesignComparison from './pages/shared/DesignComparison';
+import DesignComparison3D from './pages/shared/DesignComparison3D';
 
 // Customer Pages
 import Home from './pages/customer/Home';
@@ -85,7 +87,16 @@ function App() {
               <Settings />
             </ProtectedRoute>
           } />
-          
+          <Route path="/design-comparison" element={
+            <ProtectedRoute>
+              <DesignComparison />
+            </ProtectedRoute>
+          } />
+          <Route path="/design-comparison-3d" element={
+          <ProtectedRoute>
+            <DesignComparison3D />
+          </ProtectedRoute>
+          } />
           {/* Admin Only Routes */}
           <Route path="/admin/dashboard" element={
             <ProtectedRoute adminOnly={true}>

@@ -38,6 +38,12 @@
   transform: translateX(-5px);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .view-3d-btn {
   background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
   border: none;
@@ -53,6 +59,42 @@
 .view-3d-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.save-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
+.save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.save-btn.saved {
+  background: linear-gradient(135deg, #1e8449 0%, #27ae60 100%);
+}
+
+.save-btn.error {
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
 }
 
 .editor-container {
@@ -281,6 +323,22 @@
   background: var(--accent-green);
   color: white;
   border-color: var(--accent-green);
+}
+
+.compare-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  position: relative;
+}
+
+.compare-btn:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6d3a8a 100%);
+  border-color: #5568d3;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
 }
 
 .canvas-wrapper {
@@ -783,4 +841,153 @@
   color: var(--text-light);
   font-style: italic;
   font-size: 0.9rem;
+}
+
+/* ── Canvas price list in sidebar ── */
+.stat-total {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #dde3f0;
+}
+
+.stat-price {
+  color: #1e3c72;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.canvas-price-list {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.canvas-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f6fb;
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  gap: 0.4rem;
+}
+
+.canvas-price-name {
+  font-size: 0.75rem;
+  color: #444;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.canvas-price-val {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.canvas-price-orig {
+  font-size: 0.68rem;
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+.canvas-price-disc {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e3c72;
+}
+
+.cost-summary {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: #fff !important;
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+}
+
+.cost-summary .count-text {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Save Modal */
+.save-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.save-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.save-modal h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+  color: #1e3c72;
+}
+
+.save-modal p {
+  margin: 0 0 1.2rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.save-modal-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.save-modal-input:focus {
+  border-color: #2a5298;
+}
+
+.save-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.2rem;
+  justify-content: flex-end;
+}
+
+.save-modal-cancel {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #666;
+}
+
+.save-modal-confirm {
+  padding: 0.6rem 1.4rem;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.save-modal-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

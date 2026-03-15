@@ -371,6 +371,35 @@
   position: relative;
 }
 
+.three-d-compare-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.three-d-compare-column {
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), #020617);
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  overflow: hidden;
+}
+
+.three-d-compare-title {
+  margin: 0;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.9);
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.6));
+}
+
+.three-d-compare-canvas {
+  flex: 1;
+  min-height: 260px;
+}
+
 .rasterize-loading {
   display: flex;
   flex-direction: column;

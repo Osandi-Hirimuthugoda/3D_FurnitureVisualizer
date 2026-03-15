@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const canvasItemSchema = new mongoose.Schema({
-  canvasId: { type: Number, required: true },
-  id: { type: String, required: true },
-  name: { type: String, required: true },
+  canvasId: { type: Number },
+  id: { type: String },
+  name: { type: String },
   size: String,
   type: String,
   image: String,
@@ -15,6 +15,7 @@ const canvasItemSchema = new mongoose.Schema({
   price: Number,
   discount: Number,
   category: String,
+  templateName: String,
   x: { type: Number, default: 1.5 },
   y: { type: Number, default: 2.0 },
   width: { type: Number, default: 2.0 },
@@ -23,6 +24,7 @@ const canvasItemSchema = new mongoose.Schema({
 }, { _id: false });
 
 const designSchema = new mongoose.Schema({
+  name: { type: String, default: '' },
   title: { type: String, default: 'Untitled Design' },
   roomSpecs: {
     length: { type: Number, default: 5 },
@@ -34,6 +36,7 @@ const designSchema = new mongoose.Schema({
     floorType: { type: String, default: 'hardwood' }
   },
   canvasItems: { type: [canvasItemSchema], default: [] },
+  previewImage: { type: String, default: null },
   userId: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

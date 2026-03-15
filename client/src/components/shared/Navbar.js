@@ -25,12 +25,13 @@ const Navbar = ({ userRole }) => {
     <nav className="navbar">
       <div className="nav-container">
         <div className="nav-brand">
-          <Link to="/">
+          <Link to="/" className="nav-brand-link">
             <img
               src={process.env.PUBLIC_URL + '/logo.png'}
               alt="Living Trend"
-              style={{ height: '50px', filter: 'brightness(0) invert(1)' }}
+              style={{ height: '40px', filter: 'brightness(0) invert(1)' }}
             />
+            <span className="nav-brand-name">LIVING TREND</span>
           </Link>
         </div>
 

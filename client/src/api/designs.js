@@ -8,17 +8,23 @@ const authHeader = () => {
 };
 
 export const createDesign = async (roomSpecs, title = 'Untitled Design') => {
-  const { data } = await axios.post(API_BASE, { roomSpecs, title }, { headers: authHeader() });
+  const userId = localStorage.getItem('userEmail') || null;
+  const { data } = await axios.post(API_BASE, { roomSpecs, title, userId }, { headers: authHeader() });
   return data;
 };
 
 export const getDesign = async (id) => {
-  const { data } = await axios.get(`${API_BASE}/${id}`);
+  const { data } = await axios.get(`${API_BASE}/${id}`, { headers: authHeader() });
+  return data;
+};
+
+export const getUserDesigns = async (userId) => {
+  const { data } = await axios.get(`${API_BASE}/user/${userId}`);
   return data;
 };
 
 export const updateDesign = async (id, { roomSpecs, canvasItems, title }) => {
-  const { data } = await axios.put(`${API_BASE}/${id}`, { roomSpecs, canvasItems, title });
+  const { data } = await axios.put(`${API_BASE}/${id}`, { roomSpecs, canvasItems, title }, { headers: authHeader() });;
   return data;
 };
 

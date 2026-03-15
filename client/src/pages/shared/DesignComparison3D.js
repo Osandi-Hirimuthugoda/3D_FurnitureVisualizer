@@ -1,0 +1,690 @@
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Navbar from '../../components/shared/Navbar';
+import { getDesign } from '../../api/designs';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera, useTexture, Html } from '@react-three/drei';
+import * as THREE from 'three';
+import './ThreeDView.css';
+
+const cameraOptions = [
+  { id: 'perspective', label: 'Perspective View', description: 'Immersive angled view of the entire room.' },
+  { id: 'front', label: 'Front View', description: 'Look straight at the main wall.' },
+  { id: 'side', label: 'Side View', description: 'Focus on the side wall and furniture depth.' },
+  { id: 'top', label: 'Top View', description: 'Bird’s eye view of your layout.' }
+];
+
+const lightingOptions = [
+  { id: 'day', label: 'Natural Daylight' },
+  { id: 'evening', label: 'Warm Evening' },
+  { id: 'cool', label: 'Cool Office' },
+  { id: 'spotlight', label: 'Dramatic Spotlight' }
+];
+
+const colors = { sofas: '#D4A574', chairs: '#8B7355', tables: '#87CEEB', beds: '#C4B896', desks: '#708090' };
+
+function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
+  const w = parseFloat(item.width) || 1;
+  const d = parseFloat(item.height) || 1;
+  const h = (item.dimensions && item.dimensions.height) ? parseFloat(item.dimensions.height) : 0.8;
+  const centerX = (parseFloat(item.x) || 0) + w / 2;
+  const centerZ = (parseFloat(item.y) || 0) + d / 2;
+  const rot = -(parseFloat(item.rotation) || 0) * Math.PI / 180;
+  const hex = colors[item.category] || '#808080';
+
+  const isImage = item.image && typeof item.image === 'string' && (item.image.startsWith('data:image') || item.image.startsWith('http'));
+
+  if (isImage) {
+    return (
+      <TexturedFurniture
+        mapUrl={item.image}
+        name={item.name}
+        position={[centerX, h / 2, centerZ]}
+        rotation={[0, rot, 0]}
+        w={w}
+        h={h}
+        d={d}
+        categoryColor={hex}
+      />
+    );
+  }
+
+  return (
+    <mesh key={idx} position={[centerX, h / 2, centerZ]} rotation={[0, rot, 0]} castShadow receiveShadow>
+      <boxGeometry args={[w, h, d]} />
+      <meshLambertMaterial color={hex} transparent opacity={0.7} />
+      <Html distanceFactor={5} position={[0, h / 2 + 0.2, 0]} center>
+        <div style={{
+          background: 'rgba(0,0,0,0.6)',
+          color: 'white',
+          padding: '2px 8px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none'
+        }}>
+          {item.name}
+        </div>
+      </Html>
+    </mesh>
+  );
+}
+
+function TexturedFurniture({ mapUrl, name, position, rotation, w, h, d, categoryColor }) {
+  if (typeof mapUrl !== 'string') return null;
+
+  return (
+    <Suspense fallback={<mesh position={position}><boxGeometry args={[w, h, d]} /><meshBasicMaterial color="#ccc" wireframe /></mesh>}>
+      <ActualTexturedFurniture mapUrl={mapUrl} name={name} position={position} rotation={rotation} w={w} h={h} d={d} categoryColor={categoryColor} />
+    </Suspense>
+  );
+}
+
+function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, categoryColor }) {
+  const texture = useTexture(mapUrl);
+
+  const sideMaterial = new THREE.MeshStandardMaterial({ color: categoryColor, roughness: 0.8 });
+  const faceMaterial = new THREE.MeshStandardMaterial({ map: texture, transparent: true, alphaTest: 0.3 });
+  const materials = [sideMaterial, sideMaterial, sideMaterial, sideMaterial, faceMaterial, faceMaterial];
+
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh castShadow receiveShadow material={materials}>
+        <boxGeometry args={[w, h, d]} />
+      </mesh>
+
+      <Html distanceFactor={5} position={[0, h / 2 + 0.3, 0]} center>
+        <div style={{
+          background: 'rgba(0,0,0,0.7)',
+          color: 'white',
+          padding: '2px 10px',
+          borderRadius: '4px',
+          fontSize: '11px',
+          fontWeight: 'bold',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+        }}>
+          {name}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+function HumanFigure({ height, position }) {
+  const headSize = height * 0.12;
+  const torsoHeight = height * 0.4;
+  const legHeight = height * 0.48;
+  const armLength = height * 0.4;
+
+  const material = new THREE.MeshStandardMaterial({ color: '#333', roughness: 0.5 });
+
+  return (
+    <group position={[position[0], height / 2, position[1]]}>
+      <mesh position={[0, height / 2 - headSize / 2, 0]} castShadow>
+        <sphereGeometry args={[headSize / 2, 16, 16]} />
+        <meshStandardMaterial color="#555" />
+      </mesh>
+
+      <mesh position={[0, legHeight + torsoHeight / 2 - height / 2, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.05, torsoHeight]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+
+      <mesh position={[-0.08, legHeight / 2 - height / 2, 0]} castShadow>
+        <cylinderGeometry args={[0.02, 0.02, legHeight]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+      <mesh position={[0.08, legHeight / 2 - height / 2, 0]} castShadow>
+        <cylinderGeometry args={[0.02, 0.02, legHeight]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+
+      <mesh position={[-0.15, legHeight + torsoHeight - 0.1 - height / 2, 0]} rotation={[0, 0, 0.2]} castShadow>
+        <cylinderGeometry args={[0.015, 0.015, armLength]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+      <mesh position={[0.15, legHeight + torsoHeight - 0.1 - height / 2, 0]} rotation={[0, 0, -0.2]} castShadow>
+        <cylinderGeometry args={[0.015, 0.015, armLength]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+
+      <Html distanceFactor={5} position={[0, height / 2 + 0.2, 0]} center>
+        <div style={{
+          background: 'rgba(255,255,255,0.8)',
+          color: '#333',
+          padding: '2px 6px',
+          borderRadius: '4px',
+          fontSize: '10px',
+          fontWeight: 'bold',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          border: '1px solid #333'
+        }}>
+          Human ({height.toFixed(2)}m)
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
+  const cameraRef = React.useRef();
+  const controlsRef = React.useRef();
+
+  const L = parseFloat(roomSpecs?.length) || 5;
+  const W = parseFloat(roomSpecs?.width) || 4;
+  const H = parseFloat(roomSpecs?.height) || 3;
+
+  React.useEffect(() => {
+    if (!cameraRef.current || !controlsRef.current) return;
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+
+    let targetPos = [L * 0.8, H * 1.2, W * 1.2];
+    let lookAt = [L / 2, H / 2, W / 2];
+
+    if (activeCamera === 'front') {
+      targetPos = [L / 2, H / 2, W * 1.8];
+    } else if (activeCamera === 'side') {
+      targetPos = [L * 1.8, H / 2, W / 2];
+    } else if (activeCamera === 'top') {
+      targetPos = [L / 2, Math.max(L, W) * 1.5, W / 2 + 0.1];
+      lookAt = [L / 2, 0, W / 2];
+    }
+
+    camera.position.set(...targetPos);
+    camera.zoom = zoomLevel;
+    camera.updateProjectionMatrix();
+
+    controls.target.set(...lookAt);
+    controls.update();
+
+  }, [activeCamera, roomSpecs, L, W, H, zoomLevel]);
+
+  return (
+    <>
+      <PerspectiveCamera ref={cameraRef} makeDefault fov={45} near={0.1} far={100} />
+      <OrbitControls ref={controlsRef} enableDamping dampingFactor={0.05} />
+    </>
+  );
+}
+
+function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman, humanHeight }) {
+  const L = parseFloat(roomSpecs?.length) || 5;
+  const W = parseFloat(roomSpecs?.width) || 4;
+  const H = parseFloat(roomSpecs?.height) || 3;
+  const wallColor = roomSpecs?.wallColor || '#F5F5DC';
+  const floorColor = roomSpecs?.floorType === 'carpet' ? '#8B7355' : '#6B5344';
+
+  const roomShapePoints = React.useMemo(() => {
+    const pts = [];
+    const shape = roomSpecs?.shape || 'rectangle';
+    if (shape === 'l-shape') {
+      pts.push(
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(L, 0),
+        new THREE.Vector2(L, W * 0.5),
+        new THREE.Vector2(L * 0.5, W * 0.5),
+        new THREE.Vector2(L * 0.5, W),
+        new THREE.Vector2(0, W)
+      );
+    } else if (shape === 'u-shape') {
+      pts.push(
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(L, 0),
+        new THREE.Vector2(L, W),
+        new THREE.Vector2(L * 0.8, W),
+        new THREE.Vector2(L * 0.8, W * 0.4),
+        new THREE.Vector2(L * 0.2, W * 0.4),
+        new THREE.Vector2(L * 0.2, W),
+        new THREE.Vector2(0, W)
+      );
+    } else {
+      pts.push(
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(L, 0),
+        new THREE.Vector2(L, W),
+        new THREE.Vector2(0, W)
+      );
+    }
+    return pts;
+  }, [roomSpecs?.shape, L, W]);
+
+  const floorShape = React.useMemo(() => {
+    const s = new THREE.Shape();
+    if (roomShapePoints.length > 0) {
+      s.moveTo(roomShapePoints[0].x, roomShapePoints[0].y);
+      for (let i = 1; i < roomShapePoints.length; i++) {
+        s.lineTo(roomShapePoints[i].x, roomShapePoints[i].y);
+      }
+      s.lineTo(roomShapePoints[0].x, roomShapePoints[0].y);
+    }
+    return s;
+  }, [roomShapePoints]);
+
+  const wallSegments = React.useMemo(() => {
+    const segs = [];
+    for (let i = 0; i < roomShapePoints.length; i++) {
+      const p1 = roomShapePoints[i];
+      const p2 = roomShapePoints[(i + 1) % roomShapePoints.length];
+
+      if (Math.abs(p1.y - W) < 0.01 && Math.abs(p2.y - W) < 0.01) continue;
+
+      const dx = p2.x - p1.x;
+      const dz = p2.y - p1.y;
+      const length = Math.sqrt(dx * dx + dz * dz);
+      const cx = (p1.x + p2.x) / 2;
+      const cz = (p1.y + p2.y) / 2;
+      const rotY = Math.atan2(-dz, dx);
+
+      segs.push({ cx, cz, length, rotY, key: `wall-${i}` });
+    }
+    return segs;
+  }, [roomShapePoints, W]);
+
+  let bkgColor = '#0a0a0a', ambColor = '#404040', ambInt = 0.5, dirColor = '#ffffff', dirInt = 0.8;
+  if (lighting === 'day') {
+    bkgColor = '#e3f2fd'; ambInt = 0.8; dirInt = 1.0;
+  } else if (lighting === 'evening') {
+    bkgColor = '#2d1b15'; ambColor = '#503030'; ambInt = 0.6; dirColor = '#ff9955'; dirInt = 1.0;
+  } else if (lighting === 'cool') {
+    bkgColor = '#0f172a'; ambColor = '#406080'; ambInt = 0.7; dirColor = '#ddedff'; dirInt = 0.9;
+  } else if (lighting === 'spotlight') {
+    bkgColor = '#020617'; ambInt = 0.2; dirInt = 1.5;
+  }
+
+  return (
+    <>
+      <color attach="background" args={[bkgColor]} />
+      <ambientLight color={ambColor} intensity={ambInt} />
+      <directionalLight
+        color={dirColor}
+        intensity={dirInt}
+        position={[L / 2, H * 2, W / 2]}
+        castShadow={shadowsEnabled}
+        shadow-mapSize={[1024, 1024]}
+      />
+
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+        <extrudeGeometry args={[floorShape, { depth: 0.05, bevelEnabled: false }]} />
+        <meshLambertMaterial color={floorColor} />
+      </mesh>
+
+      {wallSegments.map((ws) => (
+        <mesh key={ws.key} position={[ws.cx, H / 2, ws.cz]} rotation={[0, ws.rotY, 0]} receiveShadow>
+          <boxGeometry args={[ws.length, H, 0.1]} />
+          <meshLambertMaterial color={wallColor} />
+        </mesh>
+      ))}
+
+      {canvasItems?.map((item, idx) => (
+        <FurnitureItem
+          key={item.canvasId || idx}
+          item={item}
+          idx={idx}
+          colors={colors}
+          shadowsEnabled={shadowsEnabled}
+        />
+      ))}
+
+      {showHuman && (
+        <HumanFigure height={humanHeight} position={[L * 0.2, W * 0.2]} />
+      )}
+    </>
+  );
+}
+
+const DesignComparison3D = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const userRole = localStorage.getItem('userRole');
+
+  const [layoutA, setLayoutA] = useState(null);
+  const [layoutB, setLayoutB] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [activeCamera, setActiveCamera] = useState('perspective');
+  const [activeLighting, setActiveLighting] = useState('day');
+  const [shadowsEnabled, setShadowsEnabled] = useState(true);
+  const [shadowQuality, setShadowQuality] = useState(80);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [showHuman, setShowHuman] = useState(true);
+  const [humanHeight, setHumanHeight] = useState(1.7);
+
+  const loadDesigns = useCallback(async () => {
+    const designAId = location.state?.designA;
+    const designBId = location.state?.designB;
+
+    if (!designAId || !designBId) {
+      setError('Missing design IDs for 3D comparison.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [designAData, designBData] = await Promise.all([
+        getDesign(designAId),
+        getDesign(designBId)
+      ]);
+
+      setLayoutA(designAData);
+      setLayoutB(designBData);
+    } catch (err) {
+      console.error('Failed to load designs for 3D comparison:', err);
+      setError('Failed to load designs for 3D comparison.');
+    } finally {
+      setLoading(false);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    loadDesigns();
+  }, [loadDesigns]);
+
+  const handleZoomChange = (direction) => {
+    setZoomLevel((current) => {
+      const delta = direction === 'in' ? 0.15 : -0.15;
+      const next = current + delta;
+      if (next < 0.8) return 0.8;
+      if (next > 1.4) return 1.4;
+      return next;
+    });
+  };
+
+  const handleBackTo2DComparison = () => {
+    const designAId = location.state?.designA;
+    const designBId = location.state?.designB;
+    if (designAId && designBId) {
+      navigate('/design-comparison', { state: { designA: designAId, designB: designBId } });
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const currentCamera = cameraOptions.find((option) => option.id === activeCamera);
+  const currentLighting = lightingOptions.find((option) => option.id === activeLighting);
+
+  const shadowLabel =
+    shadowQuality >= 75 ? 'High' : shadowQuality >= 45 ? 'Medium' : 'Low';
+
+  if (loading) {
+    return (
+      <>
+        <Navbar userRole={userRole} />
+        <div className="three-d-page">
+          <div className="three-d-content" style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <div className="rasterize-loading">
+              <div className="rasterize-spinner" />
+              <p>Loading 3D comparison...</p>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error || !layoutA || !layoutB) {
+    return (
+      <>
+        <Navbar userRole={userRole} />
+        <div className="three-d-page">
+          <div className="three-d-content" style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <div className="rasterize-error">
+              <p>{error || 'Failed to load designs for 3D comparison.'}</p>
+              <button className="retry-btn" onClick={loadDesigns}>Retry</button>
+              <button className="back-btn" onClick={handleBackTo2DComparison}>← Back to 2D comparison</button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Navbar userRole={userRole} />
+      <div className="three-d-page">
+        <header className="three-d-header">
+          <button className="back-btn" onClick={handleBackTo2DComparison}>
+            ← Back to 2D Comparison
+          </button>
+
+          <div className="three-d-header-center">
+            <h1>3D Design Comparison</h1>
+            <span className="current-view-pill">
+              Current view: {currentCamera?.label} • Lighting: {currentLighting?.label}
+            </span>
+          </div>
+
+          <div style={{ width: '120px' }} />
+        </header>
+
+        <div className="three-d-content">
+          <aside className="three-d-controls">
+            <section className="control-section">
+              <div className="control-header">
+                <h3>Camera Angles</h3>
+                <p className="control-subtitle">
+                  Choose how you want to explore both rooms.
+                </p>
+              </div>
+
+              <div className="pill-group">
+                {cameraOptions.map((camera) => (
+                  <button
+                    key={camera.id}
+                    className={`pill-button ${activeCamera === camera.id ? 'active' : ''}`}
+                    onClick={() => setActiveCamera(camera.id)}
+                  >
+                    <span className="pill-label">{camera.label}</span>
+                    <span className="pill-description">{camera.description}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="control-section">
+              <div className="control-header">
+                <h3>Lighting Presets</h3>
+                <p className="control-subtitle">
+                  Preview each room under different moods.
+                </p>
+              </div>
+
+              <div className="list-group">
+                {lightingOptions.map((lighting) => (
+                  <button
+                    key={lighting.id}
+                    className={`list-button ${activeLighting === lighting.id ? 'active' : ''}`}
+                    onClick={() => setActiveLighting(lighting.id)}
+                  >
+                    <span className="dot" />
+                    <span className="list-label">{lighting.label}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="control-section">
+              <div className="control-header">
+                <h3>Rendering Options</h3>
+                <p className="control-subtitle">
+                  Adjust realism for performance or visual quality.
+                </p>
+              </div>
+
+              <div className="control-row shadows-row">
+                <div>
+                  <span className="row-label">Shadows</span>
+                  <p className="row-description">
+                    Soft contact shadows under furniture and along walls.
+                  </p>
+                </div>
+
+                <button
+                  className={`toggle-switch ${shadowsEnabled ? 'enabled' : 'disabled'}`}
+                  onClick={() => setShadowsEnabled(!shadowsEnabled)}
+                  aria-pressed={shadowsEnabled}
+                >
+                  <span className="toggle-knob" />
+                </button>
+              </div>
+
+              <div className="control-row slider-row">
+                <div className="slider-labels">
+                  <span className="row-label">Shadow quality</span>
+                  <span className="slider-value">
+                    {shadowLabel} ({shadowQuality}%)
+                  </span>
+                </div>
+
+                <input
+                  type="range"
+                  min="20"
+                  max="100"
+                  step="5"
+                  value={shadowQuality}
+                  onChange={(e) => setShadowQuality(Number(e.target.value))}
+                  className="shadow-slider"
+                />
+              </div>
+            </section>
+
+            <section className="control-section">
+              <div className="control-header">
+                <h3>Scale Reference</h3>
+                <p className="control-subtitle">
+                  Use a human figure to judge furniture size.
+                </p>
+              </div>
+
+              <div className="control-row shadows-row">
+                <div>
+                  <span className="row-label">Show Human</span>
+                  <p className="row-description">
+                    Display a stick figure for proportion.
+                  </p>
+                </div>
+
+                <button
+                  className={`toggle-switch ${showHuman ? 'enabled' : 'disabled'}`}
+                  onClick={() => setShowHuman(!showHuman)}
+                >
+                  <span className="toggle-knob" />
+                </button>
+              </div>
+
+              <div className="control-row slider-row">
+                <div className="slider-labels">
+                  <span className="row-label">Human Height</span>
+                  <span className="slider-value">
+                    {humanHeight.toFixed(2)}m
+                  </span>
+                </div>
+
+                <input
+                  type="range"
+                  min="1.0"
+                  max="2.2"
+                  step="0.05"
+                  value={humanHeight}
+                  onChange={(e) => setHumanHeight(Number(e.target.value))}
+                  className="shadow-slider"
+                />
+              </div>
+            </section>
+          </aside>
+
+          <main className="three-d-viewport-area">
+            <div className="three-d-status-row">
+              <span className="status-chip">
+                Camera: {currentCamera?.label}
+              </span>
+              <span className="status-chip">
+                Lighting: {currentLighting?.label}
+              </span>
+              <span className="status-chip">
+                Shadows: {shadowsEnabled ? 'On' : 'Off'} ({shadowLabel})
+              </span>
+            </div>
+
+            <div className="three-d-viewport-wrapper three-d-compare-wrapper">
+              <div className="three-d-compare-column">
+                <h2 className="three-d-compare-title">Design A (Current)</h2>
+                <div className="three-d-compare-canvas">
+                  <Canvas shadows={shadowsEnabled} gl={{ preserveDrawingBuffer: true }}>
+                    <Suspense fallback={null}>
+                      <CameraController activeCamera={activeCamera} roomSpecs={layoutA.roomSpecs} zoomLevel={zoomLevel} />
+                      <RoomScene
+                        roomSpecs={layoutA.roomSpecs}
+                        canvasItems={layoutA.canvasItems}
+                        lighting={activeLighting}
+                        shadowsEnabled={shadowsEnabled}
+                        showHuman={showHuman}
+                        humanHeight={humanHeight}
+                      />
+                    </Suspense>
+                  </Canvas>
+                </div>
+              </div>
+
+              <div className="three-d-compare-column">
+                <h2 className="three-d-compare-title">Design B (Selected)</h2>
+                <div className="three-d-compare-canvas">
+                  <Canvas shadows={shadowsEnabled} gl={{ preserveDrawingBuffer: true }}>
+                    <Suspense fallback={null}>
+                      <CameraController activeCamera={activeCamera} roomSpecs={layoutB.roomSpecs} zoomLevel={zoomLevel} />
+                      <RoomScene
+                        roomSpecs={layoutB.roomSpecs}
+                        canvasItems={layoutB.canvasItems}
+                        lighting={activeLighting}
+                        shadowsEnabled={shadowsEnabled}
+                        showHuman={showHuman}
+                        humanHeight={humanHeight}
+                      />
+                    </Suspense>
+                  </Canvas>
+                </div>
+              </div>
+            </div>
+
+            <div className="three-d-viewport-footer">
+              <div className="zoom-controls">
+                <button
+                  className="zoom-btn"
+                  onClick={() => handleZoomChange('out')}
+                  aria-label="Zoom out"
+                >
+                  -
+                </button>
+                <span className="zoom-label">Zoom</span>
+                <button
+                  className="zoom-btn"
+                  onClick={() => handleZoomChange('in')}
+                  aria-label="Zoom in"
+                >
+                  +
+                </button>
+                <button
+                  className="zoom-btn reset"
+                  onClick={() => setZoomLevel(1)}
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default DesignComparison3D;
+

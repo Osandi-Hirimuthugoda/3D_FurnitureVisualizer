@@ -285,3 +285,20 @@
     grid-template-columns: 1fr;
   }
 }
+
+.explore-templates-btn {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.explore-templates-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
