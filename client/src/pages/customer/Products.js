@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
 import { getAllProducts } from '../../api/products';
+import { addToCart } from '../../api/cart';
 import './Products.css';
 
 const Products = () => {
@@ -14,17 +15,13 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [cart, setCart] = useState([]);
+  const [addingToCart, setAddingToCart] = useState({});
+  const [cartMsg, setCartMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     fetchProducts();
-    
-    // Load cart from localStorage
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
   }, []);
 
   const fetchProducts = async () => {
@@ -82,23 +79,17 @@ const Products = () => {
     return price - (price * discount / 100);
   };
 
-  const addToCart = (product) => {
-    const existingItem = cart.find(item => item._id === product._id);
-    let updatedCart;
-
-    if (existingItem) {
-      updatedCart = cart.map(item =>
-        item._id === product._id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-    } else {
-      updatedCart = [...cart, { ...product, quantity: 1 }];
+  const handleAddToCart = async (product) => {
+    setAddingToCart(prev => ({ ...prev, [product._id]: true }));
+    try {
+      await addToCart(product._id, 1);
+      setCartMsg(`${product.name} added to cart!`);
+      setTimeout(() => setCartMsg(''), 2500);
+    } catch (err) {
+      alert('Failed to add to cart: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setAddingToCart(prev => ({ ...prev, [product._id]: false }));
     }
-
-    setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-    alert(`${product.name} added to cart!`);
   };
 
   const categories = [
@@ -122,6 +113,7 @@ const Products = () => {
           </button>
           <h1>Our Furniture Collection</h1>
           <p className="subtitle">Browse our wide selection of quality furniture</p>
+          {cartMsg && <div className="cart-toast">{cartMsg}</div>}
         </div>
 
         <div className="products-controls">
@@ -218,10 +210,10 @@ const Products = () => {
 
                       <button
                         className="add-to-cart-btn"
-                        onClick={() => addToCart(product)}
-                        disabled={!product.inStock}
+                        onClick={() => handleAddToCart(product)}
+                        disabled={!product.inStock || addingToCart[product._id]}
                       >
-                        {product.inStock ? '🛒 Add to Cart' : 'Out of Stock'}
+                        {addingToCart[product._id] ? 'Adding...' : product.inStock ? '🛒 Add to Cart' : 'Out of Stock'}
                       </button>
                     </div>
                   </div>

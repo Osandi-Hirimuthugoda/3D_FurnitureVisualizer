@@ -120,7 +120,7 @@
 .floor-select:focus {
   outline: none;
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(47, 158, 158, 0.15);
+  box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.15);
 }
 
 .shape-buttons {
@@ -142,14 +142,14 @@
 
 .shape-btn:hover {
   border-color: var(--accent-blue);
-  background: rgba(47, 158, 158, 0.05);
+  background: rgba(30, 60, 114, 0.05);
 }
 
 .shape-btn.active {
-  background: linear-gradient(135deg, #2F9E9E, #4CB7A5);
+  background: linear-gradient(135deg, #2a5298, #3d7eaa);
   color: white;
-  border-color: #2F9E9E;
-  box-shadow: 0 4px 12px rgba(47, 158, 158, 0.3);
+  border-color: #2a5298;
+  box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
 }
 
 .color-input-group {

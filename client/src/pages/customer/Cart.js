@@ -3,103 +3,61 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
 import { createOrder } from '../../api/orders';
+import { getCart, updateQuantity as apiUpdateQty, removeFromCart as apiRemove, clearCart as apiClear } from '../../api/cart';
 import './Cart.css';
 
 const Cart = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
-  const [customerInfo, setCustomerInfo] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: ''
-  });
+  const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '', address: '' });
 
   useEffect(() => {
-    // Load cart from localStorage
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
-    }
+    getCart()
+      .then(data => setCartItems(data.items || []))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  const updateCart = (updatedCart) => {
-    setCartItems(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  const updateQuantity = async (productId, newQty) => {
+    if (newQty < 1) return;
+    const data = await apiUpdateQty(productId, newQty);
+    setCartItems(data.items);
   };
 
-  const updateQuantity = (itemId, newQuantity) => {
-    if (newQuantity < 1) return;
-    const updatedCart = cartItems.map(item =>
-      item._id === itemId ? { ...item, quantity: newQuantity } : item
-    );
-    updateCart(updatedCart);
+  const removeItem = async (productId) => {
+    const data = await apiRemove(productId);
+    setCartItems(data.items);
   };
 
-  const removeItem = (itemId) => {
-    const updatedCart = cartItems.filter(item => item._id !== itemId);
-    updateCart(updatedCart);
+  const clearCart = async () => {
+    if (!window.confirm('Clear your cart?')) return;
+    const data = await apiClear();
+    setCartItems(data.items);
   };
 
-  const clearCart = () => {
-    if (window.confirm('Are you sure you want to clear your cart?')) {
-      updateCart([]);
-    }
-  };
-
-  const calculateItemTotal = (item) => {
-    const price = item.discount > 0 
-      ? item.price - (item.price * item.discount / 100)
-      : item.price;
-    return price * item.quantity;
-  };
-
-  const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + calculateItemTotal(item), 0);
-  };
-
-  const calculateTax = () => {
-    return calculateSubtotal() * 0.08; // 8% tax
-  };
-
-  const calculateTotal = () => {
-    return calculateSubtotal() + calculateTax();
-  };
-
-  const handleCheckout = () => {
-    if (cartItems.length === 0) {
-      alert('Your cart is empty!');
-      return;
-    }
-    setShowCheckoutModal(true);
-  };
+  const getItemPrice = (item) => item.price; // price already discounted at add time
+  const calculateSubtotal = () => cartItems.reduce((t, i) => t + getItemPrice(i) * i.quantity, 0);
+  const calculateTax = () => calculateSubtotal() * 0.08;
+  const calculateTotal = () => calculateSubtotal() + calculateTax();
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    
     try {
-      // Build items array with product IDs for backend
       const items = cartItems.map(item => ({
-        product: item._id,
+        product: item.product._id || item.product,
         quantity: item.quantity
       }));
-
-      await createOrder({
-        items,
-        shippingAddress: customerInfo.address,
-        customerPhone: customerInfo.phone,
-        notes: ''
-      });
-
-      // Clear cart
-      updateCart([]);
+      await createOrder({ items, shippingAddress: customerInfo.address, customerPhone: customerInfo.phone, notes: '' });
+      await apiClear();
+      setCartItems([]);
       setShowCheckoutModal(false);
-      alert('Order placed successfully! Check your orders in the dashboard.');
-      navigate('/dashboard');
+      alert('Order placed successfully!');
+      navigate('/my-orders');
     } catch (err) {
-      alert('Failed to place order: ' + err.message);
+      alert('Failed to place order: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -118,7 +76,9 @@ const Cart = () => {
           </p>
         </div>
 
-        {cartItems.length > 0 ? (
+        {loading ? (
+          <div className="empty-cart"><p>Loading cart...</p></div>
+        ) : cartItems.length > 0 ? (
           <div className="cart-content">
             <div className="cart-items-section">
               <div className="cart-items-header">
@@ -128,8 +88,10 @@ const Cart = () => {
               </div>
 
               <div className="cart-items-list">
-                {cartItems.map(item => (
-                  <div key={item._id} className="cart-item">
+                {cartItems.map(item => {
+                  const productId = item.product?._id || item.product;
+                  return (
+                  <div key={productId} className="cart-item">
                     <div className="cart-item-image">
                       {item.image ? (
                         item.image.startsWith('data:image') || item.image.startsWith('http') ? (
@@ -144,59 +106,28 @@ const Cart = () => {
 
                     <div className="cart-item-details">
                       <h3>{item.name}</h3>
-                      <p className="item-category">{item.category}</p>
-                      <p className="item-dimensions">
-                        {item.dimensions.length}m × {item.dimensions.width}m × {item.dimensions.height}m
-                      </p>
-                      
                       <div className="item-pricing">
-                        {item.discount > 0 ? (
-                          <>
-                            <span className="original-price">Rs. {item.price.toLocaleString()}</span>
-                            <span className="discounted-price">
-                              Rs. {(item.price - (item.price * item.discount / 100)).toLocaleString()}
-                            </span>
-                            <span className="discount-badge">{item.discount}% OFF</span>
-                          </>
-                        ) : (
-                          <span className="price">Rs. {item.price.toLocaleString()}</span>
-                        )}
+                        <span className="price">Rs. {item.price.toLocaleString()}</span>
                       </div>
                     </div>
 
                     <div className="cart-item-actions">
                       <div className="quantity-controls">
-                        <button 
-                          className="qty-btn"
-                          onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                        >
-                          −
-                        </button>
+                        <button className="qty-btn" onClick={() => updateQuantity(productId, item.quantity - 1)}>−</button>
                         <span className="quantity">{item.quantity}</span>
-                        <button 
-                          className="qty-btn"
-                          onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                        >
-                          +
-                        </button>
+                        <button className="qty-btn" onClick={() => updateQuantity(productId, item.quantity + 1)}>+</button>
                       </div>
 
                       <div className="item-total">
                         <span className="total-label">Total:</span>
-                        <span className="total-price">
-                          Rs. {calculateItemTotal(item).toLocaleString()}
-                        </span>
+                        <span className="total-price">Rs. {(item.price * item.quantity).toLocaleString()}</span>
                       </div>
 
-                      <button 
-                        className="remove-btn"
-                        onClick={() => removeItem(item._id)}
-                      >
-                        🗑️ Remove
-                      </button>
+                      <button className="remove-btn" onClick={() => removeItem(productId)}>🗑️ Remove</button>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -225,7 +156,7 @@ const Cart = () => {
                 <span>Rs. {calculateTotal().toLocaleString()}</span>
               </div>
 
-              <button className="checkout-btn" onClick={handleCheckout}>
+              <button className="checkout-btn" onClick={() => setShowCheckoutModal(true)}>
                 Proceed to Checkout
               </button>
 

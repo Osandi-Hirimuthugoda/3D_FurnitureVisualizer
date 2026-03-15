@@ -6,6 +6,7 @@ const { protect, adminOnly } = require('../middleware/auth');
 // Protected routes (require authentication)
 router.post('/', protect, orderController.createOrder);
 router.get('/my-orders', protect, orderController.getMyOrders);
+router.put('/my-orders/:id/cancel', protect, orderController.cancelMyOrder);
 
 // Admin only routes
 router.get('/stats/summary', protect, adminOnly, orderController.getOrderStats);

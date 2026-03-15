@@ -199,6 +199,8 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
@@ -257,6 +259,9 @@
 
 .product-details {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .product-details h3 {
@@ -299,6 +304,7 @@
   gap: 0.75rem;
   margin: 1rem 0;
   flex-wrap: wrap;
+  margin-top: auto;
 }
 
 .price {
@@ -322,7 +328,7 @@
 .add-to-cart-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #4a9960 0%, #2d5f3f 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d7eaa 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -330,12 +336,13 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(74, 153, 96, 0.3);
+  box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+  margin-top: auto;
 }
 
 .add-to-cart-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 153, 96, 0.4);
+  box-shadow: 0 6px 20px rgba(30, 60, 114, 0.45);
 }
 
 .add-to-cart-btn:disabled {
@@ -405,4 +412,18 @@
   .products-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.cart-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(30, 60, 114, 0.4);
+  z-index: 9999;
+  animation: fadeInUp 0.3s ease;
 }

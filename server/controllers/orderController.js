@@ -64,7 +64,7 @@ exports.getOrder = async (req, res) => {
 // Get user's orders
 exports.getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ customer: req.user.id })
+    const orders = await Order.find({ customer: req.user._id })
       .populate('items.product')
       .sort({ createdAt: -1 });
     
@@ -123,7 +123,7 @@ exports.createOrder = async (req, res) => {
     }
     
     const order = new Order({
-      customer: req.user.id,
+      customer: req.user._id,
       customerName: req.user.fullName,
       customerEmail: req.user.email,
       customerPhone,
@@ -143,6 +143,22 @@ exports.createOrder = async (req, res) => {
   } catch (error) {
     console.error('Create order error:', error);
     res.status(500).json({ message: 'Server error while creating order' });
+  }
+};
+
+// Cancel own order (customer)
+exports.cancelMyOrder = async (req, res) => {
+  try {
+    const order = await Order.findOne({ _id: req.params.id, customer: req.user._id });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (!['pending', 'processing'].includes(order.status)) {
+      return res.status(400).json({ message: 'Order cannot be cancelled at this stage' });
+    }
+    order.status = 'cancelled';
+    await order.save();
+    res.json({ success: true, order });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error while cancelling order' });
   }
 };
 

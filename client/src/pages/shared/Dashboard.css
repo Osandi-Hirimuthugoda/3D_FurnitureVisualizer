@@ -97,34 +97,35 @@
 }
 
 .stat-card {
-  background: white;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d7eaa 100%);
   padding: 2rem;
   border-radius: 16px;
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(30, 60, 114, 0.3);
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .stat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(30, 60, 114, 0.45);
 }
 
 .stat-icon {
   font-size: 3rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .stat-info h3 {
   font-size: 2.5rem;
-  color: var(--primary-blue);
+  color: #ffffff;
   margin: 0;
 }
 
 .stat-info p {
-  color: var(--text-light);
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
   font-size: 1rem;
 }

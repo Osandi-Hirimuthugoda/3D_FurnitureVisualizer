@@ -1,5 +1,5 @@
 .sidebar {
-  background: linear-gradient(180deg, #1a3a3a 0%, #2F9E9E 50%, #1a3a3a 100%);
+  background: linear-gradient(180deg, #1a3a3a 0%, #2a5298 50%, #1a3a3a 100%);
   width: 260px;
   min-height: 100vh;
   position: fixed;
@@ -100,7 +100,7 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: #4CB7A5;
+  background: #3d7eaa;
   transform: scaleY(0);
   transition: transform 0.3s ease;
 }

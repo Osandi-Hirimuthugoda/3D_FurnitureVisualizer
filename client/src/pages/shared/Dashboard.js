@@ -37,6 +37,8 @@ const Dashboard = () => {
       await submitReview({ rating: reviewRating, comment: reviewComment });
       setReviewStatus('done');
       setReviewComment('');
+      setReviewRating(5);
+      setTimeout(() => setReviewStatus('idle'), 3000);
     } catch (err) {
       const msg = err?.response?.data?.error || err?.response?.data?.message || err.message || 'Unknown error';
       setReviewError(msg);
@@ -225,39 +227,38 @@ const Dashboard = () => {
           <div className="review-form-card">
             <h3>⭐ Leave a Review</h3>
             <p>Share your experience with Living Trend</p>
-            {reviewStatus === 'done' ? (
+            {reviewStatus === 'done' && (
               <div className="review-success">✅ Thank you for your review! It will appear on the home page.</div>
-            ) : (
-              <form onSubmit={handleReviewSubmit} className="review-form">
-                <div className="star-rating">
-                  {[1,2,3,4,5].map(star => (
-                    <span
-                      key={star}
-                      className={`star ${star <= reviewRating ? 'active' : ''}`}
-                      onClick={() => setReviewRating(star)}
-                    >★</span>
-                  ))}
-                </div>
-                <textarea
-                  className="review-textarea"
-                  placeholder="Write your review here..."
-                  value={reviewComment}
-                  onChange={e => setReviewComment(e.target.value)}
-                  rows={4}
-                  required
-                />
-                <button
-                  type="submit"
-                  className="review-submit-btn"
-                  disabled={reviewStatus === 'submitting' || !reviewComment.trim()}
-                >
-                  {reviewStatus === 'submitting' ? 'Submitting...' : reviewStatus === 'error' ? 'Failed, try again' : 'Submit Review'}
-                </button>
-                {reviewStatus === 'error' && reviewError && (
-                  <div className="review-error">❌ {reviewError}</div>
-                )}
-              </form>
             )}
+            <form onSubmit={handleReviewSubmit} className="review-form">
+              <div className="star-rating">
+                {[1,2,3,4,5].map(star => (
+                  <span
+                    key={star}
+                    className={`star ${star <= reviewRating ? 'active' : ''}`}
+                    onClick={() => setReviewRating(star)}
+                  >★</span>
+                ))}
+              </div>
+              <textarea
+                className="review-textarea"
+                placeholder="Write your review here..."
+                value={reviewComment}
+                onChange={e => setReviewComment(e.target.value)}
+                rows={4}
+                required
+              />
+              <button
+                type="submit"
+                className="review-submit-btn"
+                disabled={reviewStatus === 'submitting' || !reviewComment.trim()}
+              >
+                {reviewStatus === 'submitting' ? 'Submitting...' : reviewStatus === 'error' ? 'Failed, try again' : 'Submit Review'}
+              </button>
+              {reviewStatus === 'error' && reviewError && (
+                <div className="review-error">❌ {reviewError}</div>
+              )}
+            </form>
           </div>
         </div>
       )}

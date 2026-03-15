@@ -5,11 +5,25 @@
 }
 
 :root {
-  --primary-teal: #2F9E9E;
-  --secondary-teal: #4CB7A5;
-  --accent-sage: #A8CBB5;
+  /* Primary theme - blue */
+  --primary-blue: #1e3c72;
+  --secondary-blue: #2a5298;
+  --accent-blue: #3d7eaa;
+  --btn-bg: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d7eaa 100%);
+  --btn-hover-shadow: rgba(30, 60, 114, 0.4);
+
+  /* Legacy teal aliases - now mapped to blue */
+  --primary-teal: #2a5298;
+  --secondary-teal: #3d7eaa;
+  --hover-teal: #1e3c72;
+  --accent-sage: #b3d9ff;
   --light-blue: #E3F2FD;
-  --hover-teal: #23827A;
+  --primary-green: #2a5298;
+  --secondary-green: #3d7eaa;
+  --accent-green: #3d7eaa;
+  --light-cyan: #E3F2FD;
+
+  /* Utility */
   --coral: #F37A6D;
   --terracotta: #D76B4D;
   --error-red: #F28B82;
@@ -20,15 +34,6 @@
   --bg-offwhite: #F2E8D7;
   --white: #ffffff;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-  /* Legacy aliases for any var() references in existing code */
-  --primary-blue: #2F9E9E;
-  --secondary-blue: #4CB7A5;
-  --accent-blue: #4CB7A5;
-  --primary-green: #2F9E9E;
-  --secondary-green: #4CB7A5;
-  --accent-green: #4CB7A5;
-  --light-cyan: #E3F2FD;
 }
 
 body {
@@ -87,7 +92,7 @@ html {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #e8f5f3 0%, #c3e4dd 100%);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .page-container {
@@ -111,7 +116,7 @@ html {
   left: 0;
   top: 0;
   padding: 10px 20px;
-  background: linear-gradient(135deg, #2F9E9E 0%, #23827A 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -123,14 +128,14 @@ html {
 
 .page-header .back-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(47, 158, 158, 0.4);
+  box-shadow: 0 4px 12px rgba(30, 60, 114, 0.4);
 }
 
 .page-header h1 {
   font-size: 2.5rem;
   color: var(--text-dark);
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #2F9E9E 0%, #4CB7A5 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #3d7eaa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

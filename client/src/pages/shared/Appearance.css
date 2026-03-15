@@ -371,14 +371,14 @@
   padding: 0.8rem;
   border: none;
   border-radius: 10px;
-  background: #4CB7A5;
+  background: #3d7eaa;
   color: white;
   font-weight: 600;
   cursor: pointer;
 }
 
 .confirm-btn:hover {
-  background: #23827A;
+  background: #1e3c72;
 }
 
 /* RESPONSIVE */

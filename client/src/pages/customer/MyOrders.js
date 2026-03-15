@@ -5,6 +5,8 @@ import Footer from '../../components/shared/Footer';
 import { getMyOrders } from '../../api/orders';
 import './MyOrders.css';
 
+const API_URL = 'http://localhost:5001/api';
+
 const statusColors = {
   pending: '#f59e0b',
   processing: '#3b82f6',
@@ -16,9 +18,11 @@ const statusColors = {
 const MyOrders = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
+  const token = localStorage.getItem('token');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cancelling, setCancelling] = useState({});
 
   useEffect(() => {
     fetchOrders();
@@ -33,6 +37,24 @@ const MyOrders = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancel = async (orderId) => {
+    if (!window.confirm('Are you sure you want to cancel this order?')) return;
+    setCancelling(prev => ({ ...prev, [orderId]: true }));
+    try {
+      const res = await fetch(`${API_URL}/orders/my-orders/${orderId}/cancel`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: 'cancelled' } : o));
+    } catch (err) {
+      alert('Failed to cancel: ' + err.message);
+    } finally {
+      setCancelling(prev => ({ ...prev, [orderId]: false }));
     }
   };
 
@@ -102,7 +124,18 @@ const MyOrders = () => {
 
                 <div className="order-card-footer">
                   <span className="shipping-addr">📍 {order.shippingAddress}</span>
-                  <span className="order-total">Total: Rs. {order.totalAmount.toLocaleString()}</span>
+                  <div className="order-footer-right">
+                    <span className="order-total">Total: Rs. {order.totalAmount.toLocaleString()}</span>
+                    {['pending', 'processing'].includes(order.status) && (
+                      <button
+                        className="cancel-order-btn"
+                        onClick={() => handleCancel(order._id)}
+                        disabled={cancelling[order._id]}
+                      >
+                        {cancelling[order._id] ? 'Cancelling...' : 'Cancel Order'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
