@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import TemplateSelector from './TemplateSelector';
@@ -28,6 +28,7 @@ const LayoutEditor = () => {
   const [expandedCategory, setExpandedCategory] = useState('sofas');
   const [productsLoading, setProductsLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState('idle');
+  const dragOffset = useRef({ x: 0, y: 0 });
 
   const historyRef = useRef([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -409,15 +410,31 @@ const LayoutEditor = () => {
                     style={{ left: item.x * 50 + 'px', top: item.y * 50 + 'px', width: item.width * 50 + 'px', height: item.height * 50 + 'px', transform: 'rotate(' + item.rotation + 'deg)' }}
                     onClick={() => setSelectedItem(item)}
                     draggable
-                    onDragStart={(e) => { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('canvasId', item.canvasId.toString()); }}
+                    onDragStart={(e) => { 
+                      e.dataTransfer.effectAllowed = 'move'; 
+                      e.dataTransfer.setData('canvasId', item.canvasId.toString());
+                      
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      // Store the offset of the click from the top-left corner of the item (in meters)
+                      dragOffset.current = {
+                        x: (e.clientX - rect.left) / 50,
+                        y: (e.clientY - rect.top) / 50
+                      };
+                    }}
                     onDragEnd={(e) => {
                       const canvas = e.currentTarget.parentElement;
                       const rect = canvas.getBoundingClientRect();
-                      const newX = (e.clientX - rect.left) / 50;
-                      const newY = (e.clientY - rect.top) / 50;
+                      
+                      // Final position (meters) = (MousePos - CanvasPos) / 50 - OffsetWithinItem
+                      const rawX = (e.clientX - rect.left) / 50 - dragOffset.current.x;
+                      const rawY = (e.clientY - rect.top) / 50 - dragOffset.current.y;
+                      
+                      const newX = Math.max(0, Math.min(roomDimensions.length - item.width, rawX));
+                      const newY = Math.max(0, Math.min(roomDimensions.width - item.height, rawY));
+                      
                       const newItems = canvasItems.map(i =>
                         i.canvasId === item.canvasId
-                          ? { ...i, x: Math.max(0, Math.min(roomDimensions.length - i.width, newX)), y: Math.max(0, Math.min(roomDimensions.width - i.height, newY)) }
+                          ? { ...i, x: newX, y: newY }
                           : i
                       );
                       setCanvasItems(newItems);

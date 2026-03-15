@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
+import { updateDesign, getDesign } from '../../api/designs';
 import './Appearance.css';
 
 const Appearance = () => {
@@ -29,16 +30,91 @@ const Appearance = () => {
   { id: 'smooth', label: 'Smooth' }
 ];
 
-    const [appliedSettings, setAppliedSettings] = useState({
-    color: '#8e4b24',
-    material: 'wood'
-    });
-
+    const [designId, setDesignId] = useState(null);
+    const [roomSpecs, setRoomSpecs] = useState({});
+    const [canvasItems, setCanvasItems] = useState([]);
+    const [loading, setLoading] = useState(false);
+    
     // control showing preview comparison
     const [showPreview, setShowPreview] = useState(false);
+    const [appliedSettings, setAppliedSettings] = useState({
+        color: '#8e4b24',
+        material: 'wood'
+    });
+
+    useEffect(() => {
+        const id = localStorage.getItem('currentDesignId');
+        setDesignId(id);
+
+        const loadData = async () => {
+            // Load from localStorage first for immediate responsiveness
+            const localSpecs = localStorage.getItem('roomSpecs');
+            if (localSpecs) {
+                const parsed = JSON.parse(localSpecs);
+                setRoomSpecs(parsed);
+                setSettings(s => ({
+                    ...s,
+                    color: parsed.wallColor || '#F5F5DC',
+                    material: parsed.floorType || 'wood'
+                }));
+            }
+
+            const localItems = localStorage.getItem('canvasItems');
+            if (localItems) setCanvasItems(JSON.parse(localItems));
+
+            if (id) {
+                try {
+                    const design = await getDesign(id);
+                    if (design.roomSpecs) {
+                        setRoomSpecs(design.roomSpecs);
+                        setSettings(s => ({
+                            ...s,
+                            color: design.roomSpecs.wallColor || '#F5F5DC',
+                            material: design.roomSpecs.floorType || 'wood'
+                        }));
+                    }
+                    if (design.canvasItems) setCanvasItems(design.canvasItems);
+                } catch (err) {
+                    console.error('Failed to load design:', err);
+                }
+            }
+        };
+
+        loadData();
+    }, []);
 
   const handleChange = (field, value) => {
     setSettings({ ...settings, [field]: value });
+  };
+
+  const handleApply = async () => {
+    setLoading(true);
+    try {
+        const updatedSpecs = { 
+            ...roomSpecs, 
+            wallColor: settings.color,
+            floorType: settings.material 
+        };
+
+        // Update local state and storage
+        setRoomSpecs(updatedSpecs);
+        localStorage.setItem('roomSpecs', JSON.stringify(updatedSpecs));
+
+        if (designId) {
+            await updateDesign(designId, { 
+                roomSpecs: updatedSpecs,
+                canvasItems: canvasItems 
+            });
+        }
+        
+        alert('Appearance settings applied successfully!');
+        navigate('/room-3d');
+    } catch (err) {
+        console.error('Failed to apply settings:', err);
+        alert('Failed to save settings. Please try again.');
+    } finally {
+        setLoading(false);
+    }
   };
 
   const handleBack = () => {
@@ -178,8 +254,12 @@ const Appearance = () => {
                     Preview Changes
                 </button>
 
-                <button className="apply-btn">
-                ✓ Apply
+                <button 
+                    className="apply-btn" 
+                    onClick={handleApply}
+                    disabled={loading}
+                >
+                {loading ? 'Applying...' : '✓ Apply Changes'}
                 </button>
             </div>
 
@@ -202,7 +282,7 @@ const Appearance = () => {
                 background:
                     settings.target === 'room'
                     ? settings.color
-                    : '#F5F5DC'
+                    : (roomSpecs.wallColor || '#F5F5DC')
                 }}
             >
                 <div
@@ -211,7 +291,7 @@ const Appearance = () => {
                     background:
                     settings.target === 'item'
                         ? settings.color
-                        : appliedSettings.color
+                        : (roomSpecs.floorType === 'carpet' ? '#8B7355' : '#6B5344')
                 }}
                 ></div>
             </div>
@@ -222,11 +302,11 @@ const Appearance = () => {
         <p className="sub-label">Original</p>
         <div 
             className="preview-box"
-            style={{ background: '#F5F5DC' }}
+            style={{ background: roomSpecs.wallColor || '#F5F5DC' }}
         >
             <div
-            className={`preview-object ${appliedSettings.material}`}
-            style={{ background: appliedSettings.color }}
+            className={`preview-object ${roomSpecs.floorType || 'wood'}`}
+            style={{ background: roomSpecs.floorType === 'carpet' ? '#8B7355' : '#6B5344' }}
             ></div>
         </div>
         </div>
@@ -273,18 +353,10 @@ const Appearance = () => {
 
                 <button 
                 className="confirm-btn"
-                onClick={() => {
-                    if (settings.target === 'item') {
-                        setAppliedSettings({
-                        color: settings.color,
-                        material: settings.material
-                        });
-                    }
-
-                    setShowPreview(false);
-                    }}
+                onClick={handleApply}
+                disabled={loading}
                 >
-                Confirm
+                {loading ? 'Saving...' : 'Confirm & Apply'}
                 </button>
             </div>
             )}

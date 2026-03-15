@@ -49,8 +49,8 @@ const Navbar = ({ userRole }) => {
           {userRole ? (
             <>
               <li>
-                <Link 
-                  to="/dashboard" 
+                <Link
+                  to="/dashboard"
                   className={isActive('/dashboard') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -58,8 +58,8 @@ const Navbar = ({ userRole }) => {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/room-setup" 
+                <Link
+                  to="/room-setup"
                   className={isActive('/room-setup') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -67,26 +67,18 @@ const Navbar = ({ userRole }) => {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/room-layout" 
+                <Link
+                  to="/room-layout"
                   className={isActive('/room-layout') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   2D Layout
                 </Link>
               </li>
+
               <li>
-                <Link 
-                  to="/appearance" 
-                  className={isActive('/appearance') ? 'active' : ''}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Appearance
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/portfolio" 
+                <Link
+                  to="/portfolio"
                   className={isActive('/portfolio') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -94,8 +86,8 @@ const Navbar = ({ userRole }) => {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/products" 
+                <Link
+                  to="/products"
                   className={isActive('/products') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -103,20 +95,20 @@ const Navbar = ({ userRole }) => {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/settings" 
+                <Link
+                  to="/settings"
                   className={isActive('/settings') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Settings
                 </Link>
               </li>
-              
+
               {userRole === 'admin' && (
                 <>
                   <li>
-                    <Link 
-                      to="/admin/products" 
+                    <Link
+                      to="/admin/products"
                       className={isActive('/admin/products') ? 'active' : ''}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -124,8 +116,8 @@ const Navbar = ({ userRole }) => {
                     </Link>
                   </li>
                   <li>
-                    <Link 
-                      to="/admin/orders" 
+                    <Link
+                      to="/admin/orders"
                       className={isActive('/admin/orders') ? 'active' : ''}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -134,12 +126,12 @@ const Navbar = ({ userRole }) => {
                   </li>
                 </>
               )}
-              
+
               {userRole === 'customer' && (
                 <>
                   <li>
-                    <Link 
-                      to="/cart" 
+                    <Link
+                      to="/cart"
                       className={isActive('/cart') ? 'active' : ''}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -147,8 +139,8 @@ const Navbar = ({ userRole }) => {
                     </Link>
                   </li>
                   <li>
-                    <Link 
-                      to="/my-orders" 
+                    <Link
+                      to="/my-orders"
                       className={isActive('/my-orders') ? 'active' : ''}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -157,7 +149,7 @@ const Navbar = ({ userRole }) => {
                   </li>
                 </>
               )}
-              
+
               <li className="nav-user">
                 <button className="btn-user" onClick={handleLogout}>
                   👤 Logout
@@ -167,8 +159,8 @@ const Navbar = ({ userRole }) => {
           ) : (
             <>
               <li>
-                <Link 
-                  to="/" 
+                <Link
+                  to="/"
                   className={isActive('/') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -176,8 +168,8 @@ const Navbar = ({ userRole }) => {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/login" 
+                <Link
+                  to="/login"
                   className={isActive('/login') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >

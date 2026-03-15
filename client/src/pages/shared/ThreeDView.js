@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import { getDesign } from '../../api/designs';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, useTexture, Html } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, useTexture, Html, PivotControls } from '@react-three/drei';
 import * as THREE from 'three';
 import './ThreeDView.css';
 
@@ -36,13 +36,13 @@ function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
 
   if (isImage) {
     return (
-      <TexturedFurniture 
-        mapUrl={item.image} 
+      <TexturedFurniture
+        mapUrl={item.image}
         name={item.name}
-        position={[centerX, h / 2, centerZ]} 
-        rotation={[0, rot, 0]} 
-        w={w} 
-        h={h} 
+        position={[centerX, h / 2, centerZ]}
+        rotation={[0, rot, 0]}
+        w={w}
+        h={h}
         d={d}
         categoryColor={hex}
       />
@@ -53,11 +53,11 @@ function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
     <mesh key={idx} position={[centerX, h / 2, centerZ]} rotation={[0, rot, 0]} castShadow receiveShadow>
       <boxGeometry args={[w, h, d]} />
       <meshLambertMaterial color={hex} transparent opacity={0.7} />
-      <Html distanceFactor={5} position={[0, h/2 + 0.2, 0]} center>
-        <div style={{ 
-          background: 'rgba(0,0,0,0.6)', 
-          color: 'white', 
-          padding: '2px 8px', 
+      <Html distanceFactor={5} position={[0, h / 2 + 0.2, 0]} center>
+        <div style={{
+          background: 'rgba(0,0,0,0.6)',
+          color: 'white',
+          padding: '2px 8px',
           borderRadius: '4px',
           fontSize: '12px',
           whiteSpace: 'nowrap',
@@ -73,7 +73,7 @@ function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
 function TexturedFurniture({ mapUrl, name, position, rotation, w, h, d, categoryColor }) {
   // Defensive check to avoid useTexture hanging on wrong type
   if (typeof mapUrl !== 'string') return null;
-  
+
   return (
     <Suspense fallback={<mesh position={position}><boxGeometry args={[w, h, d]} /><meshBasicMaterial color="#ccc" wireframe /></mesh>}>
       <ActualTexturedFurniture mapUrl={mapUrl} name={name} position={position} rotation={rotation} w={w} h={h} d={d} categoryColor={categoryColor} />
@@ -83,7 +83,7 @@ function TexturedFurniture({ mapUrl, name, position, rotation, w, h, d, category
 
 function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, categoryColor }) {
   const texture = useTexture(mapUrl);
-  
+
   // Create 6 materials for the box
   // 0:Right, 1:Left, 2:Top, 3:Bottom, 4:Front, 5:Back
   const sideMaterial = new THREE.MeshStandardMaterial({ color: categoryColor, roughness: 0.8 });
@@ -95,13 +95,13 @@ function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, ca
       <mesh castShadow receiveShadow material={materials}>
         <boxGeometry args={[w, h, d]} />
       </mesh>
-      
+
       {/* Label above the object */}
       <Html distanceFactor={5} position={[0, h / 2 + 0.3, 0]} center>
-        <div style={{ 
-          background: 'rgba(0,0,0,0.7)', 
-          color: 'white', 
-          padding: '2px 10px', 
+        <div style={{
+          background: 'rgba(0,0,0,0.7)',
+          color: 'white',
+          padding: '2px 10px',
           borderRadius: '4px',
           fontSize: '11px',
           fontWeight: 'bold',
@@ -116,68 +116,88 @@ function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, ca
   );
 }
 
-function HumanFigure({ height, position }) {
+function HumanFigure({ height, position, color, onMove, onDraggingState }) {
   const headSize = height * 0.12;
   const torsoHeight = height * 0.4;
   const legHeight = height * 0.48;
   const armLength = height * 0.4;
-  
-  const material = new THREE.MeshStandardMaterial({ color: '#333', roughness: 0.5 });
+
 
   return (
-    <group position={[position[0], height/2, position[1]]}>
-      {/* Head */}
-      <mesh position={[0, height/2 - headSize/2, 0]} castShadow>
-        <sphereGeometry args={[headSize / 2, 16, 16]} />
-        <meshStandardMaterial color="#555" />
-      </mesh>
-      
-      {/* Torso */}
-      <mesh position={[0, legHeight + torsoHeight/2 - height/2, 0]} castShadow>
-        <cylinderGeometry args={[0.05, 0.05, torsoHeight]} />
-        <primitive object={material} attach="material" />
-      </mesh>
-      
-      {/* Legs */}
-      <mesh position={[-0.08, legHeight/2 - height/2, 0]} castShadow>
-        <cylinderGeometry args={[0.02, 0.02, legHeight]} />
-        <primitive object={material} attach="material" />
-      </mesh>
-      <mesh position={[0.08, legHeight/2 - height/2, 0]} castShadow>
-        <cylinderGeometry args={[0.02, 0.02, legHeight]} />
-        <primitive object={material} attach="material" />
-      </mesh>
-      
-      {/* Arms */}
-      <mesh position={[-0.15, legHeight + torsoHeight - 0.1 - height/2, 0]} rotation={[0, 0, 0.2]} castShadow>
-        <cylinderGeometry args={[0.015, 0.015, armLength]} />
-        <primitive object={material} attach="material" />
-      </mesh>
-      <mesh position={[0.15, legHeight + torsoHeight - 0.1 - height/2, 0]} rotation={[0, 0, -0.2]} castShadow>
-        <cylinderGeometry args={[0.015, 0.015, armLength]} />
-        <primitive object={material} attach="material" />
-      </mesh>
-      
-      <Html distanceFactor={5} position={[0, height/2 + 0.2, 0]} center>
-        <div style={{ 
-          background: 'rgba(255,255,255,0.8)', 
-          color: '#333', 
-          padding: '2px 6px', 
-          borderRadius: '4px',
-          fontSize: '10px',
-          fontWeight: 'bold',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none',
-          border: '1px solid #333'
-        }}>
-          Human ({height.toFixed(2)}m)
-        </div>
-      </Html>
+    <group position={[position[0], height / 2, position[2]]}>
+      <PivotControls
+        anchor={[0, -height / 2, 0]}
+        depthTest={false}
+        displayValues={false}
+        axisColors={['#ff3f3f', '#3f7fff', '#3fff3f']}
+        fixed={false}
+        disableScaling={true}
+        disableRotations={true}
+        activeAxes={[true, false, true]}
+        onDragStart={() => onDraggingState(true)}
+        onDragEnd={() => onDraggingState(false)}
+        onDrag={(l) => {
+          // Extract world position from matrix
+          const matrix = new THREE.Matrix4();
+          matrix.copy(l);
+          const pos = new THREE.Vector3();
+          pos.setFromMatrixPosition(matrix);
+          onMove([pos.x, 0, pos.z]);
+        }}
+      >
+        {/* Head */}
+        <mesh position={[0, height / 2 - headSize / 2, 0]} castShadow>
+          <sphereGeometry args={[headSize / 2, 16, 16]} />
+          <meshStandardMaterial color={color === '#000000' ? '#444' : color} roughness={0.5} />
+        </mesh>
+
+        {/* Torso */}
+        <mesh position={[0, legHeight + torsoHeight / 2 - height / 2, 0]} castShadow>
+          <cylinderGeometry args={[0.05, 0.05, torsoHeight]} />
+          <meshStandardMaterial color={color === '#000000' ? '#444' : color} roughness={0.5} />
+        </mesh>
+
+        {/* Legs */}
+        <mesh position={[-0.08, legHeight / 2 - height / 2, 0]} castShadow>
+          <cylinderGeometry args={[0.02, 0.02, legHeight]} />
+          <meshStandardMaterial color={color === '#000000' ? '#444' : color} roughness={0.5} />
+        </mesh>
+        <mesh position={[0.08, legHeight / 2 - height / 2, 0]} castShadow>
+          <cylinderGeometry args={[0.02, 0.02, legHeight]} />
+          <meshStandardMaterial color={color === '#000000' ? '#444' : color} roughness={0.5} />
+        </mesh>
+
+        {/* Arms */}
+        <mesh position={[-0.15, legHeight + torsoHeight - 0.1 - height / 2, 0]} rotation={[0, 0, 0.2]} castShadow>
+          <cylinderGeometry args={[0.015, 0.015, armLength]} />
+          <meshStandardMaterial color={color === '#000000' ? '#444' : color} roughness={0.5} />
+        </mesh>
+        <mesh position={[0.15, legHeight + torsoHeight - 0.1 - height / 2, 0]} rotation={[0, 0, -0.2]} castShadow>
+          <cylinderGeometry args={[0.015, 0.015, armLength]} />
+          <meshStandardMaterial color={color === '#000000' ? '#444' : color} roughness={0.5} />
+        </mesh>
+
+        <Html distanceFactor={5} position={[0, height / 2 + 0.2, 0]} center>
+          <div style={{
+            background: color === '#ffff00' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)',
+            color: color === '#ffff00' ? 'white' : '#333',
+            padding: '2px 6px',
+            borderRadius: '4px',
+            fontSize: '10px',
+            fontWeight: 'bold',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            border: `1px solid ${color}`
+          }}>
+            Human ({height.toFixed(2)}m)
+          </div>
+        </Html>
+      </PivotControls>
     </group>
   );
 }
 
-function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
+function CameraController({ activeCamera, roomSpecs, zoomLevel, isDraggingScale }) {
   const cameraRef = React.useRef();
   const controlsRef = React.useRef();
 
@@ -191,7 +211,7 @@ function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
     const controls = controlsRef.current;
 
     let targetPos = [L * 0.8, H * 1.2, W * 1.2];
-    let lookAt = [L/2, H/2, W/2];
+    let lookAt = [L / 2, H / 2, W / 2];
 
     if (activeCamera === 'front') {
       targetPos = [L / 2, H / 2, W * 1.8];
@@ -199,7 +219,7 @@ function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
       targetPos = [L * 1.8, H / 2, W / 2];
     } else if (activeCamera === 'top') {
       targetPos = [L / 2, Math.max(L, W) * 1.5, W / 2 + 0.1];
-      lookAt = [L/2, 0, W/2];
+      lookAt = [L / 2, 0, W / 2];
     }
 
     camera.position.set(...targetPos);
@@ -214,12 +234,12 @@ function CameraController({ activeCamera, roomSpecs, zoomLevel }) {
   return (
     <>
       <PerspectiveCamera ref={cameraRef} makeDefault fov={45} near={0.1} far={100} />
-      <OrbitControls ref={controlsRef} enableDamping dampingFactor={0.05} />
+      <OrbitControls ref={controlsRef} enableDamping dampingFactor={0.05} enabled={!isDraggingScale} />
     </>
   );
 }
 
-function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman, humanHeight }) {
+function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman, humanHeight, humanColor, humanPosition, setHumanPosition, setIsDraggingScale }) {
   const L = parseFloat(roomSpecs?.length) || 5;
   const W = parseFloat(roomSpecs?.width) || 4;
   const H = parseFloat(roomSpecs?.height) || 3;
@@ -264,7 +284,7 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
     const s = new THREE.Shape();
     if (roomShapePoints.length > 0) {
       s.moveTo(roomShapePoints[0].x, roomShapePoints[0].y);
-      for(let i=1; i<roomShapePoints.length; i++) {
+      for (let i = 1; i < roomShapePoints.length; i++) {
         s.lineTo(roomShapePoints[i].x, roomShapePoints[i].y);
       }
       s.lineTo(roomShapePoints[0].x, roomShapePoints[0].y);
@@ -274,20 +294,20 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
 
   const wallSegments = React.useMemo(() => {
     const segs = [];
-    for(let i=0; i<roomShapePoints.length; i++) {
+    for (let i = 0; i < roomShapePoints.length; i++) {
       const p1 = roomShapePoints[i];
       const p2 = roomShapePoints[(i + 1) % roomShapePoints.length];
-      
+
       // Keep front open
       if (Math.abs(p1.y - W) < 0.01 && Math.abs(p2.y - W) < 0.01) continue;
 
       const dx = p2.x - p1.x;
       const dz = p2.y - p1.y;
-      const length = Math.sqrt(dx*dx + dz*dz);
+      const length = Math.sqrt(dx * dx + dz * dz);
       const cx = (p1.x + p2.x) / 2;
       const cz = (p1.y + p2.y) / 2;
       const rotY = Math.atan2(-dz, dx);
-      
+
       segs.push({ cx, cz, length, rotY, key: `wall-${i}` });
     }
     return segs;
@@ -308,11 +328,11 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
     <>
       <color attach="background" args={[bkgColor]} />
       <ambientLight color={ambColor} intensity={ambInt} />
-      <directionalLight 
-        color={dirColor} 
-        intensity={dirInt} 
-        position={[L/2, H * 2, W/2]} 
-        castShadow={shadowsEnabled} 
+      <directionalLight
+        color={dirColor}
+        intensity={dirInt}
+        position={[L / 2, H * 2, W / 2]}
+        castShadow={shadowsEnabled}
         shadow-mapSize={[1024, 1024]}
       />
 
@@ -323,7 +343,7 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
 
       {/* Walls */}
       {wallSegments.map((ws) => (
-        <mesh key={ws.key} position={[ws.cx, H/2, ws.cz]} rotation={[0, ws.rotY, 0]} receiveShadow>
+        <mesh key={ws.key} position={[ws.cx, H / 2, ws.cz]} rotation={[0, ws.rotY, 0]} receiveShadow>
           <boxGeometry args={[ws.length, H, 0.1]} />
           <meshLambertMaterial color={wallColor} />
         </mesh>
@@ -331,18 +351,24 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
 
       {/* Furniture */}
       {canvasItems?.map((item, idx) => (
-        <FurnitureItem 
-          key={item.canvasId || idx} 
-          item={item} 
-          idx={idx} 
-          colors={colors} 
-          shadowsEnabled={shadowsEnabled} 
+        <FurnitureItem
+          key={item.canvasId || idx}
+          item={item}
+          idx={idx}
+          colors={colors}
+          shadowsEnabled={shadowsEnabled}
         />
       ))}
 
       {/* Human Reference */}
       {showHuman && (
-        <HumanFigure height={humanHeight} position={[L * 0.2, W * 0.2]} />
+        <HumanFigure
+          height={humanHeight}
+          position={humanPosition}
+          color={humanColor}
+          onMove={setHumanPosition}
+          onDraggingState={setIsDraggingScale}
+        />
       )}
     </>
   );
@@ -364,6 +390,15 @@ const ThreeDView = () => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showHuman, setShowHuman] = useState(true);
   const [humanHeight, setHumanHeight] = useState(1.70);
+  const [humanColor, setHumanColor] = useState('#333333');
+  const [humanPosition, setHumanPosition] = useState([1, 0, 1]);
+  const [isDraggingScale, setIsDraggingScale] = useState(false);
+
+  useEffect(() => {
+    if (roomSpecs) {
+      setHumanPosition([roomSpecs.length * 0.2, 0, roomSpecs.width * 0.2]);
+    }
+  }, [roomSpecs?.length, roomSpecs?.width]);
 
   const handleBackTo2D = () => {
     navigate('/room-layout');
@@ -379,12 +414,12 @@ const ThreeDView = () => {
     // Always try to load canvasItems from localStorage first (covers template items not yet saved)
     const localItems = localStorage.getItem('canvasItems');
     if (localItems) {
-      try { setCanvasItems(JSON.parse(localItems)); } catch {}
+      try { setCanvasItems(JSON.parse(localItems)); } catch { }
     }
 
     const localSpecs = localStorage.getItem('roomSpecs');
     if (localSpecs) {
-      try { setRoomSpecs(JSON.parse(localSpecs)); } catch {}
+      try { setRoomSpecs(JSON.parse(localSpecs)); } catch { }
     }
 
     if (!id) {
@@ -596,6 +631,27 @@ const ThreeDView = () => {
                   className="shadow-slider"
                 />
               </div>
+
+              <div className="control-row">
+                <span className="row-label">Human Color</span>
+                <div className="human-color-picker">
+                  {[
+                    { name: 'Black', hex: '#333333' },
+                    { name: 'Blue', hex: '#3b82f6' },
+                    { name: 'Red', hex: '#ef4444' },
+                    { name: 'Yellow', hex: '#ffff00' },
+                    { name: 'Green', hex: '#22c55e' }
+                  ].map((c) => (
+                    <button
+                      key={c.hex}
+                      className={`color-swatch ${humanColor === c.hex ? 'active' : ''}`}
+                      style={{ backgroundColor: c.hex }}
+                      onClick={() => setHumanColor(c.hex)}
+                      title={c.name}
+                    />
+                  ))}
+                </div>
+              </div>
             </section>
 
             <section className="control-section">
@@ -658,14 +714,23 @@ const ThreeDView = () => {
               {!isRasterizing && !rasterizeError && roomSpecs && (
                 <Canvas shadows={shadowsEnabled} gl={{ preserveDrawingBuffer: true }}>
                   <Suspense fallback={null}>
-                    <CameraController activeCamera={activeCamera} roomSpecs={roomSpecs} zoomLevel={zoomLevel} />
-                    <RoomScene 
-                      roomSpecs={roomSpecs} 
-                      canvasItems={canvasItems} 
-                      lighting={activeLighting} 
-                      shadowsEnabled={shadowsEnabled} 
+                    <CameraController
+                      activeCamera={activeCamera}
+                      roomSpecs={roomSpecs}
+                      zoomLevel={zoomLevel}
+                      isDraggingScale={isDraggingScale}
+                    />
+                    <RoomScene
+                      roomSpecs={roomSpecs}
+                      canvasItems={canvasItems}
+                      lighting={activeLighting}
+                      shadowsEnabled={shadowsEnabled}
                       showHuman={showHuman}
                       humanHeight={humanHeight}
+                      humanColor={humanColor}
+                      humanPosition={humanPosition}
+                      setHumanPosition={setHumanPosition}
+                      setIsDraggingScale={setIsDraggingScale}
                     />
                   </Suspense>
                 </Canvas>
