@@ -87,7 +87,44 @@ html {
 }
 
 
-/* Common Page Layout Styles */
+/* ── Global Back Button ── */
+.back-btn,
+.back-btn-portfolio,
+.back-btn-settings {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  padding: 0.55rem 1.2rem !important;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(30, 60, 114, 0.3) !important;
+  white-space: nowrap !important;
+}
+
+.back-btn:hover,
+.back-btn-portfolio:hover,
+.back-btn-settings:hover {
+  background: linear-gradient(135deg, #162d55 0%, #1e3c72 100%) !important;
+  color: white !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 16px rgba(30, 60, 114, 0.45) !important;
+}
+
+.back-btn:active,
+.back-btn-portfolio:active,
+.back-btn-settings:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 6px rgba(30, 60, 114, 0.3) !important;
+}
+
+
 .page-wrapper {
   min-height: 100vh;
   display: flex;
@@ -115,20 +152,6 @@ html {
   position: absolute;
   left: 0;
   top: 0;
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.page-header .back-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(30, 60, 114, 0.4);
 }
 
 .page-header h1 {

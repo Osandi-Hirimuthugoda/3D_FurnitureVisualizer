@@ -28,20 +28,7 @@
 }
 
 .back-btn {
-  background: transparent;
-  border: 2px solid var(--primary-blue);
-  color: var(--primary-blue);
-  padding: 0.6rem 1.3rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.back-btn:hover {
-  background: var(--primary-blue);
-  color: #ffffff;
-  transform: translateX(-4px);
+  /* global style from index.css */
 }
 
 .appearance-container {

@@ -21,21 +21,7 @@
   font-size: 1.5rem;
 }
 
-.back-btn {
-  background: rgba(124, 166, 210, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateX(-5px);
-}
+/* back-btn inherits global blue style from index.css */
 
 .header-actions {
   display: flex;
@@ -286,12 +272,12 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(42, 82, 152, 0.3);
 }
 
 .count-icon {
@@ -325,18 +311,18 @@
 }
 
 .compare-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   color: white;
-  border-color: #667eea;
+  border-color: #2a5298;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(42, 82, 152, 0.3);
   position: relative;
 }
 
 .compare-btn:hover {
   background: linear-gradient(135deg, #5568d3 0%, #6d3a8a 100%);
   border-color: #5568d3;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 4px 12px rgba(42, 82, 152, 0.5);
   transform: translateY(-2px);
 }
 
@@ -403,13 +389,13 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 10;
   transform: scale(1.02);
-  border-color: #667eea;
+  border-color: #2a5298;
 }
 
 .canvas-item.selected {
-  border-color: #667eea;
+  border-color: #2a5298;
   border-width: 3px;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.3);
   z-index: 20;
 }
 
@@ -537,7 +523,7 @@
 
 /* Selected Item Info */
 .selected-item-info {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   padding: 0.75rem;
   border-radius: 12px;
   border: none;
@@ -993,3 +979,4 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+

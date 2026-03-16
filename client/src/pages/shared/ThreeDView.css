@@ -17,6 +17,8 @@
   box-shadow: var(--shadow);
 }
 
+/* back-btn inherits global blue style from index.css */
+
 .three-d-header-center {
   text-align: center;
   flex: 1;

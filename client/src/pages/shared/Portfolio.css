@@ -24,20 +24,7 @@
 }
 
 .back-btn-portfolio {
-  background: none;
-  border: none;
-  color: #718096;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: color 0.2s ease;
   width: 150px;
-}
-
-.back-btn-portfolio:hover {
-  color: #2D3748;
 }
 
 .portfolio-title {

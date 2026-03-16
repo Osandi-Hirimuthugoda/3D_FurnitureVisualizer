@@ -39,27 +39,8 @@
 }
 
 .back-btn-settings {
-    background: none;
-    border: none;
-    color: #64748B;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    width: auto;
     min-width: 150px;
     margin-left: -12px;
-    /* Visual alignment */
-}
-
-.back-btn-settings:hover {
-    color: #0F172A;
-    background-color: #F8FAFC;
 }
 
 .settings-title {
