@@ -5,6 +5,7 @@ import TemplateSelector from './TemplateSelector';
 import CompareDesignModal from './CompareDesignModal';
 import { getDesign, updateDesign, createDesign } from '../../api/designs';
 import { getAllProducts } from '../../api/products';
+import { addToCart } from '../../api/cart';
 import './LayoutEditor.css';
 
 const LayoutEditor = () => {
@@ -28,6 +29,7 @@ const LayoutEditor = () => {
   const [expandedCategory, setExpandedCategory] = useState('sofas');
   const [productsLoading, setProductsLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState('idle');
+  const [cartStatus, setCartStatus] = useState('idle'); // idle | adding | done | error
   const dragOffset = useRef({ x: 0, y: 0 });
 
   const historyRef = useRef([[]]);
@@ -159,6 +161,26 @@ const LayoutEditor = () => {
     }
   };
 
+  const handleAddAllToCart = async () => {
+    const itemsWithId = canvasItems.filter(i => i.id);
+    if (itemsWithId.length === 0) {
+      alert('No furniture items with product IDs on canvas.');
+      return;
+    }
+    setCartStatus('adding');
+    try {
+      for (const item of itemsWithId) {
+        await addToCart(item.id, 1);
+      }
+      setCartStatus('done');
+      setTimeout(() => setCartStatus('idle'), 2500);
+    } catch (err) {
+      console.error('Add to cart failed:', err);
+      setCartStatus('error');
+      setTimeout(() => setCartStatus('idle'), 2500);
+    }
+  };
+
   const handleAddToCanvas = (item) => {
     const newItem = {
       ...item,
@@ -286,6 +308,19 @@ const LayoutEditor = () => {
             >
               🔍 Compare Design
             </button>
+            {userRole !== 'admin' && (
+              <button
+                className={`toolbar-btn cart-all-btn ${cartStatus}`}
+                onClick={handleAddAllToCart}
+                disabled={cartStatus === 'adding' || canvasItems.length === 0}
+                title="Add all canvas items to cart"
+              >
+                {cartStatus === 'adding' && '⏳ Adding...'}
+                {cartStatus === 'done' && '✓ Added to Cart!'}
+                {cartStatus === 'error' && '✗ Failed'}
+                {cartStatus === 'idle' && '🛒 Add All to Cart'}
+              </button>
+            )}
             
             <button className={"save-btn " + saveStatus} onClick={handleSave} disabled={saveStatus === 'saving'}>
               {saveStatus === 'saving' && 'Saving...'}
@@ -583,7 +618,6 @@ const LayoutEditor = () => {
           isOpen={showCompareModal}
           onClose={() => setShowCompareModal(false)}
           currentDesignId={designId || localStorage.getItem('currentDesignId')}
-          userId={localStorage.getItem('userEmail')}
           onSelectDesign={handleSelectDesignForComparison}
         />
       </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import { getDesign } from '../../api/designs';
+import { addToCart } from '../../api/cart';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, useTexture, Html, PivotControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -393,6 +394,7 @@ const ThreeDView = () => {
   const [humanColor, setHumanColor] = useState('#333333');
   const [humanPosition, setHumanPosition] = useState([1, 0, 1]);
   const [isDraggingScale, setIsDraggingScale] = useState(false);
+  const [cartStatus, setCartStatus] = useState('idle');
 
   useEffect(() => {
     if (roomSpecs) {
@@ -406,6 +408,25 @@ const ThreeDView = () => {
 
   const handleOpenAppearance = () => {
     navigate('/appearance');
+  };
+
+  const handleAddAllToCart = async () => {
+    const itemsWithId = canvasItems.filter(i => i.id);
+    if (itemsWithId.length === 0) {
+      alert('No furniture items with product IDs on canvas.');
+      return;
+    }
+    setCartStatus('adding');
+    try {
+      for (const item of itemsWithId) {
+        await addToCart(item.id, 1);
+      }
+      setCartStatus('done');
+      setTimeout(() => setCartStatus('idle'), 2500);
+    } catch (err) {
+      setCartStatus('error');
+      setTimeout(() => setCartStatus('idle'), 2500);
+    }
   };
 
   const fetchDesign = useCallback(async () => {
@@ -491,6 +512,18 @@ const ThreeDView = () => {
           <button className="appearance-btn" onClick={handleOpenAppearance}>
             Appearance
           </button>
+          {userRole !== 'admin' && (
+            <button
+              className={`appearance-btn cart-all-btn-3d ${cartStatus}`}
+              onClick={handleAddAllToCart}
+              disabled={cartStatus === 'adding' || canvasItems.length === 0}
+            >
+              {cartStatus === 'adding' && '⏳ Adding...'}
+              {cartStatus === 'done' && '✓ Added!'}
+              {cartStatus === 'error' && '✗ Failed'}
+              {cartStatus === 'idle' && '🛒 Add All to Cart'}
+            </button>
+          )}
         </header>
 
         <div className="three-d-content">

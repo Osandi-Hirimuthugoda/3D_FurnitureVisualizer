@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getReviews } from '../../api/reviews';
+import modernLivingRoom from '../../assets/modern-living-room.jpg';
+import cozyBedroom from '../../assets/cozy-bedroom.jpg';
+import elegantDining from '../../assets/elegant-dining.jpg';
+import homeOffice from '../../assets/home-office.jpg';
 import './Home.css';
 
 const API_URL = 'http://localhost:5001/api';
@@ -10,6 +14,7 @@ const Home = () => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const [discountedProducts, setDiscountedProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   useEffect(() => {
     const fetchDiscountedProducts = async () => {
@@ -77,7 +82,12 @@ const Home = () => {
         </div>
       </nav>
       
-      <section className="hero-section">
+      <section className="hero-section" style={{
+        backgroundImage: `url(${process.env.PUBLIC_URL}/home-bg.jpg)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
         <div className="hero-content">
           <h1 className="hero-title">Welcome to Living Trend</h1>
           <p className="hero-subtitle">
@@ -90,11 +100,6 @@ const Home = () => {
           >
             🎨 Get Started
           </button>
-        </div>
-        <div className="hero-image">
-          <div className="floating-card">🪑</div>
-          <div className="floating-card">🛋️</div>
-          <div className="floating-card">🪟</div>
         </div>
       </section>
 
@@ -205,19 +210,19 @@ const Home = () => {
         <p className="section-subtitle">Get inspired by these beautiful room designs</p>
         <div className="gallery-grid">
           <div className="gallery-item">
-            <div className="gallery-placeholder">🛋️</div>
+            <img src={modernLivingRoom} alt="Modern Living Room" className="gallery-img" />
             <h4>Modern Living Room</h4>
           </div>
           <div className="gallery-item">
-            <div className="gallery-placeholder">🛏️</div>
+            <img src={cozyBedroom} alt="Cozy Bedroom" className="gallery-img" />
             <h4>Cozy Bedroom</h4>
           </div>
           <div className="gallery-item">
-            <div className="gallery-placeholder">🍽️</div>
+            <img src={elegantDining} alt="Elegant Dining" className="gallery-img" />
             <h4>Elegant Dining</h4>
           </div>
           <div className="gallery-item">
-            <div className="gallery-placeholder">💼</div>
+            <img src={homeOffice} alt="Home Office" className="gallery-img" />
             <h4>Home Office</h4>
           </div>
         </div>
@@ -226,19 +231,23 @@ const Home = () => {
       <section className="testimonials-section">
         <h2>What Our Customers Say</h2>
         <div className="testimonials-grid">
-          {reviews.length > 0 ? reviews.slice(0, 6).map((r, idx) => (
-            <div className="testimonial-card" key={r._id || idx}>
-              <div className="stars">{'⭐'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</div>
-              <p className="testimonial-text">"{r.comment}"</p>
-              <div className="testimonial-author">
-                <div className="author-avatar">👤</div>
-                <div>
-                  <h4>{r.userName}</h4>
-                  <p>{new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
+          {reviews.length > 0 ? (
+            <>
+              {(showAllReviews ? reviews : reviews.slice(0, 3)).map((r, idx) => (
+                <div className="testimonial-card" key={r._id || idx}>
+                  <div className="stars">{'⭐'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</div>
+                  <p className="testimonial-text">"{r.comment}"</p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">👤</div>
+                    <div>
+                      <h4>{r.userName}</h4>
+                      <p>{new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )) : (
+              ))}
+            </>
+          ) : (
             <>
               <div className="testimonial-card">
                 <div className="stars">⭐⭐⭐⭐⭐</div>
@@ -267,6 +276,13 @@ const Home = () => {
             </>
           )}
         </div>
+        {reviews.length > 3 && (
+          <div className="reviews-toggle">
+            <button className="see-more-btn" onClick={() => setShowAllReviews(!showAllReviews)}>
+              {showAllReviews ? '▲ Show Less' : `See More (${reviews.length - 3} more)`}
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="pricing-section">
@@ -346,8 +362,91 @@ const Home = () => {
         </div>
       </section>
 
+      {/* About Us Section */}
+      <section className="about-section" id="about">
+        <div className="about-container">
+          <div className="about-text">
+            <h2>About Us</h2>
+            <p>Living Trend is a modern furniture visualization platform that helps you design your dream space before making any purchase. We combine cutting-edge 3D technology with an extensive furniture catalog to give you the most realistic room planning experience.</p>
+            <p>Founded with a passion for interior design and technology, our mission is to make furniture shopping smarter, easier, and more enjoyable for everyone.</p>
+            <div className="about-stats">
+              <div className="about-stat">
+                <span className="stat-number">500+</span>
+                <span className="stat-label">Furniture Items</span>
+              </div>
+              <div className="about-stat">
+                <span className="stat-number">10K+</span>
+                <span className="stat-label">Happy Customers</span>
+              </div>
+              <div className="about-stat">
+                <span className="stat-number">5★</span>
+                <span className="stat-label">Average Rating</span>
+              </div>
+            </div>
+          </div>
+          <div className="about-image">
+            <img src={process.env.PUBLIC_URL + '/home-bg.jpg'} alt="About Living Trend" className="about-img" />
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Us Section */}
+      <section className="contact-section" id="contact">
+        <div className="contact-container">
+          <h2>Contact Us</h2>
+          <p className="contact-subtitle">Have a question or need help? We'd love to hear from you.</p>
+          <div className="contact-grid">
+            <div className="contact-info">
+              <div className="contact-item">
+                <span className="contact-icon">📍</span>
+                <div>
+                  <h4>Address</h4>
+                  <p>123 Design Street, Colombo 03, Sri Lanka</p>
+                </div>
+              </div>
+              <div className="contact-item">
+                <span className="contact-icon">📞</span>
+                <div>
+                  <h4>Phone</h4>
+                  <p>+94 11 234 5678</p>
+                </div>
+              </div>
+              <div className="contact-item">
+                <span className="contact-icon">✉️</span>
+                <div>
+                  <h4>Email</h4>
+                  <p>hello@livingtrend.lk</p>
+                </div>
+              </div>
+              <div className="contact-item">
+                <span className="contact-icon">🕐</span>
+                <div>
+                  <h4>Working Hours</h4>
+                  <p>Mon – Sat: 9:00 AM – 6:00 PM</p>
+                </div>
+              </div>
+            </div>
+            <form className="contact-form" onSubmit={(e) => { e.preventDefault(); alert('Message sent! We will get back to you soon.'); }}>
+              <div className="contact-form-group">
+                <input type="text" placeholder="Your Name" required />
+              </div>
+              <div className="contact-form-group">
+                <input type="email" placeholder="Your Email" required />
+              </div>
+              <div className="contact-form-group">
+                <input type="text" placeholder="Subject" />
+              </div>
+              <div className="contact-form-group">
+                <textarea placeholder="Your Message" rows="5" required></textarea>
+              </div>
+              <button type="submit" className="contact-submit-btn">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
       <footer className="home-footer">
-        <p>&copy; 2024 Living Trend. All rights reserved.</p>
+        <p>&copy; 2026 Living Trend. All rights reserved.</p>
       </footer>
     </div>
   );

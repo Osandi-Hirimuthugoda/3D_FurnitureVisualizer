@@ -235,3 +235,124 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Order Progress Tracker */
+.order-progress {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f8faff;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 0;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.progress-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d1d5db;
+  border: 2px solid #d1d5db;
+  transition: all 0.3s;
+}
+
+.progress-step.active .progress-dot {
+  background: #1e3c72;
+  border-color: #1e3c72;
+  box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.15);
+}
+
+.progress-step span {
+  font-size: 0.72rem;
+  color: #aaa;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.progress-step.active span {
+  color: #1e3c72;
+  font-weight: 700;
+}
+
+.progress-line {
+  flex: 1;
+  height: 2px;
+  background: #d1d5db;
+  margin-bottom: 1.1rem;
+  transition: background 0.3s;
+}
+
+.progress-line.active {
+  background: #1e3c72;
+}
+
+/* Order Header Right */
+.order-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.order-items-count {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.order-total-badge {
+  font-weight: 700;
+  color: #1e3c72;
+  font-size: 0.95rem;
+}
+
+.expand-icon {
+  color: #888;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.order-card-header {
+  cursor: pointer;
+}
+
+.order-card-header:hover {
+  background: #fafbff;
+}
+
+/* Order Details Info */
+.order-details-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.order-phone {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.order-totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.payment-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+}
+
+.payment-pending { color: #f59e0b; background: #fef3c7; }
+.payment-paid { color: #10b981; background: #d1fae5; }
+.payment-failed { color: #ef4444; background: #fee2e2; }
+.payment-refunded { color: #8b5cf6; background: #ede9fe; }

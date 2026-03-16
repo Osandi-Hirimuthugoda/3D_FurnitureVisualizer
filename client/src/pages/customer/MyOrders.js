@@ -7,6 +7,8 @@ import './MyOrders.css';
 
 const API_URL = 'http://localhost:5001/api';
 
+const STATUS_STEPS = ['pending', 'processing', 'shipped', 'delivered'];
+
 const statusColors = {
   pending: '#f59e0b',
   processing: '#3b82f6',
@@ -23,6 +25,7 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [cancelling, setCancelling] = useState({});
+  const [expandedOrder, setExpandedOrder] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -64,6 +67,8 @@ const MyOrders = () => {
     });
   };
 
+  const getStepIndex = (status) => STATUS_STEPS.indexOf(status);
+
   return (
     <div className="my-orders-page">
       <Navbar userRole={userRole} />
@@ -71,8 +76,10 @@ const MyOrders = () => {
       <div className="my-orders-container">
         <div className="my-orders-header">
           <button className="back-btn" onClick={() => navigate('/dashboard')}>← Back</button>
-          <h1>My Orders</h1>
-          <p className="subtitle">{orders.length} order{orders.length !== 1 ? 's' : ''} placed</p>
+          <div>
+            <h1>My Orders</h1>
+            <p className="subtitle">{orders.length} order{orders.length !== 1 ? 's' : ''} placed</p>
+          </div>
         </div>
 
         {loading ? (
@@ -90,53 +97,89 @@ const MyOrders = () => {
           <div className="orders-list">
             {orders.map(order => (
               <div key={order._id} className="order-card">
-                <div className="order-card-header">
+                {/* Header */}
+                <div className="order-card-header" onClick={() => setExpandedOrder(expandedOrder === order._id ? null : order._id)}>
                   <div className="order-meta">
                     <span className="order-number">#{order.orderNumber}</span>
                     <span className="order-date">{formatDate(order.createdAt)}</span>
                   </div>
-                  <span
-                    className="order-status"
-                    style={{ background: statusColors[order.status] + '20', color: statusColors[order.status], border: `1px solid ${statusColors[order.status]}` }}
-                  >
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                  </span>
-                </div>
-
-                <div className="order-items">
-                  {order.items.map((item, idx) => (
-                    <div key={idx} className="order-item">
-                      <div className="item-image">
-                        {item.image && (item.image.startsWith('data:') || item.image.startsWith('http')) ? (
-                          <img src={item.image} alt={item.name} />
-                        ) : (
-                          <span>{item.image || '🪑'}</span>
-                        )}
-                      </div>
-                      <div className="item-info">
-                        <span className="item-name">{item.name}</span>
-                        <span className="item-qty">Qty: {item.quantity}</span>
-                      </div>
-                      <span className="item-price">Rs. {(item.price * item.quantity).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="order-card-footer">
-                  <span className="shipping-addr">📍 {order.shippingAddress}</span>
-                  <div className="order-footer-right">
-                    <span className="order-total">Total: Rs. {order.totalAmount.toLocaleString()}</span>
-                    {['pending', 'processing'].includes(order.status) && (
-                      <button
-                        className="cancel-order-btn"
-                        onClick={() => handleCancel(order._id)}
-                        disabled={cancelling[order._id]}
-                      >
-                        {cancelling[order._id] ? 'Cancelling...' : 'Cancel Order'}
-                      </button>
-                    )}
+                  <div className="order-header-right">
+                    <span className="order-items-count">{order.items.length} item{order.items.length !== 1 ? 's' : ''}</span>
+                    <span className="order-total-badge">Rs. {order.totalAmount.toLocaleString()}</span>
+                    <span
+                      className="order-status"
+                      style={{ background: statusColors[order.status] + '20', color: statusColors[order.status], border: `1px solid ${statusColors[order.status]}` }}
+                    >
+                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </span>
+                    <span className="expand-icon">{expandedOrder === order._id ? '▲' : '▼'}</span>
                   </div>
                 </div>
+
+                {/* Progress Tracker */}
+                {order.status !== 'cancelled' && (
+                  <div className="order-progress">
+                    {STATUS_STEPS.map((step, idx) => (
+                      <React.Fragment key={step}>
+                        <div className={`progress-step ${idx <= getStepIndex(order.status) ? 'active' : ''}`}>
+                          <div className="progress-dot"></div>
+                          <span>{step.charAt(0).toUpperCase() + step.slice(1)}</span>
+                        </div>
+                        {idx < STATUS_STEPS.length - 1 && (
+                          <div className={`progress-line ${idx < getStepIndex(order.status) ? 'active' : ''}`}></div>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                )}
+
+                {/* Expanded Details */}
+                {expandedOrder === order._id && (
+                  <>
+                    <div className="order-items">
+                      {order.items.map((item, idx) => (
+                        <div key={idx} className="order-item">
+                          <div className="item-image">
+                            {item.image && (item.image.startsWith('data:') || item.image.startsWith('http')) ? (
+                              <img src={item.image} alt={item.name} />
+                            ) : (
+                              <span>{item.image || '🪑'}</span>
+                            )}
+                          </div>
+                          <div className="item-info">
+                            <span className="item-name">{item.name}</span>
+                            <span className="item-qty">Qty: {item.quantity}</span>
+                          </div>
+                          <span className="item-price">Rs. {(item.price * item.quantity).toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="order-card-footer">
+                      <div className="order-details-info">
+                        <span className="shipping-addr">📍 {order.shippingAddress}</span>
+                        {order.customerPhone && <span className="order-phone">📞 {order.customerPhone}</span>}
+                      </div>
+                      <div className="order-footer-right">
+                        <div className="order-totals">
+                          <span className="order-total">Total: Rs. {order.totalAmount.toLocaleString()}</span>
+                          <span className={`payment-status payment-${order.paymentStatus}`}>
+                            💳 {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1)}
+                          </span>
+                        </div>
+                        {['pending', 'processing'].includes(order.status) && (
+                          <button
+                            className="cancel-order-btn"
+                            onClick={() => handleCancel(order._id)}
+                            disabled={cancelling[order._id]}
+                          >
+                            {cancelling[order._id] ? 'Cancelling...' : 'Cancel Order'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>

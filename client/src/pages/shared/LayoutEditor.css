@@ -990,3 +990,33 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.cart-all-btn {
+  background: linear-gradient(135deg, #1e3c72, #3d7eaa);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cart-all-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 60, 114, 0.35);
+}
+
+.cart-all-btn.done {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.cart-all-btn.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.cart-all-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

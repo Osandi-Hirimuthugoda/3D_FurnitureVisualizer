@@ -32,9 +32,11 @@ const Register = () => {
         <div className="register-page">
             <div className="register-card">
                 <div className="register-logo">
-                    <div className="logo-box">
-                        <span>88</span> 
-                    </div>
+                    <img
+                        src={process.env.PUBLIC_URL + '/logo_black.png'}
+                        alt="Living Trend"
+                        className="register-logo-img"
+                    />
                 </div>
 
                 <h2>Create Designer Account</h2>

@@ -101,19 +101,34 @@ const Login = () => {
   return (
     <div className="login-page">
       <div className="login-container">
-        <div className="login-left">
-          <div className="brand-section">
-            <img
-              src={process.env.PUBLIC_URL + '/logo.png'}
-              alt="Living Trend"
-              style={{ height: '140px', marginBottom: '1rem' }}
-            />
-            <p>Design your dream space with our innovative 3D visualization technology</p>
+        <div className="login-left" style={{
+          backgroundImage: `url(${process.env.PUBLIC_URL}/logingpage.jpeg)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}>
+          <div className="login-left-overlay">
+            <div className="brand-section">
+              <h2 className="brand-tagline">Design Your Dream Space</h2>
+              <p>Visualize your perfect room with our innovative 3D furniture technology before you buy.</p>
+              <div className="login-features">
+                <div className="login-feature-item">✦ 3D Room Visualization</div>
+                <div className="login-feature-item">✦ 2D Layout Editor</div>
+                <div className="login-feature-item">✦ Save & Compare Designs</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="login-right">
           <div className="login-form-container">
+            <div className="form-logo">
+              <img
+                src={process.env.PUBLIC_URL + '/logo_black.png'}
+                alt="Living Trend"
+                className="form-logo-img"
+              />
+            </div>
+
             {/* User Type Selector */}
             <div className="user-type-selector">
               <button

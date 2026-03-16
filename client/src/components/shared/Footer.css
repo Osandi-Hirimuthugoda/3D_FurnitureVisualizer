@@ -107,3 +107,19 @@
     justify-content: center;
   }
 }
+
+.footer-link-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 0;
+  text-align: left;
+  transition: color 0.3s ease;
+}
+
+.footer-link-btn:hover {
+  color: #b3d9ff;
+}

@@ -746,3 +746,21 @@
     align-items: flex-start;
   }
 }
+
+.cart-all-btn-3d {
+  background: linear-gradient(135deg, #1e3c72, #3d7eaa) !important;
+  box-shadow: 0 4px 14px rgba(30, 60, 114, 0.4) !important;
+}
+
+.cart-all-btn-3d.done {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+.cart-all-btn-3d.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+.cart-all-btn-3d:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

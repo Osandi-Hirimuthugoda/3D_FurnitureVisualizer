@@ -1,7 +1,24 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Footer.css';
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const scrollToSection = (sectionId) => {
+    // If already on home page, scroll directly
+    if (window.location.pathname === '/') {
+      const el = document.getElementById(sectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Navigate to home then scroll
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+  };
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -20,8 +37,8 @@ const Footer = () => {
           <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/products">Products</a></li>
-            <li><a href="/about">About Us</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><button className="footer-link-btn" onClick={() => scrollToSection('about')}>About Us</button></li>
+            <li><button className="footer-link-btn" onClick={() => scrollToSection('contact')}>Contact</button></li>
           </ul>
         </div>
         
