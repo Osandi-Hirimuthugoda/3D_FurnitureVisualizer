@@ -31,7 +31,7 @@ function FurnitureItem({ item, idx, colors, shadowsEnabled }) {
   const centerX = (parseFloat(item.x) || 0) + w / 2;
   const centerZ = (parseFloat(item.y) || 0) + d / 2;
   const rot = -(parseFloat(item.rotation) || 0) * Math.PI / 180;
-  const hex = colors[item.category] || '#808080';
+  const hex = item.color || colors[item.category] || '#808080';
 
   const isImage = item.image && typeof item.image === 'string' && (item.image.startsWith('data:image') || item.image.startsWith('http'));
 
@@ -89,7 +89,7 @@ function ActualTexturedFurniture({ mapUrl, name, position, rotation, w, h, d, ca
   // 0:Right, 1:Left, 2:Top, 3:Bottom, 4:Front, 5:Back
   const sideMaterial = new THREE.MeshStandardMaterial({ color: categoryColor, roughness: 0.8 });
   const faceMaterial = new THREE.MeshStandardMaterial({ map: texture, transparent: true, alphaTest: 0.3 });
-  const materials = [sideMaterial, sideMaterial, sideMaterial, sideMaterial, faceMaterial, faceMaterial];
+  const materials = [sideMaterial, sideMaterial, faceMaterial, sideMaterial, faceMaterial, faceMaterial];
 
   return (
     <group position={position} rotation={rotation}>
