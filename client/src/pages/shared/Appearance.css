@@ -204,6 +204,50 @@
   background: linear-gradient(135deg, #bd8554, #d79b69);
 }
 
+/* ITEM SELECTOR */
+.item-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.item-select-btn {
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-select-btn:hover {
+  background: #f5f5f5;
+}
+
+.item-select-btn.active {
+  background: #F37A6D;
+  color: white;
+  border-color: #F37A6D;
+}
+
+.no-items-msg {
+  font-size: 0.9rem;
+  color: #999;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+/* PREVIEW CARD REFINE */
+.preview-card {
+  border-left: 4px solid #F37A6D;
+}
+
 /*Shading*/
 .shading-section {
   margin-top: 2rem;

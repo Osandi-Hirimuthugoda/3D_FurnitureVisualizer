@@ -22,7 +22,7 @@
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(124, 166, 210, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
   padding: 0.5rem 1rem;
@@ -364,23 +364,23 @@
   font-size: 0.9rem;
 }
 
-.canvas-grid{
-  width:500px;
-  height:400px;
-  position:relative;
+.canvas-grid {
+  width: 500px;
+  height: 400px;
+  position: relative;
   background-image:
     linear-gradient(#ddd 1px, transparent 1px),
-    linear-gradient(90deg,#ddd 1px, transparent 1px);
-  background-size:50px 50px;
+    linear-gradient(90deg, #ddd 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
-.canvas-grid .room-svg{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  z-index:0;
+.canvas-grid .room-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 .canvas-item {
@@ -616,9 +616,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -916,7 +919,7 @@
 .save-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -928,7 +931,7 @@
   border-radius: 16px;
   padding: 2rem;
   width: 380px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .save-modal h3 {

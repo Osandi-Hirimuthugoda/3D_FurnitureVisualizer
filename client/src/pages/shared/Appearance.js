@@ -5,6 +5,8 @@ import Footer from '../../components/shared/Footer';
 import { updateDesign, getDesign } from '../../api/designs';
 import './Appearance.css';
 
+const colors = { sofas: '#D4A574', chairs: '#8B7355', tables: '#87CEEB', beds: '#C4B896', desks: '#708090' };
+
 const Appearance = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
@@ -15,6 +17,8 @@ const Appearance = () => {
     material: 'wood',
     shading: 'realistic'
   });
+
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   const presetColors = [
     '#F5F5DC', '#E8E8E8', '#CFCFCF', '#C8A97E', '#8E735B', '#9B7B64',
@@ -33,14 +37,8 @@ const Appearance = () => {
     const [designId, setDesignId] = useState(null);
     const [roomSpecs, setRoomSpecs] = useState({});
     const [canvasItems, setCanvasItems] = useState([]);
+    // Loading state
     const [loading, setLoading] = useState(false);
-    
-    // control showing preview comparison
-    const [showPreview, setShowPreview] = useState(false);
-    const [appliedSettings, setAppliedSettings] = useState({
-        color: '#8e4b24',
-        material: 'wood'
-    });
 
     useEffect(() => {
         const id = localStorage.getItem('currentDesignId');
@@ -90,20 +88,31 @@ const Appearance = () => {
   const handleApply = async () => {
     setLoading(true);
     try {
-        const updatedSpecs = { 
-            ...roomSpecs, 
-            wallColor: settings.color,
-            floorType: settings.material 
-        };
+        let updatedSpecs = { ...roomSpecs };
+        let updatedItems = [...canvasItems];
 
-        // Update local state and storage
-        setRoomSpecs(updatedSpecs);
-        localStorage.setItem('roomSpecs', JSON.stringify(updatedSpecs));
+        if (settings.target === 'room') {
+            updatedSpecs = { 
+                ...roomSpecs, 
+                wallColor: settings.color,
+                floorType: settings.material 
+            };
+            setRoomSpecs(updatedSpecs);
+            localStorage.setItem('roomSpecs', JSON.stringify(updatedSpecs));
+        } else if (settings.target === 'item' && selectedItemId) {
+            updatedItems = canvasItems.map(item => 
+                item.canvasId === selectedItemId || item._id === selectedItemId 
+                ? { ...item, color: settings.color, material: settings.material }
+                : item
+            );
+            setCanvasItems(updatedItems);
+            localStorage.setItem('canvasItems', JSON.stringify(updatedItems));
+        }
 
         if (designId) {
             await updateDesign(designId, { 
                 roomSpecs: updatedSpecs,
-                canvasItems: canvasItems 
+                canvasItems: updatedItems 
             });
         }
         
@@ -152,13 +161,46 @@ const Appearance = () => {
 
               <button
                 className={`target-btn ${settings.target === 'item' ? 'active' : ''}`}
-                onClick={() => handleChange('target', 'item')}
+                onClick={() => {
+                  handleChange('target', 'item');
+                  if (canvasItems.length > 0 && !selectedItemId) {
+                    const firstItem = canvasItems[0];
+                    const id = firstItem.canvasId || firstItem._id;
+                    setSelectedItemId(id);
+                    handleChange('color', firstItem.color || colors[firstItem.category] || '#F5F5DC');
+                  }
+                }}
               >
                 🪑
                 <span>Selected Item</span>
               </button>
             </div>
           </div>
+
+          {/* Item Selector (Only if target is item) */}
+          {settings.target === 'item' && (
+            <div className="appearance-card">
+              <h2>Select Item to Color</h2>
+              <div className="item-selector-grid">
+                {canvasItems.map((item) => {
+                  const id = item.canvasId || item._id;
+                  return (
+                    <button
+                      key={id}
+                      className={`item-select-btn ${selectedItemId === id ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedItemId(id);
+                        handleChange('color', item.color || colors[item.category] || '#808080');
+                      }}
+                    >
+                      {item.name || item.category}
+                    </button>
+                  );
+                })}
+              </div>
+              {canvasItems.length === 0 && <p className="no-items-msg">No items in your room yet.</p>}
+            </div>
+          )}
 
           {/* Color */}
           <div className="appearance-card">
@@ -248,18 +290,11 @@ const Appearance = () => {
 
             <div className="actions">
                 <button 
-                    className="preview-btn"
-                    onClick={() => setShowPreview(true)}
-                    >
-                    Preview Changes
-                </button>
-
-                <button 
                     className="apply-btn" 
                     onClick={handleApply}
-                    disabled={loading}
+                    disabled={loading || (settings.target === 'item' && !selectedItemId)}
                 >
-                {loading ? 'Applying...' : '✓ Apply Changes'}
+                {loading ? 'Applying...' : '✓ Save & See in 3D'}
                 </button>
             </div>
 
@@ -269,34 +304,29 @@ const Appearance = () => {
         <div className="appearance-right">
 
           {/* Preview */}
-        <div className="appearance-card">
-        <h2>Preview</h2>
-
-        {/* AFTER CHANGES CARD */}
-        {showPreview && (
-            <>
-            <p className="sub-label">After Changes</p>
-            <div 
-                className="preview-box"
-                style={{
+        <div className="appearance-card preview-card">
+        <h2>Live Preview</h2>
+        
+        <p className="sub-label">Instant View of Your Selection</p>
+        <div 
+            className="preview-box"
+            style={{
+            background:
+                settings.target === 'room'
+                ? settings.color
+                : (roomSpecs.wallColor || '#F5F5DC')
+            }}
+        >
+            <div
+            className={`preview-object ${settings.material}`}
+            style={{
                 background:
-                    settings.target === 'room'
+                settings.target === 'item'
                     ? settings.color
-                    : (roomSpecs.wallColor || '#F5F5DC')
-                }}
-            >
-                <div
-                className={`preview-object ${settings.material}`}
-                style={{
-                    background:
-                    settings.target === 'item'
-                        ? settings.color
-                        : (roomSpecs.floorType === 'carpet' ? '#8B7355' : '#6B5344')
-                }}
-                ></div>
-            </div>
-            </>
-        )}
+                    : (roomSpecs.floorType === 'carpet' ? '#8B7355' : '#6B5344')
+            }}
+            ></div>
+        </div>
 
         {/* ORIGINAL CARD */}
         <p className="sub-label">Original</p>
@@ -341,32 +371,10 @@ const Appearance = () => {
               <span>{settings.shading === 'flat' ? 'Flat' : settings.shading === 'smooth' ? 'Smooth' : 'Realistic'}</span>
             </div>
           </div>
-
-          {showPreview && (
-            <div className="confirm-actions">
-                <button 
-                className="cancel-btn"
-                onClick={() => setShowPreview(false)}
-                >
-                Cancel
-                </button>
-
-                <button 
-                className="confirm-btn"
-                onClick={handleApply}
-                disabled={loading}
-                >
-                {loading ? 'Saving...' : 'Confirm & Apply'}
-                </button>
-            </div>
-            )}
-
         </div>
-
       </div>
-
       <Footer />
-      </div>
+     </div>
     </div>
   );
 };

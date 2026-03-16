@@ -93,7 +93,7 @@ const LayoutEditor = () => {
         if (parsed.width && parsed.length) {
           setRoomDimensions({ width: parsed.width, length: parsed.length });
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   }, []);
 
@@ -263,7 +263,7 @@ const LayoutEditor = () => {
           <span className="canvas-price-val">
             {i.discount > 0 ? (
               <><span className="canvas-price-orig">Rs. {i.price.toLocaleString()}</span>
-              <span className="canvas-price-disc">Rs. {Math.round(i.price - i.price * i.discount / 100).toLocaleString()}</span></>
+                <span className="canvas-price-disc">Rs. {Math.round(i.price - i.price * i.discount / 100).toLocaleString()}</span></>
             ) : <span>Rs. {i.price.toLocaleString()}</span>}
           </span>
         </div>
@@ -276,7 +276,7 @@ const LayoutEditor = () => {
       <Navbar userRole={userRole} />
       <div className="layout-editor">
         <header className="editor-header">
-          <button className="back-btn" onClick={() => navigate('/dashboard')}>Back</button>
+          <button className="back-btn" onClick={() => navigate('/room-setup')}>Back</button>
           <h1>2D Layout Editor</h1>
           <div className="header-actions">
             <button
@@ -286,7 +286,7 @@ const LayoutEditor = () => {
             >
               🔍 Compare Design
             </button>
-            
+
             <button className={"save-btn " + saveStatus} onClick={handleSave} disabled={saveStatus === 'saving'}>
               {saveStatus === 'saving' && 'Saving...'}
               {saveStatus === 'saved' && 'Saved!'}
@@ -410,10 +410,10 @@ const LayoutEditor = () => {
                     style={{ left: item.x * 50 + 'px', top: item.y * 50 + 'px', width: item.width * 50 + 'px', height: item.height * 50 + 'px', transform: 'rotate(' + item.rotation + 'deg)' }}
                     onClick={() => setSelectedItem(item)}
                     draggable
-                    onDragStart={(e) => { 
-                      e.dataTransfer.effectAllowed = 'move'; 
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = 'move';
                       e.dataTransfer.setData('canvasId', item.canvasId.toString());
-                      
+
                       const rect = e.currentTarget.getBoundingClientRect();
                       // Store the offset of the click from the top-left corner of the item (in meters)
                       dragOffset.current = {
@@ -424,14 +424,14 @@ const LayoutEditor = () => {
                     onDragEnd={(e) => {
                       const canvas = e.currentTarget.parentElement;
                       const rect = canvas.getBoundingClientRect();
-                      
+
                       // Final position (meters) = (MousePos - CanvasPos) / 50 - OffsetWithinItem
                       const rawX = (e.clientX - rect.left) / 50 - dragOffset.current.x;
                       const rawY = (e.clientY - rect.top) / 50 - dragOffset.current.y;
-                      
+
                       const newX = Math.max(0, Math.min(roomDimensions.length - item.width, rawX));
                       const newY = Math.max(0, Math.min(roomDimensions.width - item.height, rawY));
-                      
+
                       const newItems = canvasItems.map(i =>
                         i.canvasId === item.canvasId
                           ? { ...i, x: newX, y: newY }
@@ -577,7 +577,7 @@ const LayoutEditor = () => {
             onApplyTemplate={handleApplyTemplate}
             onClose={() => setShowTemplateSelector(false)}
           />
-          
+
         )}
         <CompareDesignModal
           isOpen={showCompareModal}
