@@ -377,6 +377,7 @@ function RoomScene({ roomSpecs, canvasItems, lighting, shadowsEnabled, showHuman
 
 const ThreeDView = () => {
   const navigate = useNavigate();
+  const scaleRefSectionRef = React.useRef(null);
   const [designId, setDesignId] = useState(null);
   const [rasterizeError, setRasterizeError] = useState(null);
   const [isRasterizing, setIsRasterizing] = useState(false);
@@ -512,6 +513,12 @@ const ThreeDView = () => {
           <button className="appearance-btn" onClick={handleOpenAppearance}>
             Appearance
           </button>
+          <button
+            className="appearance-btn scale-ref-btn"
+            onClick={() => scaleRefSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          >
+            📐 Scale Reference
+          </button>
           {userRole !== 'admin' && (
             <button
               className={`appearance-btn cart-all-btn-3d ${cartStatus}`}
@@ -621,7 +628,7 @@ const ThreeDView = () => {
               </div>
             </section>
 
-            <section className="control-section">
+            <section className="control-section" ref={scaleRefSectionRef}>
               <div className="control-header">
                 <h3>Scale Reference</h3>
                 <p className="control-subtitle">
@@ -686,6 +693,25 @@ const ThreeDView = () => {
                 </div>
               </div>
             </section>
+
+            {userRole !== 'admin' && (
+              <section className="control-section">
+                <div className="control-header">
+                  <h3>Cart</h3>
+                  <p className="control-subtitle">Add all furniture items to your cart.</p>
+                </div>
+                <button
+                  className={`cart-sidebar-btn ${cartStatus}`}
+                  onClick={handleAddAllToCart}
+                  disabled={cartStatus === 'adding' || canvasItems.length === 0}
+                >
+                  {cartStatus === 'adding' && '⏳ Adding to Cart...'}
+                  {cartStatus === 'done' && '✓ Added to Cart!'}
+                  {cartStatus === 'error' && '✗ Failed - Try Again'}
+                  {cartStatus === 'idle' && '🛒 Add All Items to Cart'}
+                </button>
+              </section>
+            )}
 
             <section className="control-section">
               <div className="control-header">
