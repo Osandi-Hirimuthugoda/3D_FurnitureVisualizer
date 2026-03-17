@@ -108,11 +108,13 @@ const Dashboard = () => {
           <div className="quick-actions">
             <h2>Quick Actions</h2>
             <div className="action-cards">
-              <div className="action-card" onClick={() => navigate('/room-setup')}>
-                <div className="card-icon">🎨</div>
-                <h3>Create New Design</h3>
-                <p>Start designing your room in 3D</p>
-              </div>
+              {userRole !== 'admin' && (
+                <div className="action-card" onClick={() => navigate('/room-setup')}>
+                  <div className="card-icon">🎨</div>
+                  <h3>Create New Design</h3>
+                  <p>Start designing your room in 3D</p>
+                </div>
+              )}
 
               <div className="action-card" onClick={() => navigate('/products')}>
                 <div className="card-icon">🪑</div>
