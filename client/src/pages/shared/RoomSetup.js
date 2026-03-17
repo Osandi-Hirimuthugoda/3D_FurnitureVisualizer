@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/shared/Navbar';
 import Footer from '../../components/shared/Footer';
@@ -9,13 +9,6 @@ import './RoomSetup.css';
 const RoomSetup = ({ userRole = 'customer' }) => {
   const navigate = useNavigate();
   const actualUserRole = localStorage.getItem('userRole') || userRole;
-
-  // Admin should not access room setup
-  useEffect(() => {
-    if (actualUserRole === 'admin') {
-      navigate('/dashboard');
-    }
-  }, [actualUserRole, navigate]);
   const [roomSpecs, setRoomSpecs] = useState({
     length: 5,
     width: 4,
@@ -229,9 +222,6 @@ const RoomSetup = ({ userRole = 'customer' }) => {
           <div className="action-buttons">
             <button className="save-btn" onClick={handleSave}>
               💾 Save
-            </button>
-            <button className="explore-templates-btn" onClick={() => setShowTemplateSelector(true)}>
-              🧩 Explore Templates
             </button>
             <button className="continue-btn" onClick={handleContinue}>
               Continue to 2D Layout →

@@ -1113,6 +1113,7 @@
   color: var(--primary-blue);
   margin-bottom: 1.5rem;
   font-weight: 800;
+  text-align: left;
 }
 
 .about-text p {
@@ -1120,6 +1121,7 @@
   line-height: 1.8;
   margin-bottom: 1rem;
   font-size: 1.05rem;
+  text-align: left;
 }
 
 .about-stats {
@@ -1227,12 +1229,14 @@
   color: var(--primary-blue);
   font-weight: 700;
   font-size: 0.95rem;
+  text-align: left;
 }
 
 .contact-item p {
   margin: 0;
   color: var(--text-light);
   font-size: 0.9rem;
+  text-align: left;
 }
 
 .contact-form {

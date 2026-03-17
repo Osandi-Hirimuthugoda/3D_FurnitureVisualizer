@@ -144,8 +144,74 @@ const Appearance = () => {
 
       <div className="appearance-container">
 
-        {/* LEFT PANEL */}
+        {/* LEFT PANEL - Live Preview */}
         <div className="appearance-left">
+
+          {/* Preview */}
+          <div className="appearance-card preview-card">
+            <h2>Live Preview</h2>
+
+            <p className="sub-label">Wall Colour Preview</p>
+            <div className="room-svg-preview-wrapper">
+              <svg viewBox="0 0 300 240" className="room-svg-preview">
+                <rect x="30" y="30" width="240" height="180" fill={roomSpecs.floorType === 'carpet' ? '#8B7355' : '#6B5344'} />
+                <rect x="30" y="30" width="240" height="10" fill={settings.target === 'room' ? settings.color : (roomSpecs.wallColor || '#F5F5DC')} />
+                <rect x="30" y="30" width="10" height="180" fill={settings.target === 'room' ? settings.color : (roomSpecs.wallColor || '#F5F5DC')} />
+                <rect x="260" y="30" width="10" height="180" fill={settings.target === 'room' ? settings.color : (roomSpecs.wallColor || '#F5F5DC')} />
+                <rect x="30" y="30" width="240" height="180" fill="none" stroke="#333" strokeWidth="2" />
+                <rect x="80" y="140" width="80" height="40" rx="4" fill="rgba(0,0,0,0.15)" />
+                <rect x="170" y="150" width="40" height="30" rx="4" fill="rgba(0,0,0,0.12)" />
+                <rect x="100" y="60" width="60" height="40" rx="4" fill="rgba(0,0,0,0.12)" />
+                <text x="150" y="22" textAnchor="middle" fontSize="11" fill="#555" fontWeight="600">{roomSpecs.length || 5}m</text>
+                <text x="18" y="125" textAnchor="middle" fontSize="11" fill="#555" fontWeight="600" transform="rotate(-90 18 125)">{roomSpecs.width || 4}m</text>
+              </svg>
+            </div>
+
+            <p className="sub-label">Original</p>
+            <div className="room-svg-preview-wrapper">
+              <svg viewBox="0 0 300 240" className="room-svg-preview">
+                <rect x="30" y="30" width="240" height="180" fill={roomSpecs.floorType === 'carpet' ? '#8B7355' : '#6B5344'} />
+                <rect x="30" y="30" width="240" height="10" fill={roomSpecs.wallColor || '#F5F5DC'} />
+                <rect x="30" y="30" width="10" height="180" fill={roomSpecs.wallColor || '#F5F5DC'} />
+                <rect x="260" y="30" width="10" height="180" fill={roomSpecs.wallColor || '#F5F5DC'} />
+                <rect x="30" y="30" width="240" height="180" fill="none" stroke="#333" strokeWidth="2" />
+                <rect x="80" y="140" width="80" height="40" rx="4" fill="rgba(0,0,0,0.15)" />
+                <rect x="170" y="150" width="40" height="30" rx="4" fill="rgba(0,0,0,0.12)" />
+                <rect x="100" y="60" width="60" height="40" rx="4" fill="rgba(0,0,0,0.12)" />
+                <text x="150" y="22" textAnchor="middle" fontSize="11" fill="#555" fontWeight="600">{roomSpecs.length || 5}m</text>
+                <text x="18" y="125" textAnchor="middle" fontSize="11" fill="#555" fontWeight="600" transform="rotate(-90 18 125)">{roomSpecs.width || 4}m</text>
+              </svg>
+            </div>
+          </div>
+
+          {/* Current Settings */}
+          <div className="appearance-card">
+            <h2>Current Settings</h2>
+            <div className="settings-row">
+              <span>Target:</span>
+              <span>{settings.target === 'room' ? 'Room' : 'Selected Item'}</span>
+            </div>
+            <div className="settings-row">
+              <span>Color:</span>
+              <div className="color-display">
+                <div className="mini-color" style={{ background: settings.color }}></div>
+                {settings.color}
+              </div>
+            </div>
+            <div className="settings-row">
+              <span>Material:</span>
+              <span>{settings.material === 'wood' ? 'Wood' : settings.material === 'metal' ? 'Metal' : settings.material === 'glass' ? 'Glass' : settings.material === 'leather' ? 'Leather' : settings.material === 'smooth' ? 'Smooth' : 'Fabric'}</span>
+            </div>
+            <div className="settings-row">
+              <span>Shading:</span>
+              <span>{settings.shading === 'flat' ? 'Flat' : settings.shading === 'smooth' ? 'Smooth' : 'Realistic'}</span>
+            </div>
+          </div>
+
+        </div>
+
+        {/* RIGHT PANEL - Controls */}
+        <div className="appearance-right">
 
           {/* Select Target */}
           <div className="appearance-card">
@@ -158,7 +224,6 @@ const Appearance = () => {
                 🏠
                 <span>Entire Room</span>
               </button>
-
               <button
                 className={`target-btn ${settings.target === 'item' ? 'active' : ''}`}
                 onClick={() => {
@@ -177,7 +242,7 @@ const Appearance = () => {
             </div>
           </div>
 
-          {/* Item Selector (Only if target is item) */}
+          {/* Item Selector */}
           {settings.target === 'item' && (
             <div className="appearance-card">
               <h2>Select Item to Color</h2>
@@ -202,10 +267,9 @@ const Appearance = () => {
             </div>
           )}
 
-          {/* Color */}
+          {/* Wall Colour */}
           <div className="appearance-card">
-            <h2>Color</h2>
-
+            <h2>Wall Colour</h2>
             <div className="custom-color">
               <label>Custom Color</label>
               <div className="color-row">
@@ -223,7 +287,6 @@ const Appearance = () => {
                 />
               </div>
             </div>
-
             <div className="preset-colors">
               <label>Preset Colors</label>
               <div className="preset-grid">
@@ -240,137 +303,48 @@ const Appearance = () => {
           </div>
 
           {/* Material */}
-            <div className="appearance-card">
-            <h2>Material</h2>
-
-            <div className="material-grid">
-                {materials.map((mat) => (
-                <button
-                    key={mat.id}
-                    className={`material-btn ${settings.material === mat.id ? 'active' : ''}`}
-                    onClick={() => handleChange('material', mat.id)}
-                >
-                    <div className={`material-preview ${mat.id}-preview`}></div>
-                    {mat.label}
-                </button>
-                ))}
-            </div>
-            </div>
-
-            {/* Shading */}
-            <div className="appearance-card">
-            <h2>Shading Style</h2>
-                
-            <div className="shading">
-              <button
-                className={`shading-btn ${settings.shading === 'flat' ? 'active' : ''}`}
-                onClick={() => handleChange('shading', 'flat')}
-              >
-                Flat
-                <span><p>No shading, solid colors</p></span>
-              </button>
-
-              <button
-                className={`shading-btn ${settings.shading === 'smooth' ? 'active' : ''}`}
-                onClick={() => handleChange('shading', 'smooth')}
-              >
-                Smooth
-                <span><p>Smooth gradient shading</p></span>
-              </button>
-
-              <button
-                className={`shading-btn ${settings.shading === 'realistic' ? 'active' : ''}`}
-                onClick={() => handleChange('shading', 'realistic')}
-              >
-                Realistic
-                <span><p>Advanced lighting and shadows</p></span>
-              </button>
-            </div>
-            </div>
-
-            <div className="actions">
-                <button 
-                    className="apply-btn" 
-                    onClick={handleApply}
-                    disabled={loading || (settings.target === 'item' && !selectedItemId)}
-                >
-                {loading ? 'Applying...' : '✓ Save & See in 3D'}
-                </button>
-            </div>
-
-        </div>
-
-        {/* RIGHT PANEL */}
-        <div className="appearance-right">
-
-          {/* Preview */}
-        <div className="appearance-card preview-card">
-        <h2>Live Preview</h2>
-        
-        <p className="sub-label">Instant View of Your Selection</p>
-        <div 
-            className="preview-box"
-            style={{
-            background:
-                settings.target === 'room'
-                ? settings.color
-                : (roomSpecs.wallColor || '#F5F5DC')
-            }}
-        >
-            <div
-            className={`preview-object ${settings.material}`}
-            style={{
-                background:
-                settings.target === 'item'
-                    ? settings.color
-                    : (roomSpecs.floorType === 'carpet' ? '#8B7355' : '#6B5344')
-            }}
-            ></div>
-        </div>
-
-        {/* ORIGINAL CARD */}
-        <p className="sub-label">Original</p>
-        <div 
-            className="preview-box"
-            style={{ background: roomSpecs.wallColor || '#F5F5DC' }}
-        >
-            <div
-            className={`preview-object ${roomSpecs.floorType || 'wood'}`}
-            style={{ background: roomSpecs.floorType === 'carpet' ? '#8B7355' : '#6B5344' }}
-            ></div>
-        </div>
-        </div>
-
-          {/* Current Settings */}
           <div className="appearance-card">
-            <h2>Current Settings</h2>
-
-            <div className="settings-row">
-              <span>Target:</span>
-              <span>{settings.target === 'room' ? 'Room' : 'Selected Item'}</span>
-            </div>
-
-            <div className="settings-row">
-              <span>Color:</span>
-              <div className="color-display">
-                <div
-                  className="mini-color"
-                  style={{ background: settings.color }}
-                ></div>
-                {settings.color}
-              </div>
-            </div>
-
-            <div className="settings-row">
-              <span>Material:</span>
-              <span>{settings.material === 'wood' ? 'Wood' : settings.material === 'metal' ? 'Metal' : settings.material === 'glass' ? 'Glass' : settings.material === 'leather' ? 'Leather' : settings.material === 'smooth' ? 'Smooth' : 'Fabric'}</span>
-            </div>
-
-            <div className="settings-row">
-              <span>Shading:</span>
-              <span>{settings.shading === 'flat' ? 'Flat' : settings.shading === 'smooth' ? 'Smooth' : 'Realistic'}</span>
+            <h2>Material</h2>
+            <div className="material-grid">
+              {materials.map((mat) => (
+                <button
+                  key={mat.id}
+                  className={`material-btn ${settings.material === mat.id ? 'active' : ''}`}
+                  onClick={() => handleChange('material', mat.id)}
+                >
+                  <div className={`material-preview ${mat.id}-preview`}></div>
+                  {mat.label}
+                </button>
+              ))}
             </div>
           </div>
+
+          {/* Shading */}
+          <div className="appearance-card">
+            <h2>Shading Style</h2>
+            <div className="shading">
+              <button className={`shading-btn ${settings.shading === 'flat' ? 'active' : ''}`} onClick={() => handleChange('shading', 'flat')}>
+                Flat<span><p>No shading, solid colors</p></span>
+              </button>
+              <button className={`shading-btn ${settings.shading === 'smooth' ? 'active' : ''}`} onClick={() => handleChange('shading', 'smooth')}>
+                Smooth<span><p>Smooth gradient shading</p></span>
+              </button>
+              <button className={`shading-btn ${settings.shading === 'realistic' ? 'active' : ''}`} onClick={() => handleChange('shading', 'realistic')}>
+                Realistic<span><p>Advanced lighting and shadows</p></span>
+              </button>
+            </div>
+          </div>
+
+          <div className="actions">
+            <button
+              className="apply-btn"
+              onClick={handleApply}
+              disabled={loading || (settings.target === 'item' && !selectedItemId)}
+            >
+              {loading ? 'Applying...' : '✓ Save & See in 3D'}
+            </button>
+          </div>
+
         </div>
       </div>
       <Footer />

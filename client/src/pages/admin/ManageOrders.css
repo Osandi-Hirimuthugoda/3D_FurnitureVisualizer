@@ -22,18 +22,23 @@
 }
 
 .orders-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 30px;
 }
 
 .orders-header h1 {
   color: #1e3c72;
   font-size: 2rem;
-  margin-bottom: 8px;
+  margin: 0;
+  flex: 1;
 }
 
 .orders-header .subtitle {
   color: #718096;
   font-size: 1rem;
+  margin: 0;
 }
 
 /* Order Statistics */

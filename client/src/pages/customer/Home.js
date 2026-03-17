@@ -367,15 +367,15 @@ const Home = () => {
         <div className="about-container">
           <div className="about-text">
             <h2>About Us</h2>
-            <p>Living Trend is a modern furniture visualization platform that helps you design your dream space before making any purchase. We combine cutting-edge 3D technology with an extensive furniture catalog to give you the most realistic room planning experience.</p>
-            <p>Founded with a passion for interior design and technology, our mission is to make furniture shopping smarter, easier, and more enjoyable for everyone.</p>
+            <p>At Living Trend, we bring your interior vision to life. Our platform lets you visualize, plan, and furnish your space in stunning 3D all before spending a single rupee. With a rich catalog of furniture and real-time room planning tools, designing your dream home has never been this intuitive.</p>
+            <p>We started with a simple belief: everyone deserves a space they love. That's why we built a tool that puts the power of professional interior design right in your hands no expertise required.</p>
             <div className="about-stats">
               <div className="about-stat">
-                <span className="stat-number">500+</span>
+                <span className="stat-number">100+</span>
                 <span className="stat-label">Furniture Items</span>
               </div>
               <div className="about-stat">
-                <span className="stat-number">10K+</span>
+                <span className="stat-number">30+</span>
                 <span className="stat-label">Happy Customers</span>
               </div>
               <div className="about-stat">

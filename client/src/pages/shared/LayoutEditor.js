@@ -455,7 +455,7 @@ const LayoutEditor = () => {
                     pushHistory([]);
                   }
                 }}>Reset</button>
-                <button className="toolbar-btn" onClick={() => setShowTemplateSelector(true)}>Explore Templates</button>
+                <button className="toolbar-btn explore-templates-btn" onClick={() => setShowTemplateSelector(true)}>Explore Templates</button>
               </div>
               <div className="toolbar-right">
                 <div className="furniture-count">
