@@ -30,6 +30,8 @@ const LayoutEditor = () => {
   const [productsLoading, setProductsLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState('idle');
   const [cartStatus, setCartStatus] = useState('idle'); // idle | adding | done | error
+  const [selectedCartItems, setSelectedCartItems] = useState(new Set()); // canvasIds selected for cart
+  const [selectedCartStatus, setSelectedCartStatus] = useState('idle');
   const dragOffset = useRef({ x: 0, y: 0 });
 
   const historyRef = useRef([[]]);
@@ -181,6 +183,35 @@ const LayoutEditor = () => {
     }
   };
 
+  const toggleCartSelection = (canvasId) => {
+    setSelectedCartItems(prev => {
+      const next = new Set(prev);
+      if (next.has(canvasId)) next.delete(canvasId);
+      else next.add(canvasId);
+      return next;
+    });
+  };
+
+  const handleAddSelectedToCart = async () => {
+    const itemsToAdd = canvasItems.filter(i => i.id && selectedCartItems.has(i.canvasId));
+    if (itemsToAdd.length === 0) {
+      alert('Select at least one item to add to cart.');
+      return;
+    }
+    setSelectedCartStatus('adding');
+    try {
+      for (const item of itemsToAdd) {
+        await addToCart(item.id, 1);
+      }
+      setSelectedCartStatus('done');
+      setSelectedCartItems(new Set());
+      setTimeout(() => setSelectedCartStatus('idle'), 2500);
+    } catch (err) {
+      setSelectedCartStatus('error');
+      setTimeout(() => setSelectedCartStatus('idle'), 2500);
+    }
+  };
+
   const handleAddToCanvas = (item) => {
     const newItem = {
       ...item,
@@ -309,17 +340,32 @@ const LayoutEditor = () => {
               🔍 Compare Design
             </button>
             {userRole !== 'admin' && (
-              <button
-                className={`toolbar-btn cart-all-btn ${cartStatus}`}
-                onClick={handleAddAllToCart}
-                disabled={cartStatus === 'adding' || canvasItems.length === 0}
-                title="Add all canvas items to cart"
-              >
-                {cartStatus === 'adding' && '⏳ Adding...'}
-                {cartStatus === 'done' && '✓ Added to Cart!'}
-                {cartStatus === 'error' && '✗ Failed'}
-                {cartStatus === 'idle' && '🛒 Add All to Cart'}
-              </button>
+              <>
+                <button
+                  className={`toolbar-btn cart-all-btn ${cartStatus}`}
+                  onClick={handleAddAllToCart}
+                  disabled={cartStatus === 'adding' || canvasItems.length === 0}
+                  title="Add all canvas items to cart"
+                >
+                  {cartStatus === 'adding' && '⏳ Adding...'}
+                  {cartStatus === 'done' && '✓ Added to Cart!'}
+                  {cartStatus === 'error' && '✗ Failed'}
+                  {cartStatus === 'idle' && '🛒 Add All to Cart'}
+                </button>
+                {selectedCartItems.size > 0 && (
+                  <button
+                    className={`toolbar-btn cart-selected-btn ${selectedCartStatus}`}
+                    onClick={handleAddSelectedToCart}
+                    disabled={selectedCartStatus === 'adding'}
+                    title="Add selected items to cart"
+                  >
+                    {selectedCartStatus === 'adding' && '⏳ Adding...'}
+                    {selectedCartStatus === 'done' && '✓ Added!'}
+                    {selectedCartStatus === 'error' && '✗ Failed'}
+                    {selectedCartStatus === 'idle' && `🛒 Add Selected (${selectedCartItems.size})`}
+                  </button>
+                )}
+              </>
             )}
             <button className={"save-btn " + saveStatus} onClick={handleSave} disabled={saveStatus === 'saving'}>
               {saveStatus === 'saving' && 'Saving...'}
@@ -440,9 +486,15 @@ const LayoutEditor = () => {
                 {canvasItems.map(item => (
                   <div
                     key={item.canvasId}
-                    className={"canvas-item " + (selectedItem && selectedItem.canvasId === item.canvasId ? 'selected' : '')}
+                    className={"canvas-item " + (selectedItem && selectedItem.canvasId === item.canvasId ? 'selected' : '') + (selectedCartItems.has(item.canvasId) ? ' cart-selected' : '')}
                     style={{ left: item.x * 50 + 'px', top: item.y * 50 + 'px', width: item.width * 50 + 'px', height: item.height * 50 + 'px', transform: 'rotate(' + item.rotation + 'deg)' }}
-                    onClick={() => setSelectedItem(item)}
+                    onClick={(e) => {
+                      if (e.ctrlKey || e.metaKey) {
+                        toggleCartSelection(item.canvasId);
+                      } else {
+                        setSelectedItem(item);
+                      }
+                    }}
                     draggable
                     onDragStart={(e) => {
                       e.dataTransfer.effectAllowed = 'move';
@@ -482,6 +534,15 @@ const LayoutEditor = () => {
                       ? <img src={item.image} alt={item.name} className="canvas-item-image" />
                       : <span className="canvas-item-emoji">chair</span>}
                     <div className="item-label">{item.name}</div>
+                    {userRole !== 'admin' && (
+                      <div
+                        className={"cart-checkbox " + (selectedCartItems.has(item.canvasId) ? 'checked' : '')}
+                        onClick={(e) => { e.stopPropagation(); toggleCartSelection(item.canvasId); }}
+                        title="Select for cart"
+                      >
+                        {selectedCartItems.has(item.canvasId) ? '✓' : ''}
+                      </div>
+                    )}
                     <div className="resize-handles">
                       <div className="handle top-left"></div>
                       <div className="handle top-right"></div>
