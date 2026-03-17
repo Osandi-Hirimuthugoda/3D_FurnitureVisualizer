@@ -18,19 +18,24 @@
 .room-setup-header {
   max-width: 1400px;
   width: 100%;
-  margin: 2rem auto;
+  margin: 1.5rem auto;
   padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .back-btn {
   /* global style from index.css */
-  margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .room-setup-header h1 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--text-dark);
   margin: 0;
+  flex: 1;
+  text-align: center;
 }
 
 .room-setup-container {
@@ -42,6 +47,14 @@
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   flex: 1;
+}
+
+.room-preview {
+  order: -1;
+}
+
+.room-specifications {
+  order: 1;
 }
 
 .room-specifications,
@@ -252,6 +265,10 @@
 
   .room-preview {
     order: -1;
+  }
+
+  .room-specifications {
+    order: 1;
   }
 }
 
