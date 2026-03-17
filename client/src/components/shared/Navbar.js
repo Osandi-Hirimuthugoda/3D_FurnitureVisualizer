@@ -135,7 +135,7 @@ const Navbar = ({ userRole }) => {
                       className={isActive('/cart') ? 'active' : ''}
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <span className="cart-icon">🛒</span> Cart
+                      Cart
                     </Link>
                   </li>
                   <li>
@@ -144,7 +144,7 @@ const Navbar = ({ userRole }) => {
                       className={isActive('/my-orders') ? 'active' : ''}
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      📦 My Orders
+                      My Orders
                     </Link>
                   </li>
                 </>
@@ -152,7 +152,7 @@ const Navbar = ({ userRole }) => {
 
               <li className="nav-user">
                 <button className="btn-user" onClick={handleLogout}>
-                  👤 Logout
+                  Logout
                 </button>
               </li>
             </>
